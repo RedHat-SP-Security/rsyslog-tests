@@ -18,5 +18,5 @@ adjust:
     when: distro < rhel-8.5
 link:
 -   verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1932795
-extra-summary: /rsyslog/Sanity/bz1932795-rebase-to-2102
+extra-summary: /Sanity/bz1932795-rebase-to-2102
 extra-nitrate: TC#0611069

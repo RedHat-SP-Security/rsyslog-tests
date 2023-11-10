@@ -1,5 +1,5 @@
 # run e.g. with:
-#   tmt run -a -vvvddd provision --how minute -i rhel-8 report --verbose plans --name /rsyslog/Sanity/elasticsearch/elasticsearch/v7.3.0
+#   tmt run -a -vvvddd provision --how minute -i rhel-8 report --verbose plans --name /Sanity/elasticsearch/elasticsearch/v7.3.0
 
 context:
     EStest: 1
@@ -7,7 +7,7 @@ context:
 discover:
   - how: fmf
     test:
-      - /rsyslog/Sanity/elasticsearch/test
+      - /Sanity/elasticsearch/test
 execute:
   - how: tmt
 

@@ -6,8 +6,8 @@ tag+:
 - Tier2
 environment:
   TEST: Multihost/relp/direct-config
-extra-summary: /rsyslog/Multihost/relp
-extra-task: /rsyslog/Multihost/relp
+extra-summary: /Multihost/relp
+extra-task: /Multihost/relp
 adjust:
 -   enabled: false
     when: distro < rhel-6

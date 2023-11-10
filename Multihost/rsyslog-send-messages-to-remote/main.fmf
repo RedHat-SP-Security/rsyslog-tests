@@ -24,7 +24,7 @@ enabled: true
     discover:
       - how: fmf
         test:
-          - /rsyslog/Multihost/rsyslog-send-messages-to-remote/ansible-normal
+          - /Multihost/rsyslog-send-messages-to-remote/ansible-normal
     provision:
       - role: client
         how: connect

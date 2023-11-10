@@ -25,17 +25,17 @@ discover:
     where:
       - client
     test:
-      - /rsyslog/Multihost/orchestrated-example/test/role/client
+      - /Multihost/orchestrated-example/test/role/client
   - how: fmf
     where:
       - server
     test:
-      - /rsyslog/Multihost/orchestrated-example/test/role/server
+      - /Multihost/orchestrated-example/test/role/server
   - how: fmf
     # removed as a workaround for getting all TMT_ROLE_* variables set
     # where:
     #   - controller
     test:
-      - /rsyslog/Multihost/orchestrated-example/test/controller
+      - /Multihost/orchestrated-example/test/controller
 execute:
   - how: tmt

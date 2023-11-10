@@ -14,6 +14,6 @@ provision:
 discover:
   - how: fmf
     test:
-      - /rsyslog/Multihost/.*
+      - /Multihost/.*
 execute:
   - how: tmt

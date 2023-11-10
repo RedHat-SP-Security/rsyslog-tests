@@ -3,7 +3,7 @@ link:
   - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=672182
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
-path: /rsyslog/Sanity/bz672182-RFE-Provide-multi-line-message-capability
+path: /Sanity/bz672182-RFE-Provide-multi-line-message-capability
 require+:
   - library(distribution/dpcommon)
   - library(selinux-policy/common)

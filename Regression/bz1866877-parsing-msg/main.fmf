@@ -18,5 +18,5 @@ adjust:
     when: distro < rhel-8.5 or distro < centos-8
 link:
 -   verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1866877
-extra-summary: /rsyslog/Regression/bz1866877-parsing-msg
+extra-summary: /Regression/bz1866877-parsing-msg
 extra-nitrate: TC#0611000

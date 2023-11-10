@@ -2,7 +2,7 @@
 # vim: dict=/usr/share/beakerlib/dictionary.vim cpt=.,w,b,u,t,i,k
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#   runtest.sh of /rsyslog/Multihost/relp
+#   runtest.sh of /Multihost/relp
 #   Description: Test for bz701782 (rsyslog TLS does not encrypt traffic on s390x and)
 #   Author: Karel Srot <ksrot@redhat.com>
 #

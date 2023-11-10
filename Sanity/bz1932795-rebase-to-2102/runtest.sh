@@ -1,7 +1,7 @@
 #!/bin/bash
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#   runtest.sh of /rsyslog/Sanity/bz1932795-rebase-to-2102
+#   runtest.sh of /Sanity/bz1932795-rebase-to-2102
 #   Author: Attila Lakatos <alakatos@redhat.com>
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

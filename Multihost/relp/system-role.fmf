@@ -12,8 +12,8 @@ recommend:
 environment:
     ANSIBLE: '1'
     TEST: Multihost/relp/system-role
-extra-summary: ANSIBLE=1 /rsyslog/Multihost/relp
-extra-task: /rsyslog/Multihost/relp
+extra-summary: ANSIBLE=1 /Multihost/relp
+extra-task: /Multihost/relp
 adjust:
 -   enabled: false
     when: distro < rhel-8.4

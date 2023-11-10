@@ -21,7 +21,7 @@ adjust:
 -   enabled: false
     when: distro ~< rhel-8.5
     continue: false
-extra-summary: /rsyslog/Regression/bz1886400-gnutls-shutdown-relp
+extra-summary: /Regression/bz1886400-gnutls-shutdown-relp
 link:
     verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1886400
 extra-nitrate: TC#0610789
