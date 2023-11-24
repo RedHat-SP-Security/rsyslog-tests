@@ -1,3 +1,4 @@
+framework: beakerlib
 component:
   - rsyslog
 require:
