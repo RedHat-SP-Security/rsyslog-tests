@@ -10,15 +10,12 @@ adjust:
       - library(ControlFlow/Cleanup)
       - library(ControlFlow/SessionControl)
     test: ./runtest.sh
-    extra-nitrate: TC#615829
 /role:
     framework: shell
     test: "true"
     /server:
         require:
           - rsyslog
-        extra-nitrate: TC#615831
     /client:
         require:
           - rsyslog
-        extra-nitrate: TC#615830
