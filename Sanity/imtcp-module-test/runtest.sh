@@ -36,7 +36,7 @@ PACKAGE="${COMPONENT:-$PACKAGE}"
 rlJournalStart
     rlPhaseStartSetup && {
         rlRun "rlImport --all" || rlDie 'cannot continue'
-        rlRun "rlCheckMakefileRequires"
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
         CleanupRegister 'tcfRun "rsyslogCleanup"'
         tcfRun "rsyslogSetup"
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"

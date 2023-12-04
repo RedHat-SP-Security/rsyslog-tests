@@ -36,7 +36,7 @@ PACKAGE="${COMPONENT:-$PACKAGE}"
 rlJournalStart
     rlPhaseStartSetup
         rlRun "rlImport --all" || rlDie 'cannot continue'
-        rlRun "rlCheckMakefileRequires"
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
         VER3=false
         rsyslogVersion 3 && VER3=true
         rlFileBackup /etc/rsyslog.conf

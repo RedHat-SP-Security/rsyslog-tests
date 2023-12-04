@@ -46,7 +46,7 @@ function log_messages() {
 
 rlJournalStart
     rlPhaseStartSetup
-        rlRun "rlCheckMakefileRequires" || rlFail "not all requirements are satisfied"
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
         rlRun "rlImport --all" || rlDie "cannot continue"
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"

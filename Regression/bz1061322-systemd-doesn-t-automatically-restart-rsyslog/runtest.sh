@@ -34,7 +34,7 @@ PACKAGE="rsyslog"
 rlJournalStart
     rlPhaseStartSetup
         rlRun "rlImport --all" || rlDie 'cannot continue'
-        rlRun "rlCheckMakefileRequires" || rlDie 'cannot continue'
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
         rsyslogServiceStart

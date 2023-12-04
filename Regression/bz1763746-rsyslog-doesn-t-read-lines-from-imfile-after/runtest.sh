@@ -36,7 +36,7 @@ rsyslogSyntax=new
 rlJournalStart && {
   rlPhaseStartSetup && {
     rlRun "rlImport --all" 0 "Import libraries" || rlDie "cannot continue"
-    tcfRun "rlCheckMakefileRequires"
+    rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     CleanupRegister 'rlRun "rsyslogCleanup"'
     rlRun "rsyslogSetup"
     rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
