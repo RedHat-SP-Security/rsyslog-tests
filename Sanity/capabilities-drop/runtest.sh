@@ -31,7 +31,7 @@ rlIsRHEL
 rlJournalStart && {
   rlPhaseStartSetup && {
     rlRun "rlImport --all" 0 "Import libraries" || rlDie "cannot continue"
-    rlRun "rlCheckMakefileRequires"
+    rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     CleanupRegister 'rlRun "testUserCleanup"'
     rlRun "testUserSetup 2"
     CleanupRegister 'rlRun "rsyslogCleanup"'

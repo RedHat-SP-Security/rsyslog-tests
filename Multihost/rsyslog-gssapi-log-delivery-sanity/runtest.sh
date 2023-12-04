@@ -276,7 +276,7 @@ EOF
 
 rlJournalStart
     rlPhaseStartSetup
-        rlRun "rlCheckMakefileRequires" || rlDie 'cannot continue'
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
         rlRun "rlImport --all" || rlDie 'cannot continue'
         rlLog "Server: $SERVERS"
         rlLog "Client: $CLIENTS"

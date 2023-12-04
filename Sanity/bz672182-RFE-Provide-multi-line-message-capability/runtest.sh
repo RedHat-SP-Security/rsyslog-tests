@@ -36,7 +36,7 @@ PACKAGE="${BASEOS_CI_COMPONENT:-$PACKAGE}"
 rlJournalStart
     rlPhaseStartSetup
       rlRun "rlImport --all" || rlDie 'cannot continue'
-      rlRun "rlCheckMakefileRequires" || rlDie 'cannot continue'
+      rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
       tcfTry "Setup phase" && {
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         CleanupRegister "rlRun 'rm -rf $TmpDir' 0 'Removing tmp directory'"

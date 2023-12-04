@@ -33,7 +33,7 @@
 rlJournalStart && {
   rlPhaseStartSetup && {
     rlRun "rlImport --all" 0 "Import libraries" || rlDie "cannot continue"
-    rlRun "rlCheckMakefileRequires" || rlDie 'cannot continue'
+    rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     CleanupRegister 'tcfRun "rsyslogCleanup"'
     tcfRun "rsyslogSetup"
     rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"

@@ -192,7 +192,7 @@ EOF
 
     rlPhaseStartSetup
         rlRun "rlImport --all" || rlDie 'cannot continue'
-        rlRun "rlCheckMakefileRequires" || rlDie 'cannot continue'
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
         CleanupRegister 'rlRun "rsyslogCleanup"'
         rlRun "rsyslogSetup"
         CleanupRegister 'rlRun "rsyslogServerCleanup"'

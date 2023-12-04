@@ -36,7 +36,7 @@ rlJournalStart
     rlRun "epel yum install -y $(rlGetYAMLdeps recommend)"
     CleanupRegister 'rlRun "rm -rf ~/.ansible/collections/ansible_collections/community/general"'
     rlRun "ansible-galaxy collection install community.general" 0 "Install alternatives module from community.general collection"
-    rlRun "rlCheckMakefileRequires" || rlDie 'cannot continue'
+    rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     CleanupRegister 'rlRun "rsyslogCleanup"'
     rlRun "rsyslogSetup"
     rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"

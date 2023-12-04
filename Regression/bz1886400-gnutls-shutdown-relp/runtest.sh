@@ -33,7 +33,7 @@ PACKAGE="rsyslog"
 
 rlJournalStart && {
   rlPhaseStartSetup && {
-    rlRun "rlCheckMakefileRequires" || rlDie "cannot continue"
+    rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     rlRun "rlImport --all" 0 "Import libraries" || rlDie "cannot continue"
     CleanupRegister 'rlRun "rsyslogCleanup"'
     rlRun "rsyslogSetup"

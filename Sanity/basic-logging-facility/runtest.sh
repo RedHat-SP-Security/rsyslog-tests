@@ -36,7 +36,7 @@ PACKAGE="${COMPONENT:-$PACKAGE}"
 rlJournalStart
     rlPhaseStartSetup
         rlRun "rlImport --all" || rlDie 'cannot continue'
-        rlRun "rlCheckMakefileRequires"
+        rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
       [[ "${IN_PLACE_UPGRADE,,}" != "new" ]] && {
         rlRun "rsyslogSetup"
         rlServiceEnable rsyslog
