@@ -135,6 +135,7 @@ EOF
         type="omfwd"
         Protocol="tcp"
         Target="127.0.0.1"
+        # connect to CONN2 (port 50515) causing the used certificate invalid
         Port="50515"
         StreamDriver="$driver"
         StreamDriverMode="1"
@@ -179,8 +180,8 @@ EOF
         type="imtcp"
         Port="50515"
         streamdriver.CAFile="/etc/rsyslog.d/ca1.pem"
-        streamdriver.CertFile="/etc/rsyslog.d/client1-cert.pem"
-        streamdriver.KeyFile="/etc/rsyslog.d/client1-key.pem"
+        streamdriver.CertFile="/etc/rsyslog.d/server1-cert.pem"
+        streamdriver.KeyFile="/etc/rsyslog.d/server1-key.pem"
         ruleset="TestRuleSet2"
       )
 EOF
@@ -190,8 +191,8 @@ EOF
         type="imtcp"
         Port="50516"
         streamDriver.CAFile="/etc/rsyslog.d/ca2.pem"
-        streamDriver.CertFile="/etc/rsyslog.d/client2-cert.pem"
-        streamDriver.KeyFile="/etc/rsyslog.d/client2-key.pem"
+        streamDriver.CertFile="/etc/rsyslog.d/server2-cert.pem"
+        streamDriver.KeyFile="/etc/rsyslog.d/server2-key.pem"
         ruleset="TestRuleSet3"
       )
 EOF
