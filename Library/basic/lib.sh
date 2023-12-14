@@ -828,8 +828,7 @@ rsyslogSetup() {
     fi
   fi
   rsyslogConfigIsNewSyntax -p
-  local reqs="$(rlGetMakefileRequires | grep -oE '\S*rsyslog\S*' | tr '\n' ' ')"
-  reqs="$(rsyslogTranslate "$reqs")"
+  local reqs="$(rsyslogTranslate "$reqs")"
   rlRun "rlCheckRequirements $reqs" || {
     let res++
     Log "maybe you want to execute also: export rsyslogSuffix='installed'"
