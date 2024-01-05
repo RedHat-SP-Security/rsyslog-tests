@@ -858,7 +858,7 @@ rsyslogServerSetup() {
   rlIsRHEL '<8' && rsyslogPidFile='/var/run/syslogd.pid'
   rsyslogServerPidFile='/var/run/rsyslogd-server.pid'
   rsyslogServerWorkDir='/var/lib/rsyslog-server'
-  rsyslogServerLogDir='/var/log/server'
+  rsyslogServerLogDir='/var/log-server'
   rlRun "rlFileBackup --namespace rsyslog-lib-server --clean $rsyslogServerConf $rsyslogServerWorkDir $rsyslogServerLogDir $rsyslogServerPidFile"
   # prepare server side
   if rsyslogConfigIsNewSyntax; then
