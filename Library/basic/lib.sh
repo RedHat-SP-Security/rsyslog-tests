@@ -8,7 +8,7 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#   Copyright (c) 2014 Red Hat, Inc.
+#   Copyright (c) 2024 Red Hat, Inc.
 #
 #   This copyrighted material is made available to anyone wishing
 #   to use, modify, copy, or redistribute it subject to the terms
@@ -26,10 +26,10 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   library-prefix = rsyslog
-#   library-version = 66
+#   library-version = 67
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 __INTERNAL_rsyslog_LIB_NAME="rsyslog/basic"
-__INTERNAL_rsyslog_LIB_VERSION=65
+__INTERNAL_rsyslog_LIB_VERSION=67
 
 : <<'=cut'
 =pod
@@ -725,7 +725,7 @@ true <<'=cut'
 
 =head2 rsyslogConfigAddTo
 
-Add peac of configuration to the specific section of config file.
+Add a peace of configuration to the specific section of config file.
 
     rsyslogConfigAddTo [--begin] section file addition
 
@@ -1015,7 +1015,7 @@ EOF
   rlRun "semanage $import_style <<< 'fcontext -a -e /etc/rsyslog.conf $rsyslogServerConf
 fcontext -a -e /var/lib/rsyslog $rsyslogServerWorkDir
 fcontext -a -e /var/log $rsyslogServerLogDir
-fcontext -a -e $rsyslogPidFile $rsyslogServerPidFile'" 0 "set selinux equivalence"
+fcontext -a -e $rsyslogPidFile $rsyslogServerPidFile'" 0,1 "set selinux equivalence"
   rlRun "restorecon -vF $rsyslogServerConf $rsyslogServerWorkDir $rsyslogServerLogDir"
 
   # create server config manipulation functions clones
