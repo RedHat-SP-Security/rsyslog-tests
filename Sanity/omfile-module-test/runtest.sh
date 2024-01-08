@@ -113,6 +113,8 @@ EOF
         rlRun "for i in \`seq 150\`; do logger -p local0.info 'dummy message to fill the buffer'; done" 0 "Sending 150 messages just to fill the buffer"  # this is not enough to fill default 4k buffer but enough for 1k buffer
         # not flush the buffer
         #rlRun "kill -s SIGHUP \`pidof rsyslogd\`" 0 "Send SIGHUP to rsyslogd to flush the buffer"
+        # we need to give rsyslog some time to process messages
+        sleep 2
         rlRun "grep 'flush test message1' /var/log/rsyslog.test.log" 0 "The message1 should be in the log now"
         rlRun "grep 'flush test message2' /var/log/rsyslog.test.log" 0 "The message2 should be in the log now"
         rlRun "grep 'flush test message3' /var/log/rsyslog.test.log" 0 "The message3 should be in the log now"
