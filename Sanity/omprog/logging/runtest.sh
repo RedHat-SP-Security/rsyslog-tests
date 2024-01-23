@@ -49,9 +49,6 @@ rlJournalStart && {
     rsyslogConfigAddTo "MODLOAD OMPROG" <<EOF
 module(load="omprog")
 EOF
-# rsyslogConfigAddTo "GLOBALS" <<EOF
-# global()
-# EOF
 rsyslogConfigAddTo --begin "RULES" <<EOF
 if (\$programname startswith 'module_execution_') then {
   action(type="omprog"
