@@ -79,7 +79,7 @@ rlJournalStart
 \$InputTCPMaxSessions 1000
 \$InputTCPServerRun 514
 
-local2.error   /var/log/server/bz701782-rsyslog.log
+local2.error   ${rsyslogServerLogDir}/bz701782-rsyslog.log
 EOF
         rsyslogConfigAppend "RULES" << EOF
 \$MaxOpenFiles 1024
@@ -107,11 +107,11 @@ EOF
 
         # communication test
         [[ -e /var/log/bz701782-rsyslog.log ]] && rlAssertNotGrep "bz726525 communication test" /var/log/bz701782-rsyslog.log
-        [[ -e /var/log/server/bz701782-rsyslog.log ]] && rlAssertNotGrep "bz726525 communication test" /var/log/server/bz701782-rsyslog.log
+        [[ -e ${rsyslogServerLogDir}/bz701782-rsyslog.log ]] && rlAssertNotGrep "bz726525 communication test" ${rsyslogServerLogDir}/bz701782-rsyslog.log
         rlRun "logger -p local2.error 'bz726525 communication test'" 0 "Sending a test message to the server"
         sleepWithProgress 6
         rlAssertGrep "bz726525 communication test" /var/log/bz701782-rsyslog.log
-        rlAssertGrep "bz726525 communication test" /var/log/server/bz701782-rsyslog.log
+        rlAssertGrep "bz726525 communication test" ${rsyslogServerLogDir}/bz701782-rsyslog.log
 
         # shut down server
         rlRun "rsyslogServerStop"
