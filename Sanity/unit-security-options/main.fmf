@@ -16,7 +16,7 @@ adjust:
     when: distro ~< rhel-9.3
     continue: false
   - enabled: false
-    when: distro < rhel-8.9
+    when: distro <= rhel-8
     continue: false
 link:
   - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2176403

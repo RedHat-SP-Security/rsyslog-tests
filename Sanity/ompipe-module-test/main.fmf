@@ -33,3 +33,7 @@ adjust:
 -   enabled: false
     when: distro == rhel-4
     continue: false
+-   enabled: false
+    when: distro = rhel-8
+    continue: false
+    because: unstable for rhel-8, needed to provide further investigation
