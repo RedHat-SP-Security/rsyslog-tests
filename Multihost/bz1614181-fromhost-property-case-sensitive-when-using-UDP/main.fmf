@@ -24,8 +24,5 @@ extra-summary: /CoreOS/rsyslog/Multihost/bz1614181-fromhost-property-case-sensit
 extra-nitrate: TC#0600869
 adjust:
 -   enabled: false
-    when: distro < rhel-7
-    continue: false
--   enabled: false
-    when: distro ~<= rhel-7.7
+    when: distro <= rhel-7.7
     continue: false

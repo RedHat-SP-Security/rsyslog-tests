@@ -23,10 +23,7 @@ tag:
 tier: '1'
 adjust:
 -   enabled: false
-    when: distro < rhel-8
-    continue: false
--   enabled: false
-    when: distro ~< rhel-8.5
+    when: distro < rhel-8.5
     continue: false
 extra-summary: /Sanity/imrelp-omrelp-module-test
 link:

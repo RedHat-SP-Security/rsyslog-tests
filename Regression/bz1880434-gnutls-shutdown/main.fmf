@@ -14,10 +14,7 @@ tag:
 tier: '3'
 adjust:
 -   enabled: false
-    when: distro < rhel-8
-    continue: false
--   enabled: false
-    when: distro ~< rhel-8.5
+    when: distro < rhel-8.5
     continue: false
 extra-summary: /Regression/bz1880434-gnutls-shutdown
 extra-nitrate: TC#0610787

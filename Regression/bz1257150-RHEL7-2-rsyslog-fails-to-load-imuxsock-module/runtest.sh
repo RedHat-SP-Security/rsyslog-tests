@@ -61,7 +61,7 @@ EOF
         # need for /dev/log restore
         if rlIsRHEL 7 ; then
             rlRun "systemctl restart systemd-journald.socket"
-        elif rlIsRHEL 8 ; then
+        else
             rlRun "systemctl stop systemd-journald-dev-log.socket"
             rlRun "systemctl stop systemd-journald.socket"
             rlRun "systemctl stop systemd-journald"
