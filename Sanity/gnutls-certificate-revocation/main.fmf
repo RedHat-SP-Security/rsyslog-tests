@@ -26,9 +26,6 @@ extra-summary: /CoreOS/rsyslog/Sanity/gnutls-certificate-revocation
 extra-task: /CoreOS/rsyslog/Sanity/gnutls-certificate-revocation
 adjust:
 -   enabled: false
-    when: distro ~< rhel-8.2
-    continue: false
--   enabled: false
-    when: distro < rhel-8
+    when: distro < rhel-8.2
     continue: false
 extra-nitrate: TC#0611304

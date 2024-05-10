@@ -24,8 +24,5 @@ extra-task: /CoreOS/rsyslog/Regression/bz1763746-rsyslog-doesn-t-read-lines-from
 extra-nitrate: TC#0604434
 adjust:
 -   enabled: false
-    when: distro < rhel-7
-    continue: false
--   enabled: false
-    when: distro ~< rhel-7.7
+    when: distro < rhel-7.7
     continue: false

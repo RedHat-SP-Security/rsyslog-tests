@@ -19,8 +19,5 @@ extra-summary: /CoreOS/rsyslog/Multihost/EKU-purpose
 extra-nitrate: TC#0604425
 adjust:
 -   enabled: false
-    when: distro < rhel-8
-    continue: false
--   enabled: false
-    when: distro ~< rhel-8.2
+    when: distro < rhel-8.2
     continue: false

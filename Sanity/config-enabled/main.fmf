@@ -27,8 +27,5 @@ extra-task: /CoreOS/rsyslog/Sanity/config-enabled
 extra-nitrate: TC#0605354
 adjust:
 -   enabled: false
-    when: distro ~< rhel-8.2
-    continue: false
--   enabled: false
-    when: distro < rhel-8
+    when: distro < rhel-8.2
     continue: false
