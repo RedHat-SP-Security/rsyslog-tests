@@ -52,7 +52,6 @@ rlJournalStart
         rlRun "pushd $TmpDir"
         rlRun "useradd -m bz1419228usr1"
         rlRun "useradd -m bz1419228usr2"
-        rlFileBackup /etc/systemd/journald.conf
         rlRun "rsyslogSetup"
         rlRun "rlServiceStop rsyslog"
         rlRun "rsyslogPrepareConf"

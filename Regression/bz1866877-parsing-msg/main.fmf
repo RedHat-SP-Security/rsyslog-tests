@@ -16,6 +16,9 @@ tier: '2'
 adjust:
 -   enabled: false
     when: distro < rhel-8.5 or distro < centos-8
+-   enabled: false
+    when: distro < rhel-10
+    continue: false
 link:
 -   verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1866877
 extra-summary: /Regression/bz1866877-parsing-msg

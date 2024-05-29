@@ -834,6 +834,43 @@ rsyslogSetup() {
     Log "maybe you want to execute also: export rsyslogSuffix='installed'"
   }
   rlRun "rlFileBackup --clean --namespace rsyslog-lib /etc/rsyslog.conf /etc/rsyslog.d /etc/rsyslogd.d" 0-255
+  rlRun "rlFileBackup /etc/systemd/journald.conf"
+  if rlIsRHEL '>=10'; then
+    [ -e "/etc/systemd/journald.conf" ] || cat > /etc/systemd/journald.conf <<_EOF 
+[Journal]
+#Storage=auto
+#Compress=yes
+#Seal=yes
+#SplitMode=uid
+#SyncIntervalSec=5m
+#RateLimitIntervalSec=30s
+#RateLimitBurst=10000
+#SystemMaxUse=
+#SystemKeepFree=
+#SystemMaxFileSize=
+#SystemMaxFiles=100
+#RuntimeMaxUse=
+#RuntimeKeepFree=
+#RuntimeMaxFileSize=
+#RuntimeMaxFiles=100
+#MaxRetentionSec=
+#MaxFileSec=1month
+#ForwardToSyslog=no
+#ForwardToKMsg=no
+#ForwardToConsole=no
+#ForwardToWall=yes
+#TTYPath=/dev/console
+#MaxLevelStore=debug
+#MaxLevelSyslog=debug
+#MaxLevelKMsg=notice
+#MaxLevelConsole=info
+#MaxLevelWall=emerg
+#LineMax=48K
+#ReadKMsg=yes
+Audit=
+_EOF
+    rlRun "cat /etc/systemd/journald.conf"
+  fi
   rsyslogPrepareConf
   rsyslogPrintEffectiveConfig -n
   rsyslogServiceStart || let res++
@@ -844,6 +881,7 @@ rsyslogSetup() {
 
 rsyslogCleanup() {
   rlRun "rlFileRestore --namespace rsyslog-lib" 0-255
+  rlRun "rlFilerestore --clean /etc/systemd/journald.conf"
   rsyslogServiceRestore
   rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 
@@ -853,7 +891,8 @@ rsyslogCleanup() {
 rsyslogServerSetup() {
   rsyslogConf='/etc/rsyslog.conf'
   rsyslogServerConf='/etc/rsyslog-server.conf'
-  rsyslogPidFile='/var/run/rsyslogd.pid'
+  rsyslogPidFile='/run/rsyslogd.pid'
+  rsIsRHEL '<10' && rsyslogPidFile='/var/run/rsyslog.pid'
   rlIsRHEL '<8' && rsyslogPidFile='/var/run/syslogd.pid'
   rsyslogServerPidFile='/var/run/rsyslogd-server.pid'
   rsyslogServerWorkDir='/var/lib/rsyslog-server'
