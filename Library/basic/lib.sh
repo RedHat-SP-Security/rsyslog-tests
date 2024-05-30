@@ -881,7 +881,7 @@ _EOF
 
 rsyslogCleanup() {
   rlRun "rlFileRestore --namespace rsyslog-lib" 0-255
-  rlRun "rlFilerestore --clean /etc/systemd/journald.conf"
+  rlRun "rlFileRestore --clean /etc/systemd/journald.conf"
   rsyslogServiceRestore
   rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 
