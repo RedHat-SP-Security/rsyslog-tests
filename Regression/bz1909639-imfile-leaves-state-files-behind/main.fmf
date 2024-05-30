@@ -16,3 +16,5 @@ extra-nitrate: TC#0612937
 adjust:
   - enabled: false
     when: distro < rhel-8.7
+  - enabled: false
+    when: distro >= rhel-10
