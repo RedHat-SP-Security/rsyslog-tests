@@ -834,7 +834,7 @@ rsyslogSetup() {
     Log "maybe you want to execute also: export rsyslogSuffix='installed'"
   }
   rlRun "rlFileBackup --clean --namespace rsyslog-lib /etc/rsyslog.conf /etc/rsyslog.d /etc/rsyslogd.d" 0-255
-  rlRun "rlFileBackup /etc/systemd/journald.conf"
+  rlRun "rlFileBackup --missing-ok /etc/systemd/journald.conf"
   if rlIsRHEL '>=10'; then
     [ -e "/etc/systemd/journald.conf" ] || cat > /etc/systemd/journald.conf <<_EOF 
 [Journal]
@@ -881,7 +881,7 @@ _EOF
 
 rsyslogCleanup() {
   rlRun "rlFileRestore --namespace rsyslog-lib" 0-255
-  rlRun "rlFileRestore --clean /etc/systemd/journald.conf"
+  rlRun "rlFileRestore /etc/systemd/journald.conf"
   rsyslogServiceRestore
   rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 
@@ -894,7 +894,8 @@ rsyslogServerSetup() {
   rsyslogPidFile='/run/rsyslogd.pid'
   rsIsRHEL '<10' && rsyslogPidFile='/var/run/rsyslog.pid'
   rlIsRHEL '<8' && rsyslogPidFile='/var/run/syslogd.pid'
-  rsyslogServerPidFile='/var/run/rsyslogd-server.pid'
+  rsyslogServerPidFile='/run/rsyslogd-server.pid'
+  rsIsRHEL '<10' && rsyslogServerPidFile='/var/run/rsyslogd-server.pid'
   rsyslogServerWorkDir='/var/lib/rsyslog-server'
   rsyslogServerLogDir='/var/log-server'
   rlRun "rlFileBackup --namespace rsyslog-lib-server --clean $rsyslogServerConf $rsyslogServerWorkDir $rsyslogServerLogDir $rsyslogServerPidFile"
@@ -1073,7 +1074,7 @@ rsyslogServerCleanup() {
   rlRun "semanage $import_style <<< 'fcontext -d -e /etc/rsyslog.conf $rsyslogServerConf
 fcontext -d -e /var/lib/rsyslog $rsyslogServerWorkDir
 fcontext -d -e /var/log $rsyslogServerLogDir
-fcontext -d -e $rsyslogPidFile $rsyslogServerPidFile'" 0 "celanup selinux"
+fcontext -d -e $rsyslogPidFile $rsyslogServerPidFile'" 0 "Cleanup selinux"
   rlRun "rlFileRestore --namespace rsyslog-lib-server"
 }
 
