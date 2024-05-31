@@ -164,7 +164,7 @@ EOF
         # normally
         rlAssertNotGrep "The certificate was revoked via OCSP" "gnutls.debug.log"
         rlRun -s "systemctl status -l rsyslog"
-        rlAssertNotGrep "not permitted to talk to peer, certificate invalid: certificate revoked" $rlRun_LOG
+        rlAssertNotGrep "not permitted to talk to peer.*, certificate invalid" $rlRun_LOG
 
         rlServiceStop rsyslog.service
         rlRun "kill $ocsp_pid"
