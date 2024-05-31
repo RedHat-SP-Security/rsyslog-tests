@@ -881,7 +881,7 @@ _EOF
 
 rsyslogCleanup() {
   rlRun "rlFileRestore --namespace rsyslog-lib" 0-255
-  rlRun "rlFileRestore /etc/systemd/journald.conf"
+  rlRun "rlFileRestore /etc/systemd/journald.conf" 0,16 #possible that file doesn't exist for RHEL-10,nothing to restore, then used exit code 16
   rsyslogServiceRestore
   rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 
