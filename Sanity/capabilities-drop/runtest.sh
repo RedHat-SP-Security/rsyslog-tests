@@ -61,6 +61,7 @@ ${USER_ID:+"\$PrivDropToUserID $USER_ID"}
 ${GROUP_ID:+"\$PrivDropToGroupID $GROUP_ID"}
 EOF
       rlRun "rsyslogPrintEffectiveConfig -n"
+      sleep 2
       rlRun "rsyslogServiceStart"
       rlRun -s 'pscap -a | grep rsyslogd' 0,1
       rlAssertNotGrep 'rsyslogd.*full' $rlRun_LOG
