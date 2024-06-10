@@ -835,7 +835,7 @@ rsyslogSetup() {
   }
   rlRun "rlFileBackup --clean --namespace rsyslog-lib /etc/rsyslog.conf /etc/rsyslog.d /etc/rsyslogd.d" 0-255
   rlRun "rlFileBackup --missing-ok /etc/systemd/journald.conf"
-  if rlIsRHEL '>=10'; then
+  if rlIsRHELLike '>=10'; then
     [ -e "/etc/systemd/journald.conf" ] || cat > /etc/systemd/journald.conf <<_EOF 
 [Journal]
 #Storage=auto
