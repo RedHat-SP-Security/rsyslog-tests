@@ -1,0 +1,26 @@
+description: Test various SSL connection configuration places
+contact: Dalibor Pospisil <dapospis@redhat.com>
+test: ./runtest.sh
+require+:
+  - library(openssl/certgen)
+  - library(selinux-policy/common)
+  - library(ControlFlow/Cleanup)
+  - library(distribution/tcf)
+  - openssl
+duration: 5m
+enabled: true
+adjust:
+ -  enabled: false
+    when: distro ~< rhel-9.4
+    continue: false
+ -  enabled: false
+    when: distro < rhel-8.10
+    continue: false
+link:
+ - verifies: https://issues.redhat.com/browse/RHEL-937
+/gtls:
+    require+:
+     - rsyslog-gnutls
+/ossl:
+    require+:
+     - rsyslog-openssl
