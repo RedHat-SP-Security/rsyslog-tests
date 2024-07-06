@@ -69,7 +69,7 @@ rlJournalStart
         pid_of=`pidof rsyslogd`
         rlLogInfo "PID of rsyslogd: $pid_of"
         pid_file=`cat /run/rsyslogd.pid`
-        rsIsRHELLike '<10' && pid_file='/var/run/rsyslog.pid'
+        rlIsRHELLike '<10' && pid_file='/var/run/rsyslog.pid'
         rlLogInfo "PID in pidfile: $pid_file"
         # dummy check
         [ $pid_of -ne $pid_file ] && rlFail "PIDs are not the same"

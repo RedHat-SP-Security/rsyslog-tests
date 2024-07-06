@@ -892,10 +892,10 @@ rsyslogServerSetup() {
   rsyslogConf='/etc/rsyslog.conf'
   rsyslogServerConf='/etc/rsyslog-server.conf'
   rsyslogPidFile='/run/rsyslogd.pid'
-  rsIsRHELLike '<10' && rsyslogPidFile='/var/run/rsyslog.pid'
+  rlIsRHELLike '<10' && rsyslogPidFile='/var/run/rsyslog.pid'
   rlIsRHELLike '<8' && rsyslogPidFile='/var/run/syslogd.pid'
   rsyslogServerPidFile='/run/rsyslogd-server.pid'
-  rsIsRHELLike '<10' && rsyslogServerPidFile='/var/run/rsyslogd-server.pid'
+  rlIsRHELLike '<10' && rsyslogServerPidFile='/var/run/rsyslogd-server.pid'
   rsyslogServerWorkDir='/var/lib/rsyslog-server'
   rsyslogServerLogDir='/var/log-server'
   rlRun "rlFileBackup --namespace rsyslog-lib-server --clean $rsyslogServerConf $rsyslogServerWorkDir $rsyslogServerLogDir $rsyslogServerPidFile"
