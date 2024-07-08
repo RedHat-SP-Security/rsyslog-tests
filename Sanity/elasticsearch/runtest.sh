@@ -44,7 +44,7 @@ rlJournalStart && {
     rlRun "rlSEBooleanOn allow_ypbind"
     CleanupRegister 'rlRun "rlServiceStop elasticsearch"'
     rlRun "rlServiceStart elasticsearch"
-    rlRun "rlWaitForSocket 9200"
+    rlRun "rlWaitForSocket 9200 -t 30"
 #    rlRun "sleep 20"
     rlRun "rlServiceStatus elasticsearch"
     rlRun "netstat -putna | grep 9200" 0-255
