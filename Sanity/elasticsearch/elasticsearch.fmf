@@ -25,6 +25,7 @@ execute:
       - how: shell
         script:
           - yum remove -y elasticsearch
+          - rm -rf /etc/elasticsearch
 /v7.3.0:
     adjust:
       - enabled: false
@@ -39,6 +40,7 @@ execute:
         script:
           - dnf remove -y elasticsearch
           - update-crypto-policies --set DEFAULT
+          - rm -rf /etc/elasticsearch
     /SearchIndex:
         environment:
             SearchIndex: test-index
@@ -72,3 +74,4 @@ execute:
           - dnf remove -y elasticsearch
           - rm -f /etc/yum.repos.d/elasticsearch.repo
           - update-crypto-policies --set DEFAULT
+          - rm -rf /etc/elasticsearch
