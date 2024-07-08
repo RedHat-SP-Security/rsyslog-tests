@@ -4,6 +4,7 @@ test: ./runtest.sh
 require+:
   - library(distribution/dpcommon)
   - library(selinux-policy/common)
+  - initscripts
   - rsyslog-elasticsearch
   - elasticsearch
   - net-tools
