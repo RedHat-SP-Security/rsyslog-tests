@@ -62,12 +62,7 @@ EOF
         if rlIsRHEL 7 ; then
             rlRun "systemctl restart systemd-journald.socket"
         else
-            rlRun "systemctl stop systemd-journald-dev-log.socket"
-            rlRun "systemctl stop systemd-journald.socket" 0,1
-            rlRun "systemctl stop systemd-journald"
-            rlRun "systemctl restart systemd-journald.socket" 0,1
-            rlRun "systemctl restart systemd-journald-dev-log.socket" 0,1
-            rlRun "systemctl start systemd-journald"
+            rlRun "systemctl restart systemd-journald"
         fi
         rlRun "ls -l /dev/log"
         rlRun "popd"
