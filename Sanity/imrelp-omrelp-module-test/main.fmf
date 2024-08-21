@@ -6,6 +6,8 @@ require+:
 - library(ControlFlow/ConditionalPhases)
 - /usr/bin/tshark
 - /usr/bin/certtool
+- librelp
+- rpmlint
 recommend:
 - rsyslog
 - rsyslog-relp
@@ -13,8 +15,6 @@ recommend:
 - gnutls-utils
 - rsyslog-gnutls
 - openssl
-- librelp
-- rpmlint
 duration: 15m
 enabled: true
 tag:
