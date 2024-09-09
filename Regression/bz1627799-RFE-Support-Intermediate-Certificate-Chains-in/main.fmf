@@ -7,7 +7,7 @@ test: ./runtest.sh
 require+:
   - library(distribution/dpcommon)
   - rsyslog
-  - /usr/bin/certtool
+  - gnutls-utils
   - openssl
 duration: 5m
 enabled: true

@@ -4,8 +4,8 @@ test: ./runtest.sh
 require+:
 - library(distribution/dpcommon)
 - library(ControlFlow/ConditionalPhases)
-- /usr/bin/certtool
-- /usr/bin/tshark
+- gnutls-utils
+- wireshark-cli
 - rsyslog-openssl
 - rsyslog-relp
 - librelp

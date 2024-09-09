@@ -11,7 +11,7 @@ require+:
 recommend:
 - rsyslog
 - lsof
-- /usr/bin/nc
+- nmap-ncat
 - rsyslog-mmjsonparse
 duration: 5m
 enabled: true
