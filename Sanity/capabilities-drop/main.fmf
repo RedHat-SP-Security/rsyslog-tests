@@ -2,7 +2,7 @@ summary: tests dropping of capabilities
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-  - /usr/bin/pscap
+  - libcap-ng-utils
   - library(ControlFlow/Cleanup)
   - library(distribution/testUser)
 duration: 5m

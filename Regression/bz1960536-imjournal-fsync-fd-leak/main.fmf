@@ -3,7 +3,7 @@ contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 duration: 10m
 require+:
-- /usr/bin/lsof
+- lsof
 - library(distribution/dpcommon)
 tag:
 - Tier3

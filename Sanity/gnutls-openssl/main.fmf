@@ -4,8 +4,8 @@ test: ./runtest.sh
 require+:
   - library(distribution/dpcommon)
   - library(ControlFlow/ConditionalPhases)
-  - /usr/bin/tshark
-  - /usr/bin/certtool
+  - wireshark-cli
+  - gnutls-utils
 duration: 15m
 enabled: true
 tag:
@@ -13,7 +13,7 @@ tag:
 tier: '1'
 adjust+:
   - require-:
-      - /usr/bin/tshark
+      - wireshark-cli
     require+:
       - /usr/sbin/tshark
     when: distro < rhel-8

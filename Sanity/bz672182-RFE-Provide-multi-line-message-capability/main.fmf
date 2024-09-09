@@ -7,12 +7,12 @@ path: /Sanity/bz672182-RFE-Provide-multi-line-message-capability
 require+:
   - library(distribution/dpcommon)
   - library(selinux-policy/common)
-  - /usr/bin/nc
+  - nmap-ncat
   - rsyslog
 recommend+:
   - /usr/bin/netstat
   - /bin/netstat
-duration: 6m
+duration: 10m
 enabled: true
 
 /old-syntax:
