@@ -1434,6 +1434,7 @@ rsyslogWaitTillGrowing() {
     fsize_prev=$fsize
     sleep 1
   done
+  echo
   return $res
 }
 
