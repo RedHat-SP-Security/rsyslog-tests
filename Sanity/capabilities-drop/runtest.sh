@@ -44,9 +44,12 @@ rlJournalStart && {
     CleanupRegister 'rlRun "rsyslogServiceStop"; rlRun "rlFileRestore"'
     rlRun "rlFileBackup --clean /var/log/rsyslog.test-cef.log"
     rsyslogConfigAddTo "GLOBALS" < <(rsyslogConfigCreateSection 'CAP')
+    if rlIsRHELLike '>=10'; then
+        exp_caps="block_suspend chown dac_override lease net_admin net_bind_service net_raw setgid setuid sys_admin sys_chroot syslog sys_resource"
+    else
+        exp_caps="block_suspend chown dac_override ipc_lock lease net_admin net_bind_service net_raw setgid setuid sys_admin sys_chroot syslog sys_resource"
+    fi
   rlPhaseEnd; }
-
-  exp_caps="block_suspend chown dac_override lease net_admin net_bind_service net_raw setgid setuid sys_admin sys_chroot syslog sys_resource"
 
   while read -r USER GROUP USER_ID GROUP_ID; do
     [[ "$USER" == '-' ]] && USER=''
