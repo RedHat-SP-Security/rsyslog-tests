@@ -49,7 +49,7 @@ rlJournalStart && {
     rlRun "pushd $TmpDir"
     CleanupRegister 'rlRun "rlSEPortRestore"'
     rlRun "rlSEPortAdd tcp 50514-50517 syslogd_port_t" 0 "Enabling ports 50514-50516 in SElinux" 
-
+: <<'DISABLE'
     # Generate keys and certs
     for keys in '' 1 2; do
       rlRun "x509KeyGen ca${keys}"
@@ -66,6 +66,33 @@ rlJournalStart && {
       rlRun "cp $(x509Cert server${keys}) /etc/rsyslog.d/server${keys}-cert.pem"
       rlRun "cp $(x509Key server${keys}) /etc/rsyslog.d/server${keys}-key.pem"
     done
+DISABLE
+    for keys in '' 1 2; do
+      # Generate private keys
+      openssl genpkey -algorithm RSA -out ca${keys}.key
+      openssl genpkey -algorithm RSA -out server${keys}.key
+      openssl genpkey -algorithm RSA -out client${keys}.key
+
+      # Create self-signed CA certificates
+      openssl req -new -x509 -key ca${keys}.key -out ca${keys}.pem -days 365 -subj "/CN=ca${keys}"
+
+      # Create certificate signing requests (CSRs)
+      openssl req -new -key server${keys}.key -out server${keys}.csr -subj "/CN=server${keys}"
+      openssl req -new -key client${keys}.key -out client${keys}.csr -subj "/CN=client${keys}"
+
+      # Sign the server and client certificates with the CA certificate
+      openssl x509 -req -in server${keys}.csr -CA ca${keys}.pem -CAkey ca${keys}.key -CAcreateserial -out server${keys}.pem -days 365
+      openssl x509 -req -in client${keys}.csr -CA ca${keys}.pem -CAkey ca${keys}.key -CAcreateserial -out client${keys}.pem -days 365
+      # Copy the certificates and keys to the desired directory
+      cp ca${keys}.pem /etc/rsyslog.d/ca${keys}.pem
+      cp client${keys}.pem /etc/rsyslog.d/client${keys}-cert.pem
+      cp client${keys}.key /etc/rsyslog.d/client${keys}-key.pem
+      cp server${keys}.pem /etc/rsyslog.d/server${keys}-cert.pem
+      cp server${keys}.key /etc/rsyslog.d/server${keys}-key.pem
+      cp /etc/rsyslog.d/server${keys}-cert.pem /etc/pki/ca-trust/source/anchors/server${keys}-cert.pem
+      update-ca-trust
+    done
+
 
     rlRun "ls -l /etc/rsyslog.d"
 
@@ -253,6 +280,7 @@ EOF
   rlPhaseStartCleanup && {
     rlRun "rsyslogServerStatus"
     rlRun "rsyslogServiceStatus"
+    rlRun "rm -r /etc/pki/ca-trust/source/anchors/server*"
     CleanupDo
     tcfCheckFinal
   rlPhaseEnd; }
