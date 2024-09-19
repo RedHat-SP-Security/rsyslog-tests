@@ -34,6 +34,7 @@ PACKAGE="rsyslog"
 rlJournalStart
     rlPhaseStartSetup
         rlAssertRpm $PACKAGE
+        rlRun "rlImport --all" || rlDie 'cannot continue'
         rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
         rlRun "pushd $TmpDir"
         rlLog "Import RpmSnapshot library"
@@ -78,21 +79,16 @@ rlJournalStart
     rlPhaseStartTest "BZ#1422414"
         rlLogInfo "set global net.aclResolveHostname=\"off\""
         echo "global(net.aclResolveHostname=\"off\")" >> /etc/rsyslog.conf
-        rlServiceStop "rsyslog"
-	sleep 2
-        rlRun "systemctl start rsyslog" 0
-	sleep 2
+        rlRun "rsyslogServiceStart && sleep 4"
+        rlRun "rsyslogServiceStatus"
         rlRun "cat rsyslog.conf > /etc/rsyslog.conf"
         rlLogInfo "set global net.aclResolveHostname=\"on\""
         echo "global(net.aclResolveHostname=\"on\")" >> /etc/rsyslog.conf
-        rlServiceStop "rsyslog"
-	sleep 2
-        rlRun "systemctl start rsyslog" 0
-        rlServiceStop "rsyslog"
-	sleep 2
+        rlRun "rsyslogServiceStart && sleep 4"
+        rlRun "rsyslogServiceStatus"
         rlRun "cat rsyslog.conf > /etc/rsyslog.conf"
-	sleep 2
-        rlServiceStart "rsyslog"
+        rlRun "rsyslogServiceStart && sleep 4"
+        rlRun "rsyslogServiceStatus"
     rlPhaseEnd
 
     rlPhaseStartTest "BZ#1410630"
