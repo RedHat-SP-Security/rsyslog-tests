@@ -4,7 +4,7 @@ component:
 - rsyslog
 - rsyslog
 - rsyslog5
-enabled: true
+enabled: false
 tag+:
 - TIPfail_Security
 - fedora-wanted

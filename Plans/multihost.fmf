@@ -1,0 +1,58 @@
+summary:
+  Multihost test used for regression testing
+
+prepare:
+  - how: shell
+    script:
+     - dnf config-manager --set-enabled beaker*
+     - systemctl disable --now dnf-makecache.service || true
+     - systemctl disable --now dnf-makecache.timer || true
+     - dnf makecache
+
+provision:
+  - name: client
+    role: CLIENT
+#    arch: ${ARCH_CLIENT}
+#    image: ${COMPOSE_CLIENT}
+# use just when it's run directly via tmt
+    how: connect
+    guest: IP
+    user: USER
+    password: PASSWORD
+#    how: minute
+#    image: 1MT-RHEL-9.4.0-released
+  - name: server
+    role: SERVER
+#    arch: ${ARCH_SERVER}
+#    image: ${COMPOSE_SERVER}
+# use just when it's run directly via tmt
+    how: connect
+    guest: IP
+    user: USER
+    password: PASSWORD
+#    how: minute
+#    image: 1MT-RHEL-9.4.0-released
+
+
+discover:
+  - name: multihost_upstream
+#    url: https://github.com/RedHat-SP-Security/rsyslog-tests
+#    ref: master
+    how: fmf
+    where:
+      - client
+      - server
+    test:
+      - /Multihost/bz726
+
+execute:
+  how: tmt
+
+adjust+:
+
+  - when: distro == centos-stream-9
+    prepare+:
+      - how: shell
+        order: 30
+        script:
+         - rpm -Uv https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm https://dl.fedoraproject.org/pub/epel/epel-next-release-latest-9.noarch.rpm || true
