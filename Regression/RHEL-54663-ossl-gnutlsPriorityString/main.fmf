@@ -5,6 +5,9 @@ duration: 10m
 require+:
   - library(distribution/Log)
   - library(ControlFlow/Cleanup)
+  - rsyslog-openssl
+  - nmap
+  - /usr/bin/certtool
 link:
   - verifies: https://issues.redhat.com/browse/RHEL-54663
 adjust:
