@@ -1,0 +1,15 @@
+description: Test for RHEL-54663 custom ciphers using gnutlsPriorityString option
+contact: Attila Lakatos <alakatos@redhat.com>
+test: ./runtest.sh
+duration: 10m
+require+:
+  - library(distribution/Log)
+  - library(ControlFlow/Cleanup)
+  - rsyslog-openssl
+  - nmap
+  - /usr/bin/certtool
+link:
+  - verifies: https://issues.redhat.com/browse/RHEL-54663
+adjust:
+  - enabled: false
+    when: distro < rhel-8.10
