@@ -170,9 +170,13 @@ EOF
     tcfTry "Tests" --no-assert && {
 
         rlPhaseStartTest "Ensure system crypto policies are used by default"
-            rlRun -s "rpmlint --info librelp" 0-64 "Check for common rpm problems"
-            rlAssertNotGrep "crypto-policy-non-compliance-gnutls" $rlRun_LOG
-            rlAssertNotGrep "crypto-policy-non-compliance-openssl" $rlRun_LOG
+            if rpm -q rpmlint; then
+                rlRun -s "rpmlint --info librelp" 0-64 "Check for common rpm problems"
+                rlAssertNotGrep "crypto-policy-non-compliance-gnutls" $rlRun_LOG
+                rlAssertNotGrep "crypto-policy-non-compliance-openssl" $rlRun_LOG
+            else
+                rlLogWarning "rpmlint is not installed, skipping the test"
+            fi
         rlPhaseEnd;
 
         for client_driver in "gnutls" "openssl"; do
