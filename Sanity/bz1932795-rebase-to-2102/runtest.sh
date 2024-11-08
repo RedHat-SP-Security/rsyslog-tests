@@ -482,6 +482,7 @@ EOF
 
         rlRun "rsyslogServerStart"
         rlRun "rsyslogServiceStart"
+        rlRun "sleep 1"
         rlRun "logger -p local6.info 'TLS driver: certificate chain depth'"
         rlRun "sleep 3"
         rlRun "rsyslogServerStatus"
@@ -496,10 +497,12 @@ EOF
 
         rlRun "rsyslogServerStart"
         rlRun "rsyslogServiceStart"
+        rlRun "sleep 1"
         rlRun "logger -p local6.info 'TLS driver: certificate chain depth'"
         rlRun "sleep 3"
         rlRun "rsyslogServerStatus"
         rlRun -s "rsyslogServiceStatus"
+        rlRun "cat /var/log/rsyslog-stats.log"
         rlAssertNotGrep 'Some constraint limits were reached.' $rlRun_LOG
         rlAssertGrep 'TLS driver: certificate chain depth' /var/log/rsyslog-stats.log
 
