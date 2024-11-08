@@ -241,7 +241,7 @@ EOF
     rlPhaseStartTest "tcp_frameDelimiter" && {
       CleanupRegister --mark 'rsyslogServiceRestore'
       CleanupRegister 'rsyslogConfigReplace "TEST1"'
-      rlRun "nc -l 127.0.0.1 514 > >(tee nc.out) &"
+      rlRun "nc -l 127.0.0.1 514 > nc.out &"
       CleanupRegister 'kill $(pidof nc)'
       rsyslogConfigReplace "TEST1" /etc/rsyslog.conf <<'EOF'
 local0.info   action(type="omfwd"
@@ -249,14 +249,16 @@ target="127.0.0.1"
 port="514"
 protocol="tcp"
 tcp_framedelimiter="120"
+extendedConnectionCheck="off"
 )
 EOF
-      rsyslogServiceStart
+      rlRun "rsyslogServiceStart"
       rlRun "rsyslogPrintEffectiveConfig -n"
       rlRun "rsyslogServiceStatus"
       rlRun "sleep 3"
       rlRun "logger -p local0.info test"
       rlRun "sleep 5"
+      rlRun "rsyslogServiceStatus"
       rlRun "rsyslogServiceStop"
       rlRun "cat nc.out"
       rlAssertGrep 'testx' nc.out
