@@ -114,6 +114,7 @@ module(load="omrelp")
 action(type="omrelp"
         target="$(hostname)"
         port="6514"
+        timeout="10"
         tls="on"
         tls.caCert="/etc/rsyslogd.d/ca-cert.pem"
         tls.myCert="/etc/rsyslogd.d/client-cert.pem"
@@ -149,12 +150,16 @@ EOF
 
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest && {
-      rlRun "logger 'test message'"
+      rlRun "logger 'test message 1'"
       rlRun "sleep 3s"
-      rlAssertGrep 'test message' $rsyslogServerLogDir/messages
+      rlAssertGrep 'test message 1' $rsyslogServerLogDir/messages
+
       rlRun "iptables -I INPUT 1 -p tcp --dport 6514 -j DROP"
       rlRun "iptables -vnL INPUT"
+      sleep 1
       t=$(date +%s)
+
+      rlRun "logger 'test message 2'"
       rlRun "rsyslogServiceStop"
       rlAssertLesserOrEqual "service stop should not timeout" $(($(date +%s)-$t)) 20
       rlRun -s "rsyslogServiceStatus" 3
