@@ -129,8 +129,15 @@ EOF
     rlPhaseStartTest "\$PreserveFQDN test, related bz#805424" && {
       fqdn=$(hostname -f)
       short=$(hostname -s)
-      if [[ "$short" == "$fqdn" ]]; then
-        rlFail "there's no difference between fqdn and shot name on this machine!"
+      rlRun "echo 'FQDN: $fqdn'"
+      rlRun "echo 'SHORT: $short'"
+
+      # Skip the test if the FQDN is 64 or more characters long
+      # The limit is 64 characters, see gethostname(2)
+      if [[ ${#fqdn} -gt 64 ]]; then
+        rlLog "Skipping test: FQDN length (${#fqdn}) is 64 or more characters."
+      elif [[ "$short" == "$fqdn" ]]; then
+        rlFail "there's no difference between fqdn and short name on this machine!"
       else
         rsyslogConfigIsNewSyntax || {
           rsyslogConfigPrepend --begin "MODULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection FQDN <<EOF
@@ -146,17 +153,16 @@ global(preserveFQDN="on")
 *.* action(type="omfile" file="/var/log/rsyslog-PreserveFQDN-test.log")
 EOF
         CleanupRegister --mark 'rlRun "rm -f /var/log/rsyslog-PreserveFQDN-test.log"'
+        rlRun "rsyslogPrintEffectiveConfig -n"
         rsyslogServiceStart
+        rsyslogServiceStatus
         sleep 3  # wait for rsyslogd to start
-        PID=`pidof rsyslogd`
+
         rlRun "logger -p local0.info 'test message from logger command'" 0 "Logging test using logger command"
-        rsyslogServiceStart
         sleep 1
         rlRun "cat /var/log/rsyslog-PreserveFQDN-test.log" 0-255
-        #[[ "$HOSTNAME" == "$fqdn" ]]
-        #rlAssert0 "Checking that my hostname $HOSTNAME is FQDN" $?
         rlRun "grep -q '$fqdn' /var/log/rsyslog-PreserveFQDN-test.log" 0 "Checking that FQDN is used in log messages"
-        rlIsRHEL 5 || rlRun "grep -v '$fqdn' /var/log/rsyslog-PreserveFQDN-test.log" 1 "Checking that all messages are using the FQDN"  # bz847967 wontfix on RHEL5
+        rlRun "grep -v '$fqdn' /var/log/rsyslog-PreserveFQDN-test.log" 1 "Checking that all messages are using the FQDN"
         CleanupDo --mark
       fi
     rlPhaseEnd; }
@@ -164,32 +170,36 @@ EOF
 
   if rsyslogVersion '>=5.8.10'; then   # feature available probably since 5.8.10
     rlPhaseStartTest "\$LocalHostName test" && {
-	NICKNAME=nickname.`hostname -d`
-
-        rsyslogConfigIsNewSyntax || {
-          rsyslogConfigReplace "FQDN" /etc/rsyslog.conf <<EOF
+	  NICKNAME=nickname.`hostname -d`
+    if [[ ${#fqdn} -gt 64 ]]; then
+      rlLog "Skipping test: FQDN length (${#fqdn}) is 64 or more characters."
+    else
+      rsyslogConfigIsNewSyntax || {
+        rsyslogConfigReplace "FQDN" /etc/rsyslog.conf <<EOF
 \$LocalHostName $NICKNAME
 EOF
-          rsyslogConfigReplace "TEST1" /etc/rsyslog.conf <<EOF
+        rsyslogConfigReplace "TEST1" /etc/rsyslog.conf <<EOF
 *.* /var/log/rsyslog-LocalHostName-test.log
 EOF
-        }
-        rsyslogConfigIsNewSyntax && rsyslogConfigReplace "TEST1" /etc/rsyslog.conf <<EOF
+    }
+      rsyslogConfigIsNewSyntax && rsyslogConfigReplace "TEST1" /etc/rsyslog.conf <<EOF
 global(localHostname="$NICKNAME")
 *.* action(type="omfile" file="/var/log/rsyslog-LocalHostName-test.log")
 EOF
-        CleanupRegister --mark 'rlRun "rm -f /var/log/rsyslog-LocalHostName-test.log"'
-        rsyslogServiceStart
-	sleep 3  # wait for rsyslogd to start
-	PID=`pidof rsyslogd`
-	rlRun "logger -p local0.info 'test message from logger command'" 0 "Logging test using logger command"
-        rsyslogServiceStart
-	sleep 1
-	cat /var/log/rsyslog-LocalHostName-test.log
-        rlRun "grep -q '$NICKNAME' /var/log/rsyslog-LocalHostName-test.log" 0 "Checking that $NICKNAME was used in log messages"
-        rlIsRHEL 5 || rlRun "grep -v '$NICKNAME' /var/log/rsyslog-LocalHostName-test.log" 1 "Checking that all messages are using $NICKNAME"  # won'tfix on rhel5
-        CleanupDo --mark
-    rlPhaseEnd; }
+      CleanupRegister --mark 'rlRun "rm -f /var/log/rsyslog-LocalHostName-test.log"'
+      rsyslogServiceStart
+      rsyslogServiceStatus
+      rlRun "rsyslogPrintEffectiveConfig -n"
+      sleep 3  # wait for rsyslogd to start
+      rlRun "logger -p local0.info 'test message from logger command'" 0 "Logging test using logger command"
+      sleep 1
+      cat /var/log/rsyslog-LocalHostName-test.log
+      rlRun "grep -q '$NICKNAME' /var/log/rsyslog-LocalHostName-test.log" 0 "Checking that $NICKNAME was used in log messages"
+      rlRun "grep -v '$NICKNAME' /var/log/rsyslog-LocalHostName-test.log" 1 "Checking that all messages are using $NICKNAME"  # won'tfix on rhel5
+      CleanupDo --mark
+      rlPhaseEnd;
+    fi
+    }
   fi
 
 
