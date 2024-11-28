@@ -52,7 +52,7 @@ EOF
   rlPhaseEnd; }
 
   while IFS='~' read -r title options message expected unexpected; do
-    rlPhaseStartTest "$title" && {
+    rlPhaseStartTest "Title: $title" && {
       rsyslogConfigReplace "RULES_MMFIELDS" <<EOF
         local2.* action(type="mmfields"${options:+" $options"})
         local2.* action(type="omfile" file="/var/log/rsyslog.test-cef.log" template="cef")

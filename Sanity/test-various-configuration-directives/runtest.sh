@@ -50,7 +50,7 @@ rlJournalStart
         rsyslogConfigAddTo --begin "RULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection TESTBEGIN)
     rlPhaseEnd
 
-    rlPhaseStartTest "\$ActionExecOnlyOnceEveryInterval test" && {
+    rlPhaseStartTest "Action: \$ActionExecOnlyOnceEveryInterval test" && {
         rsyslogConfigIsNewSyntax || rsyslogConfigReplace "TEST1" <<EOF
 \$ActionExecOnlyOnceEveryInterval 3
 local0.info /var/log/rsyslog-ActionExecOnlyOnceEveryInterval-test.log
@@ -87,7 +87,7 @@ EOF
     rlPhaseEnd; }
 
   if rsyslogVersion '>=4.5.1'; then   # feature available since 4.5.1
-    rlPhaseStartTest "\$ActionSendTCPRebindInterval test, bz1645245" && {
+    rlPhaseStartTest "Action: \$ActionSendTCPRebindInterval test, bz1645245" && {
         rsyslogConfigIsNewSyntax || rsyslogConfigReplace "TEST1" /etc/rsyslog.conf <<EOF
 \$ModLoad imtcp.so
 \$ActionSendTCPRebindInterval 3
@@ -126,7 +126,7 @@ EOF
   fi
 
   if rsyslogVersion '>=5.8.10'; then   # feature available since 5.8.10
-    rlPhaseStartTest "\$PreserveFQDN test, related bz#805424" && {
+    rlPhaseStartTest "Action: \$PreserveFQDN test, related bz#805424" && {
       fqdn=$(hostname -f)
       short=$(hostname -s)
       rlRun "echo 'FQDN: $fqdn'"
@@ -169,7 +169,7 @@ EOF
   fi
 
   if rsyslogVersion '>=5.8.10'; then   # feature available probably since 5.8.10
-    rlPhaseStartTest "\$LocalHostName test" && {
+    rlPhaseStartTest "Action: \$LocalHostName test" && {
 	  NICKNAME=nickname.`hostname -d`
     if [[ ${#fqdn} -gt 64 ]]; then
       rlLog "Skipping test: FQDN length (${#fqdn}) is 64 or more characters."

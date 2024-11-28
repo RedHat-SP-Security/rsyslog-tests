@@ -44,7 +44,7 @@ rlJournalStart
     rlPhaseEnd
 
 if ! $VER3; then
-    rlPhaseStartTest "\$OMFileZipLevel test"   # logfile compression test"
+    rlPhaseStartTest "Testing: \$OMFileZipLevel test"   # logfile compression test"
         rsyslogConfigIsNewSyntax && rsyslogConfigAddTo --begin "RULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection ZIPTEST <<EOF
 # log file compression test
 local0.info    action(type="omfile" file="/var/log/rsyslog.test.gz" zipLevel="5")     # set logfile compression on
@@ -89,7 +89,7 @@ EOF
         rlRun "grep 'relpath test message' /tmp/rsyslog.rel-path-test.log" 0 "Check the message in the log"
     rlPhaseEnd
 
-    rlPhaseStartTest "\$OMFileFlushOnTXEnd and \$OMFileIOBufferSize test"  # check that messages are flushed in batch
+    rlPhaseStartTest "Testing: \$OMFileFlushOnTXEnd and \$OMFileIOBufferSize test"  # check that messages are flushed in batch
         rsyslogConfigReplace "RELPATH" /etc/rsyslog.conf
         rsyslogConfigIsNewSyntax && rsyslogConfigAppend --begin "RULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection FLUSHTEST <<EOF
 local0.info    action(type="omfile" file="/var/log/rsyslog.test.log" IOBufferSize="1k" FlushOnTXEnd="off")    # default is 4k

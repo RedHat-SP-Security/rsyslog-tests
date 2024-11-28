@@ -51,7 +51,7 @@ rlJournalStart
         CleanupRegister 'rlRun "popd"'
     rlPhaseEnd
 
-    rsyslogConfigIsNewSyntax && rlPhaseStartTest "\"ruleset\" in module directive (Sanity)" && {
+    rsyslogConfigIsNewSyntax && rlPhaseStartTest "Testing: \"ruleset\" in module directive (Sanity)" && {
         rsyslogPrepareConf
         rsyslogConfigAppend --begin "MODULES" /etc/rsyslog.conf <<EOF
 module(load="imrelp" ruleset="relp")
