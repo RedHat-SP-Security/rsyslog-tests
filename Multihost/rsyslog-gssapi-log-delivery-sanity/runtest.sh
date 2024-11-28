@@ -126,7 +126,7 @@ EOF
         rlRun "syncSet SERVER_SETUP_READY"
     rlPhaseEnd
 
-    rlPhaseStartTest "$SERVER_SETUP_MESSAGE"
+    rlPhaseStartTest "Server message: $SERVER_SETUP_MESSAGE"
 	rlLogInfo "$CLIENT_SETUP_MESSAGE"
         # server setup goes here
 	rlRun "service rsyslog status" 0 "Verify that rsyslog is running"
@@ -241,7 +241,7 @@ EOF
     rlPhaseEnd
 
 
-   rlPhaseStartTest "$CLIENT_SETUP_MESSAGE"
+   rlPhaseStartTest "Client message: $CLIENT_SETUP_MESSAGE"
 	rlLogInfo "$SERVER_SETUP_MESSAGE"
         rlRun "syncSet CLIENT_TEST_READY"
         rlRun "syncExp SERVER_TEST_READY"

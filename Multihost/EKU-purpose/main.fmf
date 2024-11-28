@@ -13,8 +13,6 @@ tag+:
 - fedora-wanted
 - rhel-8.1
 - rhel-8.1.0
-- Tier3
-tier: 3
 extra-summary: /CoreOS/rsyslog/Multihost/EKU-purpose
 extra-nitrate: TC#0604425
 adjust:

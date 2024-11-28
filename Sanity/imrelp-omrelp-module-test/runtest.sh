@@ -181,7 +181,7 @@ EOF
 
         for client_driver in "gnutls" "openssl"; do
             for server_driver in "gnutls" "openssl"; do
-                rlPhaseStartTest "$client_driver -> $server_driver" && tcfChk && {
+                rlPhaseStartTest "Testing: $client_driver -> $server_driver" && tcfChk && {
                     tcfChk "setup" && {
                         client_config $client_driver
                         server_config $server_driver

@@ -139,7 +139,7 @@ EOF
 	rlAssertEquals "3 rsyslog instancies on IPv6 should be running" $IP6 3
     rlPhaseEnd; }
 
-    rlPhaseStartTest "\$InputTCPServerBindRuleset and TCP forwarding test" && {
+    rlPhaseStartTest "Testing: \$InputTCPServerBindRuleset and TCP forwarding test" && {
 	rlRun "logger -p local4.info 'test message 50514'" 0 "Sending test message1 for port 50514"
 	rlRun "logger -p local5.info 'test message 50515'" 0 "Sending test message2 for port 50515"
 	rlRun "logger -p local6.info 'test message 50516'" 0 "Sending test message3 for port 50516"

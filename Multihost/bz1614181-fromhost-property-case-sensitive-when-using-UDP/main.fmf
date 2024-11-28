@@ -15,11 +15,8 @@ enabled: true
 tag+:
 - NoRHEL4
 - NoRHEL5
-- Tier2
-- Tier2security
 - fedora-wanted
 - rhel-8.1
-tier: '2'
 extra-summary: /CoreOS/rsyslog/Multihost/bz1614181-fromhost-property-case-sensitive-when-using-UDP
 extra-nitrate: TC#0600869
 adjust:
