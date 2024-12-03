@@ -1111,32 +1111,65 @@ rsyslogServerStart() {
 
 rsyslogServerStop() {
   local res=0
+
   if [[ -s $rsyslogServerPidFile ]]; then
-    __INTERNAL_PrintText "stopping rsyslog server" "LOG"
-    kill $(cat $rsyslogServerPidFile) || let res++
-    local i
-    for ((i=60; i>0; i--)); do
-      kill -0 $(cat $rsyslogServerPidFile >/dev/null 2>&1) >/dev/null 2>&1 || break
-      echo -n .
-      sleep 1
-    done
-    echo
-    kill -0 $(cat $rsyslogServerPidFile >/dev/null 2>&1) >/dev/null 2>&1 && kill -9 $(cat $rsyslogServerPidFile)
+    local pid
+    pid=$(cat $rsyslogServerPidFile)
+    
+    # Verify that the PID exists and corresponds to a running process
+    if kill -0 "$pid" 2>/dev/null; then
+      __INTERNAL_PrintText "Stopping rsyslog server (PID: $pid)" "LOG"
+
+      # Attempt to gracefully stop the process
+      kill "$pid" || {
+        echo "Failed to send SIGTERM to process $pid"
+        let res++
+      }
+
+      # Wait for the process to terminate gracefully
+      local i
+      for ((i=60; i>0; i--)); do
+        if ! kill -0 "$pid" 2>/dev/null; then
+          echo
+          __INTERNAL_PrintText "rsyslog server stopped successfully" "LOG"
+          break
+        fi
+        echo -n "."
+        sleep 1
+      done
+      echo
+
+      # Force kill the process if it hasn't terminated
+      if kill -0 "$pid" 2>/dev/null; then
+        __INTERNAL_PrintText "Forcing rsyslog server to stop (PID: $pid)" "LOG"
+        kill -9 "$pid" || {
+          echo "Failed to force kill process $pid"
+          let res++
+        }
+      fi
+    else
+      __INTERNAL_PrintText "PID $pid not found." "LOG"
+    fi
+  else
+    __INTERNAL_PrintText "No PID file found for rsyslog server. Skipping stop." "LOG"
   fi
+
   if [[ "$1" == "--valgrind" ]]; then
     local i
     for ((i=180; i>0; i--)); do
-      grep -q '== ERROR SUMMARY' $rsyslogServerOut && {
+      if grep -q '== ERROR SUMMARY' "$rsyslogServerOut"; then
         echo
         return 0
-      }
-      echo -n .
+      fi
+      echo -n "."
       sleep 1
     done
     return 1
   fi
+
   return $res
 }
+
 
 
 rsyslogServerStatus() {
