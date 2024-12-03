@@ -6,12 +6,11 @@ tag+:
 - NSS_testing_HIGH
 - NoRHEL4
 - TIPpass_Security
-- Tier2
 - Tier2security
 - rhel-6.2
 - rhel-6.3
 - rsyslogSyntaxOLD
-tier: '2'
+
 adjust:
 -   enabled: false
     when: distro == rhel-4
