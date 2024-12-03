@@ -9,6 +9,7 @@ require+:
 - rsyslog-openssl
 - gnutls
 - openssl
+- library(distribution/Cleanup)
 tag:
 - Tier2
 - CI-Tier-1

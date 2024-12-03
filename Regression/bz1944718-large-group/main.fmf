@@ -4,6 +4,7 @@ test: ./runtest.sh
 duration: 10m
 require+:
 - library(distribution/testUser)
+- library(distribution/Cleanup)
 tag:
 - Tier2
 - CI-Tier-1
