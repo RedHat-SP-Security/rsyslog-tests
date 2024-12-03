@@ -4,9 +4,8 @@ environment:
     ANSIBLE: 1
     CLIENT_NO_CERT: 1
 tag+:
-- Tier2
 - rsyslogSyntaxOLD
-tier: '2'
+
 adjust:
 -   enabled: false
     when: distro < rhel-8.3
