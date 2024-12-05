@@ -31,9 +31,16 @@ rlJournalStart && {
     rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
   rlPhaseEnd; }
 
-  rlPhaseStartTest && {
-    rlAssertGrep 'systemctl -s HUP kill rsyslog' $(rpm -qal rsyslog\* | grep 'logrotate\.d')
-  rlPhaseEnd; }; :
+  if rlIsRHEL '<=9.6'; then
+    rlPhaseStartTest 
+      rlAssertGrep 'systemctl -s HUP kill rsyslog' $(rpm -qal rsyslog\* | grep 'logrotate\.d')
+    rlPhaseEnd;
 
+  elif rlIsRHEL '>=10.0'; then
+    rlPhaseStartTest
+      rlAssertGrep 'systemctl reload rsyslog.service' $(rpm -qal rsyslog\* | grep 'logrotate\.d')
+    rlPhaseEnd
+  fi
+  
   rlJournalPrintText
 rlJournalEnd; }
