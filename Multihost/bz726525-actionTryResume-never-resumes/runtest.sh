@@ -75,26 +75,21 @@ rlJournalStart
         rlRun "mkdir -p /var/lib/rsyslog && restorecon -v /var/lib/rsyslog"
         rlRun "rm -f /var/log/bz701782-rsyslog.log"
         rsyslogServerConfigAppend "RULES" << EOF
-\$ModLoad imtcp.so
-\$InputTCPMaxSessions 1000
-\$InputTCPServerRun 514
-
+module(load="imtcp")
+input(type="imtcp" port="514")
 local2.error   ${rsyslogServerLogDir}/bz701782-rsyslog.log
 EOF
         rsyslogConfigAppend "RULES" << EOF
-\$MaxOpenFiles 1024
+local2.error action(
+	type="omfwd"
+	target="127.0.0.1" port="514" protocol="tcp"
+	queue.filename="remoteq"
+	queue.type="Disk"
+	action.resumeRetryCount="-1"
+	action.resumeInterval="5"
+	action.resumeIntervalMax="10"
+)
 
-# Configure the work queue files
-\$ActionQueueType LinkedList
-\$ActionQueueHighWaterMark $HWM
-\$ActionQueueLowWaterMark $LWM
-\$ActionQueueFileName remoteq
-\$ActionQueueSize $ACTIONQUEUESIZE
-\$ActionQueueMaxFileSize $ACTIONQUEUEMAXFILESIZE
-\$ActionResumeRetryCount -1
-\$ActionResumeInterval 20
-
-local2.error    @@127.0.0.1
 local2.error    /var/log/bz701782-rsyslog.log
 EOF
     rlPhaseEnd
