@@ -8,6 +8,8 @@ require+:
 - rsyslog-gnutls
 - rsyslog-relp
 - librelp
+recommend:
+- kernel-modules-core
 duration: 15m
 enabled: true
 tag:
