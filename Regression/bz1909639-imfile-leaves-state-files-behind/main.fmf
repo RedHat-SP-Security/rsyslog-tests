@@ -17,4 +17,4 @@ adjust:
   - enabled: false
     when: distro < rhel-8.7
   - enabled: false
-    when: distro >= rhel-10
+    when: distro >= rhel-9.6
