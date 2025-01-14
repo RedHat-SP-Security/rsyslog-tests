@@ -177,7 +177,7 @@ EOF
         rlRun "pidof rsyslogd" 0 "Verify that rsyslog did not stop"
         # greping CLIENT_IP not working as on some enviroments IPV-6 is used, TC can be adjusted to check if catched string beatween "from" and "will" is valid IP address
         rlAssertGrep "rsyslogd[^:]*: netstream session.*from.*will be closed due to error" /var/log/bz1326216-rsyslog.log -E
-        rlAssertGrep "rsyslogd[^:]*: not permitted to talk to peer, certificate invalid" /var/log/bz1326216-rsyslog.log -E
+        rlAssertGrep "rsyslogd[^:]*: not permitted to talk to peer '[^']+', certificate invalid" /var/log/bz1326216-rsyslog.log -E
         # seems that info is not always accurate, sometimes it's "certificate invalid: signer not found insted of next line"
         #rlAssertGrep "rsyslogd: invalid cert info:.*certificate valid from Thu Jan 29 00:00:00 2004 to Thu Jan 29 00:00:00 2015" /var/log/bz1326216-rsyslog.log -E
     rlPhaseEnd
