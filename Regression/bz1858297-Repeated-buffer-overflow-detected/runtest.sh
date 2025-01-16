@@ -50,7 +50,7 @@ rlJournalStart && {
     rlRun "echo -e '[Service]\nLimitNOFILE=16384' > /etc/systemd/system/rsyslog.service.d/10-LimitNOFILE.conf"
     rlRun "ulimit -n 16384"
     rlRun "systemctl daemon-reload"
-    cat > ca.tmpl <<EOF
+    cat >ca.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -70,7 +70,7 @@ EOF
     rlRun "certtool --generate-privkey --outfile ca-key.pem" 0 "Generate key for CA"
     rlRun "certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem" 0 "Generate self-signed CA cert"
 
-    cat > server.tmpl <<EOF
+    cat >server.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -86,7 +86,7 @@ EOF
     rlRun "certtool --generate-request --template server.tmpl --load-privkey server-key.pem --outfile server-request.pem" 0 "Generate server cert request"
     rlRun "certtool --generate-certificate --template server.tmpl --load-request server-request.pem  --outfile server-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate server cert"
 
-    cat > client.tmpl <<EOF
+    cat >client.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -102,19 +102,18 @@ EOF
     rlRun "certtool --generate-request --template client.tmpl --load-privkey client-key.pem --outfile client-request.pem" 0 "Generate client cert request"
     rlRun "certtool --generate-certificate --template client.tmpl --load-request client-request.pem  --outfile client-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate client cert"
 
-    rlRun "mkdir -p /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
-    rlRun "cp *.pem /etc/rsyslogd.d/"
-    rlRun "chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d"
+    rlRun "cp *.pem /etc/rsyslog.d/"
+    rlRun "chmod 400 /etc/rsyslog.d/* && restorecon -R /etc/rsyslog.d"
 
-      rsyslogConfigAddTo "GLOBALS" <<EOF
+    rsyslogConfigAddTo "GLOBALS" <<EOF
 global(
     DefaultNetstreamDriver="gtls"
-    DefaultNetstreamDriverCAFile="/etc/rsyslogd.d/ca-cert.pem"
-    DefaultNetstreamDriverCertFile="/etc/rsyslogd.d/server-cert.pem"
-    DefaultNetstreamDriverKeyFile="/etc/rsyslogd.d/server-key.pem"
+    DefaultNetstreamDriverCAFile="/etc/rsyslog.d/ca-cert.pem"
+    DefaultNetstreamDriverCertFile="/etc/rsyslog.d/server-cert.pem"
+    DefaultNetstreamDriverKeyFile="/etc/rsyslog.d/server-key.pem"
 )
 EOF
-      rsyslogConfigAddTo "MODULES" <<EOF
+    rsyslogConfigAddTo "MODULES" <<EOF
 module( load="imtcp"
 
         # Update if handling large numbers of clients
@@ -128,9 +127,10 @@ module( load="imtcp"
 )
 input(type="imtcp" port="6514")
 EOF
-      rsyslogPrintEffectiveConfig -n
-      rlRun "rsyslogServiceStart"
-  rlPhaseEnd; }
+    rsyslogPrintEffectiveConfig -n
+    rlRun "rsyslogServiceStart"
+    rlPhaseEnd
+  }
 
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest && {
@@ -139,18 +139,18 @@ EOF
       tcfChk "open connections" && {
         CleanupRegister 'rlRun "kill \$(pidof sleep)"'
         progressHeader 1024
-        for (( i=30000; i<=31024; i++)); do
+        for ((i = 30000; i <= 31024; i++)); do
           (
-            sleep 1200 \
-             | nc --ssl --ssl-cert /etc/rsyslogd.d/client-cert.pem \
-                  --ssl-key /etc/rsyslogd.d/client-key.pem \
-                  127.0.0.1 6514 &>/dev/null &
+            sleep 1200 | nc --ssl --ssl-cert /etc/rsyslogd.d/client-cert.pem \
+              --ssl-key /etc/rsyslogd.d/client-key.pem \
+              127.0.0.1 6514 &>/dev/null &
           )
-          progressDraw $((i-30000))
+          progressDraw $((i - 30000))
         done
         progressFooter
-      tcfFin; }
-      rlRun "echo 'muj test' | nc --ssl --ssl-cert /etc/rsyslogd.d/client-cert.pem --ssl-key /etc/rsyslogd.d/client-key.pem 127.0.0.1 6514"
+        tcfFin
+      }
+      rlRun "echo 'muj test' | nc --ssl --ssl-cert /etc/rsyslog.d/client-cert.pem --ssl-key /etc/rsyslog.d/client-key.pem 127.0.0.1 6514"
       rlRun -s "journalctl -u rsyslog -l --since '$since' --no-pager"
       rlAssertNotGrep "code=dumped" $rlRun_LOG
       rlAssertNotGrep "code=killed" $rlRun_LOG
@@ -158,12 +158,16 @@ EOF
       rlRun "rsyslogServiceStatus"
       sleepWithProgress 15
       rlRun "rsyslogCatLogFileFromPointer /var/log/messages | grep 'muj test'"
-    rlPhaseEnd; }
-  tcfFin; }
+      rlPhaseEnd
+    }
+    tcfFin
+  }
 
   rlPhaseStartCleanup && {
     CleanupDo
     tcfCheckFinal
-  rlPhaseEnd; }
+    rlPhaseEnd
+  }
   rlJournalPrintText
-rlJournalEnd; }
+  rlJournalEnd
+}
