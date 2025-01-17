@@ -55,7 +55,7 @@ EOF
     tcfChk "Server phase" && {
       rlRun "syncExp CLIENT_DONE"
       rlRun "rlServiceStop rsyslog"
-      rlRun "sleep 10"
+      rlRun "sleep 15"
       rlRun "diff messages /var/log/messages > messages.log" 0-255
       rlRun "cat messages.log"
       rlAssertGrep "relptest" messages.log
