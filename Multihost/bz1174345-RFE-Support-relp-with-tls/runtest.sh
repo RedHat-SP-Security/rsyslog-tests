@@ -51,7 +51,7 @@ Server() {
         SERVER_IP=`host $SERVERS | awk '/has address/ {print $NF;exit}'`
         CLIENT_IP=`host $CLIENTS | awk '/has address/ {print $NF;exit}'`
 
-        cat > ca.tmpl <<EOF
+        cat >ca.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -71,7 +71,7 @@ EOF
         rlRun "certtool --generate-privkey --outfile ca-key.pem" 0 "Generate key for CA"
         rlRun "certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca.pem" 0 "Generate self-signed CA cert"
 
-        cat > server.tmpl <<EOF
+        cat >server.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -90,7 +90,7 @@ EOF
         rlRun "certtool --generate-request --template server.tmpl --load-privkey server-key.pem --outfile server-request.pem" 0 "Generate server cert request"
         rlRun "certtool --generate-certificate --template server.tmpl --load-request server-request.pem  --outfile server-cert.pem --load-ca-certificate ca.pem --load-ca-privkey ca-key.pem" 0 "Generate server cert"
 
-        cat > client.tmpl <<EOF
+        cat >client.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -124,8 +124,7 @@ EOF
         rlRun "syncSet CERTS_READY"
 
         # rsyslog setup
-        rlRun "mkdir -p /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
-        rlRun "cp ca.pem server-key.pem server-cert.pem /etc/rsyslogd.d/ && chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d" 0 "Copy certificates to /etc/rsyslogd.d"
+        rlRun "cp ca.pem server-key.pem server-cert.pem /etc/rsyslog.d/ && chmod 400 /etc/rsyslog.d/* && restorecon -R /etc/rsyslog.d" 0 "Copy certificates to /etc/rsyslog.d"
 #       old syntax config have no support, or no documented support for addition options like tls
         rsyslogConfigIsNewSyntax || rsyslogConfigAppend "MODULES" /etc/rsyslog.conf <<EOF
 EOF
@@ -133,9 +132,9 @@ EOF
 module(load="imrelp" ruleset="relp")
 input(type="imrelp" port="6514"
 tls="on"
-tls.caCert="/etc/rsyslogd.d/ca.pem"
-tls.myCert="/etc/rsyslogd.d/server-cert.pem"
-tls.myPrivKey="/etc/rsyslogd.d/server-key.pem"
+tls.caCert="/etc/rsyslog.d/ca.pem"
+tls.myCert="/etc/rsyslog.d/server-cert.pem"
+tls.myPrivKey="/etc/rsyslog.d/server-key.pem"
 # see BZ#1430000, SHA1 works
 #tls.authMode="fingerprint"
 #tls.permittedpeer=["SHA1:$SHA1_CLIENT"] )
@@ -192,8 +191,7 @@ Client() {
         fi
         rlRun "tar -xf certs.tar" 0 "Extract certificates"
 
-        rlRun "mkdir /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
-        rlRun "mv *.pem /etc/rsyslogd.d/ && chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d" 0 "Move certificates to /etc/rsyslogd.d"
+        rlRun "mv *.pem /etc/rsyslog.d/ && chmod 400 /etc/rsyslog.d/* && restorecon -R /etc/rsyslog.d" 0 "Move certificates to /etc/rsyslog.d"
 #       old syntax config have no support, or no documented support for addition options like tls
         rsyslogConfigIsNewSyntax || rsyslogConfigAppend "MODULES" /etc/rsyslog.conf <<EOF
 EOF
@@ -206,9 +204,9 @@ action(type="omrelp"
         target="$SERVERS"
         port="6514"
         tls="on"
-        tls.caCert="/etc/rsyslogd.d/ca.pem"
-        tls.myCert="/etc/rsyslogd.d/client-cert.pem"
-        tls.myPrivKey="/etc/rsyslogd.d/client-key.pem"
+        tls.caCert="/etc/rsyslog.d/ca.pem"
+        tls.myCert="/etc/rsyslog.d/client-cert.pem"
+        tls.myPrivKey="/etc/rsyslog.d/client-key.pem"
         tls.authmode="name"
         tls.permittedpeer=["$SERVERS"] )
 EOF
@@ -271,7 +269,7 @@ rlJournalStart
         rlFileSubmit /var/log/bz1174345-rsyslog.log
         rlRun "popd"
         rlRun "rm -r $TmpDir" 0 "Removing tmp directory"
-        rlRun "rm -rf /etc/rsyslogd.d/ /var/log/bz1174345-rsyslog.log" 0 "Removing /etc/rsyslogd.d/"
+        rlRun "rm -rf /etc/rsyslog.d/ /var/log/bz1174345-rsyslog.log" 0 "Removing /etc/rsyslog.d/"
         rlRun "rlFileRestore"
         rlRun "rsyslogServiceRestore"
         $ENTROPY && kill `pidof rngd`
