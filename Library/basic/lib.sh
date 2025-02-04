@@ -1543,7 +1543,7 @@ rsyslogLibraryLoaded() {
   }
   which semanage &>/dev/null || {
     rlLogInfo "semanage not available, will try to install it"
-    i+=" /usr/sbin/semanage"
+    i+=" policycoreutils-python-utils"
   }
   __INTERNAL_rsyslog_import
   #rpm -q rsyslog${rsyslogSuffix} &>/dev/null || {
