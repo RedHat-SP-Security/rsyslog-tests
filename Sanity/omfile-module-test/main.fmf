@@ -26,6 +26,7 @@ tag:
 - TIPpass_Security
 - Tier1
 - Tier1security
+- ImageMode
 tier: '1'
 adjust:
 -   enabled: false

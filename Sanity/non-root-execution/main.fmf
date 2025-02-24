@@ -9,6 +9,7 @@ enabled: true
 tag:
   - Tier1
   - CI-Tier-1
+  - ImageMode
 tier: 1
 link:
   - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2216919

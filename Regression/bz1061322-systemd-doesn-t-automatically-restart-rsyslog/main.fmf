@@ -17,6 +17,7 @@ tag:
 - TIPfail_Security
 - Tier1
 - Tier1security
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/rsyslog/Regression/bz1061322-systemd-doesn-t-automatically-restart-rsyslog
 extra-task: /CoreOS/rsyslog/Regression/bz1061322-systemd-doesn-t-automatically-restart-rsyslog

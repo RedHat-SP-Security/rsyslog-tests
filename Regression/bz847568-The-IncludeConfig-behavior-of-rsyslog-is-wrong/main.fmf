@@ -20,6 +20,7 @@ tag:
 - TipWaived5
 - rhel-6.4
 - rsyslogSyntaxOLD
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/rsyslog/Regression/bz847568-The-IncludeConfig-behavior-of-rsyslog-is-wrong
 extra-task: /CoreOS/rsyslog/Regression/bz847568-The-IncludeConfig-behavior-of-rsyslog-is-wrong

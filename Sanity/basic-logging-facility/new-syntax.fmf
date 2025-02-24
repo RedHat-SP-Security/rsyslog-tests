@@ -9,6 +9,7 @@ tag:
 - fedora-wanted
 - notip
 - rsyslogSyntaxNEW
+- ImageMode
 extra-summary: rsyslogSyntax=new /CoreOS/rsyslog/Sanity/basic-logging-facility
 extra-nitrate: TC#0419209
 adjust:
