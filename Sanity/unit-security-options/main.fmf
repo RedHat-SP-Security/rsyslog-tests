@@ -10,6 +10,7 @@ tag:
   - rhel-9.3
   - Tier1
   - CI-Tier-1
+  - ImageMode
 tier: '1'
 adjust:
   - enabled: false

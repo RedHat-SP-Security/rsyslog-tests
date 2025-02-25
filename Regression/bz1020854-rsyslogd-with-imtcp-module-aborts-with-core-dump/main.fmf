@@ -26,6 +26,7 @@ tag:
 - Tier1
 - Tier1security
 - rsyslogSyntaxOLD
+- ImageMode
 tier: '1'
 adjust:
 -   enabled: false

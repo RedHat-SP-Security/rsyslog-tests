@@ -21,6 +21,7 @@ tag:
 - Tier1security
 - TipWaived5
 - rsyslogSyntaxOLD
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/rsyslog/Regression/bz886004-rsyslog-not-understaning-rfc5424-messages-through
 extra-task: /CoreOS/rsyslog/Regression/bz886004-rsyslog-not-understaning-rfc5424-messages-through

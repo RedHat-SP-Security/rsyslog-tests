@@ -32,6 +32,7 @@ tag:
 - Tier1
 - Tier1security
 - rsyslogSyntaxOLD
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/rsyslog/Regression/bz582288-rsyslog-does-not-capture-kernel-thread-dumps
 extra-task: /CoreOS/rsyslog/Regression/bz582288-rsyslog-does-not-capture-kernel-thread-dumps

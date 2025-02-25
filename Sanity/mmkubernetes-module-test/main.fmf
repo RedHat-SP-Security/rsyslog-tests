@@ -17,6 +17,7 @@ tag:
 - Tier1
 - Tier1security
 - rhel-8.0
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/rsyslog/Sanity/mmkubernetes-module-test
 extra-task: /CoreOS/rsyslog/Sanity/mmkubernetes-module-test

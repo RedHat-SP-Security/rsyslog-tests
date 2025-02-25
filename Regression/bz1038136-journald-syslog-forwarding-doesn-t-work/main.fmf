@@ -25,6 +25,7 @@ tag:
 - Tier1
 - Tier1security
 - rsyslogSyntaxOLD
+- ImageMode
 tier: '1'
 extra-summary: /CoreOS/rsyslog/Regression/bz1038136-journald-syslog-forwarding-doesn-t-work
 extra-task: /CoreOS/rsyslog/Regression/bz1038136-journald-syslog-forwarding-doesn-t-work
