@@ -10,7 +10,7 @@ duration: 15m
 enabled: true
 tag:
   - Tier1
-  - ImageMode
+#  - ImageMode
 tier: '1'
 adjust+:
   - require-:
