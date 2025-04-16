@@ -61,9 +61,9 @@ EOF
 )
         rsyslogServiceStart
         rlRun "logger -p local0.info 'logfile compression test'" 0 "Logging the test message"
-        sleep 2
+        sleep 5
         rsyslogServiceStop
-        sleep 2
+        sleep 5
         rlRun "file /var/log/rsyslog.test.gz | grep 'gzip compressed data'" 0 "Checking that logfile is a gzip archive"
         rlRun -s "gunzip -c --stdout /var/log/rsyslog.test.gz"
         rlAssertGrep "logfile compression test" $rlRun_LOG
@@ -85,7 +85,7 @@ EOF
 
         rsyslogServiceStart
         rlRun "logger -p local0.info 'relpath test message'" 0 "Logging the test message"
-        sleep 2
+        sleep 5
         rlRun "grep 'relpath test message' /tmp/rsyslog.rel-path-test.log" 0 "Check the message in the log"
     rlPhaseEnd
 
@@ -105,7 +105,7 @@ EOF
         rlRun "logger -p local0.info 'flush test message1'" 0 "Logging the test message1"
         rlRun "logger -p local0.info 'flush test message2'" 0 "Logging the test message2"
         rlRun "logger -p local0.info 'flush test message3'" 0 "Logging the test message3"
-        sleep 2
+        sleep 5
         # now check the log - there should be no messages since they are still in the buffer
         rlRun "grep 'flush test message1' /var/log/rsyslog.test.log" 1 "The message1 should not be in the log"
         rlRun "grep 'flush test message2' /var/log/rsyslog.test.log" 1 "The message2 should not be in the log"
@@ -114,7 +114,7 @@ EOF
         # not flush the buffer
         #rlRun "kill -s SIGHUP \`pidof rsyslogd\`" 0 "Send SIGHUP to rsyslogd to flush the buffer"
         # we need to give rsyslog some time to process messages
-        sleep 2
+        sleep 5
         rlRun "grep 'flush test message1' /var/log/rsyslog.test.log" 0 "The message1 should be in the log now"
         rlRun "grep 'flush test message2' /var/log/rsyslog.test.log" 0 "The message2 should be in the log now"
         rlRun "grep 'flush test message3' /var/log/rsyslog.test.log" 0 "The message3 should be in the log now"

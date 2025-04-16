@@ -60,7 +60,7 @@ EOF
       :> /var/log/rsyslog.test-cef.log
       rlRun "rsyslogServiceStart"
       rlRun "logger -p local2.info 'CEF:0|Vendor|Product|Version|Signature ID|some name|Severity| aa=field1 bb=this is a value cc=field 3'"
-      rlRun "sleep 3s"
+      rlRun "sleep 10s"
       rlRun -s "cat /var/log/rsyslog.test-cef.log"
       rlAssertGrep '"cef": { "DeviceVendor": "Vendor", "DeviceProduct": "Product", "DeviceVersion": "Version", "SignatureID": "Signature ID", "Name": "some name", "Severity": "Severity", "Extensions": { "aa": "field1", "bb": "this is a value", "cc": "field 3" } }' $rlRun_LOG
       rm -f $rlRun_LOG

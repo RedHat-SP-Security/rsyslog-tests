@@ -70,7 +70,7 @@ EOF
 	for I in `seq 3`; do
 		rlRun "logger -p local$I.info 'test message $I'"
 	done
-	sleep 5
+	sleep 10
 	for I in `seq 3`; do
 		cat /var/log/bz847568-local$I.log
 		rlAssertGrep "test message $I" /var/log/bz847568-local$I.log

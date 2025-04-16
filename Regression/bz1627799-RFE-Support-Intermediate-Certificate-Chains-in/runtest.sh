@@ -188,7 +188,7 @@ EOF
     rlPhaseStartTest && {
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
-      rlRun "sleep 3s"
+      rlRun "sleep 10s"
       rlAssertNotGrep 'test message' $rsyslogServerLogDir/messages
       rlRun "rsyslogServiceStop"
       rlRun "rsyslogServerStop"

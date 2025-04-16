@@ -55,13 +55,13 @@ EOF
     rlRun "rsyslogd -N 1 -f ${rsroot}/etc/rsyslog.conf"
     rlRun "su -c \"rsyslogd -n -d -f ${rsroot}/etc/rsyslog.conf -i ${rsroot}/var/run/rsyslog.pid &\" - $testUser"
     CleanupRegister "rlRun 'kill \$(cat ${rsroot}/var/run/rsyslog.pid)'"
-    rlRun "sleep 2"
+    rlRun "sleep 5"
     rlRun "ps auxf | grep -v grep | grep rsyslog"
   rlPhaseEnd; }
 
   rlPhaseStartTest && {
     rlRun "logger -u ${rsroot}/syslog 'test message'"
-    rlRun "sleep 2"
+    rlRun "sleep 5"
     rlRun -s "cat ${rsroot}/var/log/messages"
   rlPhaseEnd; }
 

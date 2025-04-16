@@ -57,7 +57,7 @@ rlJournalStart
         rlAssertExists /etc/rsyslog.d
         rlRun "logger -p local1.info 'test message 1'"
         rlRun "logger -p local2.info 'test message 2'"
-	sleep 1
+	sleep 5
 	rlAssertGrep "test message 1" /var/log/bz740420.log1
 	rlAssertGrep "test message 2" /var/log/bz740420.log2
       tcfFin; }
