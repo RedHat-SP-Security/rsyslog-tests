@@ -55,7 +55,13 @@ EOF
     rlRun "rsyslogd -N 1 -f ${rsroot}/etc/rsyslog.conf"
     rlRun "su -c \"rsyslogd -n -d -f ${rsroot}/etc/rsyslog.conf -i ${rsroot}/var/run/rsyslog.pid &\" - $testUser"
     CleanupRegister "rlRun 'kill \$(cat ${rsroot}/var/run/rsyslog.pid)'"
-    rlRun "sleep 5"
+    for i in {1..10}; do
+      [ -S "${rsroot}/syslog" ] && break
+      sleep 1
+    done
+    [ -S "${rsroot}/syslog" ] || rlDie "Syslog socket was not created at ${rsroot}/syslog"
+
+    rlRun "sleep 2"
     rlRun "ps auxf | grep -v grep | grep rsyslog"
   rlPhaseEnd; }
 
