@@ -207,6 +207,7 @@ EOF
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
       rlRun "sleep 3s"
+      rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
     rlPhaseEnd; }
   tcfFin; }

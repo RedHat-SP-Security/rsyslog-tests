@@ -45,8 +45,9 @@ rlJournalStart
         #Check if the Restart on failure is in rsyslog.service
         rlAssertGrep "Restart=on-failure" /lib/systemd/system/rsyslog.service
         rlRun "kill -s ABRT `pidof rsyslogd`" 0 "Simulate failure of rsyslogd"
-        sleep 5
+        sleep 3
         rlRun -s "service rsyslog status" 0 "Get status of rsyslog service"
+        sleep 3
         rlAssertGrep "active (running)" $rlRun_LOG
         rm -f $rlRun_LOG
     rlPhaseEnd

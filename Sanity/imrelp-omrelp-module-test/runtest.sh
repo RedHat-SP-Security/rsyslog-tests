@@ -204,6 +204,7 @@ EOF
                         rlAssertNotGrep 'test message' $rsyslogServerLogDir/messages
                         rlRun "logger -p local6.info 'test message'"
                         rlRun "sleep 10s"
+                        rlRun "grep $rsyslogServerLogDir/messages" 0 "Check the message in the log"
                         rlAssertGrep 'test message' $rsyslogServerLogDir/messages
                         echo "" > $rsyslogServerLogDir/messages
                         ps -p $TSHARK_PID &> /dev/null && kill $TSHARK_PID; sleep 3
