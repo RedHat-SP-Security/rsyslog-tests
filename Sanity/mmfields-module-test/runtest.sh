@@ -45,13 +45,15 @@ rlJournalStart && {
     rlRun "rlFileBackup --clean /var/log/rsyslog.test-cef.log"
 
     rlRun "rsyslogServiceStop"
+
+    # Setup template early so it's always defined before usage
     rsyslogConfigAddTo "MODULES" < <(rsyslogConfigCreateSection 'MODULES_MMFIELDS')
-    rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
     rsyslogConfigReplace "MODULES_MMFIELDS" <<'EOF'
       module(load="mmfields")
       template(name="cef" type="string" string="%json!cef%\n")
 EOF
 
+    rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
     rlRun "grep mmfields /var/log/messages || true"
   rlPhaseEnd; }
 
@@ -59,6 +61,7 @@ EOF
     rlPhaseStartTest "Title: $title" && {
       rlLog "Using mmfields options: ${options:-<default>}"
 
+      # Define the parsing and logging rules
       rsyslogConfigReplace "RULES_MMFIELDS" <<EOF
         local2.* action(type="mmfields"${options:+ $options})
         local2.* action(type="omfile" file="/var/log/rsyslog.test-cef.log" template="cef")
@@ -74,9 +77,11 @@ EOF
         grep "$expected" /var/log/rsyslog.test-cef.log && break
         sleep 1
       done
-      rlRun "rsyslogd -N1"
+
+      rlRun "rsyslogd -N1" 0 "Check configuration syntax"
       rlRun "journalctl -u rsyslog | tail -n 50"
       rlRun "cat /var/log/rsyslog.test-cef.log"
+
       if grep -q "$expected" /var/log/rsyslog.test-cef.log; then
         rlAssertGrep "$expected" "/var/log/rsyslog.test-cef.log"
         [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" "/var/log/rsyslog.test-cef.log"
