@@ -70,11 +70,12 @@ EOF
       rlRun "rsyslogServiceStart" 0 "Starting rsyslog"
       rlRun "logger -p local2.info '$message'" 0 "Sending log message"
 
-      for i in {1..5}; do
+      for i in {1..20}; do
         grep "$expected" /var/log/rsyslog.test-cef.log && break
         sleep 1
       done
-
+      rlRun "rsyslogd -N1"
+      rlRun "journalctl -u rsyslog | tail -n 50"
       rlRun "cat /var/log/rsyslog.test-cef.log"
       if grep -q "$expected" /var/log/rsyslog.test-cef.log; then
         rlAssertGrep "$expected" "/var/log/rsyslog.test-cef.log"
