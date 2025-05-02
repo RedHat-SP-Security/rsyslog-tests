@@ -53,10 +53,24 @@ EOF
 
   while IFS='~' read -r title options message expected unexpected; do
     rlPhaseStartTest "Title: $title" && {
+
+      # Dynamically select the template depending on jsonRoot presence
+      if [[ "$options" == *"jsonRoot="* ]]; then
+        template_string='%json!cef%\n'
+      else
+        template_string='%$!%\n'
+      fi
+
+      rsyslogConfigReplace "MODULES_MMFIELDS" <<<EOF
+        module(load="mmfields")
+        template(name="cef" type="string" string="$template_string")
+EOF
+
       rsyslogConfigReplace "RULES_MMFIELDS" <<EOF
         local2.* action(type="mmfields"${options:+" $options"})
         local2.* action(type="omfile" file="/var/log/rsyslog.test-cef.log" template="cef")
 EOF
+
       rlRun "rsyslogPrintEffectiveConfig -n"
       :> /var/log/rsyslog.test-cef.log
       rlRun "rsyslogServiceStart"
