@@ -48,7 +48,7 @@ rlJournalStart && {
       module(load="mmfields")
       template(name="cef" type="string" string="%json!cef%\n")
 EOF
-
+    rlRun "grep mmfields /var/log/messages || true" 
   rlPhaseEnd; }
 
   while IFS='~' read -r title options message expected unexpected; do
@@ -66,7 +66,7 @@ EOF
         grep "$expected" /var/log/rsyslog.test-cef.log && break
         sleep 1
       done
-      rlRun -s "cat /var/log/rsyslog.test-cef.log"
+      rlRun "cat /var/log/rsyslog.test-cef.log"
       rlAssertGrep "$expected" $rlRun_LOG
       [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" $rlRun_LOG
       rm -f $rlRun_LOG
