@@ -35,12 +35,15 @@ rlJournalStart && {
     rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     CleanupRegister 'rlRun "rsyslogCleanup"'
     rlRun "rsyslogSetup"
+
     rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
-    CleanupRegister "rlRun 'rm -r $TmpDir' 0 'Removing tmp directory'"
+    CleanupRegister "rlRun 'rm -r \"\$TmpDir\"' 0 'Removing tmp directory'"
     CleanupRegister 'rlRun "popd"'
-    rlRun "pushd $TmpDir"
+    rlRun "pushd \"\$TmpDir\""
+
     CleanupRegister 'rlRun "rsyslogServiceStop"; rlRun "rlFileRestore"'
     rlRun "rlFileBackup --clean /var/log/rsyslog.test-cef.log"
+
     rlRun "rsyslogServiceStop"
     rsyslogConfigAddTo "MODULES" < <(rsyslogConfigCreateSection 'MODULES_MMFIELDS')
     rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
@@ -48,7 +51,8 @@ rlJournalStart && {
       module(load="mmfields")
       template(name="cef" type="string" string="%json!cef%\n")
 EOF
-    rlRun "grep mmfields /var/log/messages || true" 
+
+    rlRun "grep mmfields /var/log/messages || true"
   rlPhaseEnd; }
 
   while IFS='~' read -r title options message expected unexpected; do
@@ -60,16 +64,19 @@ EOF
       rlRun "rsyslogPrintEffectiveConfig -n"
       :> /var/log/rsyslog.test-cef.log
       rlRun "rsyslogServiceStart"
-      sleep 2
       rlRun "logger -p local2.info '$message'"
+
       for i in {1..5}; do
         grep "$expected" /var/log/rsyslog.test-cef.log && break
         sleep 1
       done
+
       rlRun "cat /var/log/rsyslog.test-cef.log"
-      rlAssertGrep "$expected" $rlRun_LOG
-      [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" $rlRun_LOG
-      rm -f $rlRun_LOG
+      rlAssertGrep "$expected" "/var/log/rsyslog.test-cef.log"
+
+      if [[ -n "$unexpected" ]]; then
+        rlAssertNotGrep "$unexpected" "/var/log/rsyslog.test-cef.log"
+      fi
     rlPhaseEnd; }
   done << 'EOF'
 default~~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
@@ -80,5 +87,6 @@ EOF
   rlPhaseStartCleanup && {
     CleanupDo
   rlPhaseEnd; }
+
   rlJournalPrintText
 rlJournalEnd; }
