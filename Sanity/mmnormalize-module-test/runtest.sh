@@ -59,9 +59,12 @@ EOF
       rlRun "rsyslogPrintEffectiveConfig -n"
       :> /var/log/rsyslog.test-cef.log
       rlRun "rsyslogServiceStart"
-      rlRun "cat /var/log/rsyslog.test-cef.log"
+      sleep 2
       rlRun "logger -p local2.info 'CEF:0|Vendor|Product|Version|Signature ID|some name|Severity| aa=field1 bb=this is a value cc=field 3'"
-      rlRun "sleep 10s"
+      for i in {1..30}; do
+        grep '"cef": {' /var/log/rsyslog.test-cef.log && break
+        sleep 1
+      done
       rlRun -s "cat /var/log/rsyslog.test-cef.log"
       rlAssertGrep '"cef": { "DeviceVendor": "Vendor", "DeviceProduct": "Product", "DeviceVersion": "Version", "SignatureID": "Signature ID", "Name": "some name", "Severity": "Severity", "Extensions": { "aa": "field1", "bb": "this is a value", "cc": "field 3" } }' $rlRun_LOG
       rm -f $rlRun_LOG
