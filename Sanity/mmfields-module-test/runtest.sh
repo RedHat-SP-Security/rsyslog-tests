@@ -46,7 +46,7 @@ rlJournalStart && {
     rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
     rsyslogConfigReplace "MODULES_MMFIELDS" <<'EOF'
       module(load="mmfields")
-      template(name="cef" type="string" string="%$!%\n")
+      template(name="cef" type="string" string="%json!cef%\n")
 EOF
 
   rlPhaseEnd; }
