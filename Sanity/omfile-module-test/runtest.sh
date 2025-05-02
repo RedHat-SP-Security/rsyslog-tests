@@ -60,13 +60,13 @@ local0.info    /var/log/rsyslog.test.gz
 EOF
 )
         rsyslogServiceStart
-        rlRun "logger -p local0.info 'logfile compression test'" 0 "Logging the test message"
+        rlRun "logger -p local0.info 'ZIPTEST: logfile compression test'" 0 "Logging the test message"
         sleep 5
         rsyslogServiceStop
         sleep 5
         rlRun "file /var/log/rsyslog.test.gz | grep 'gzip compressed data'" 0 "Checking that logfile is a gzip archive"
         rlRun -s "gunzip -c --stdout /var/log/rsyslog.test.gz"
-        rlAssertGrep "logfile compression test" $rlRun_LOG
+        rlAssertGrep "ZIPTEST: logfile compression test" $rlRun_LOG
         rlAssertNotGrep "unexpected end of file" $rlRun_LOG
         rm -f $rlRun_LOG
     rlPhaseEnd
