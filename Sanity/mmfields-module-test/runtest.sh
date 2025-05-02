@@ -60,8 +60,12 @@ EOF
       rlRun "rsyslogPrintEffectiveConfig -n"
       :> /var/log/rsyslog.test-cef.log
       rlRun "rsyslogServiceStart"
+      sleep 2
       rlRun "logger -p local2.info '$message'"
-      rlRun "sleep 3s"
+      for i in {1..5}; do
+        grep "$expected" /var/log/rsyslog.test-cef.log && break
+        sleep 1
+      done
       rlRun -s "cat /var/log/rsyslog.test-cef.log"
       rlAssertGrep "$expected" $rlRun_LOG
       [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" $rlRun_LOG
