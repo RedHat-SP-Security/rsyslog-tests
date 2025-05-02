@@ -105,7 +105,7 @@ EOF
         rlRun "logger -p local0.info 'flush test message1'" 0 "Logging the test message1"
         rlRun "logger -p local0.info 'flush test message2'" 0 "Logging the test message2"
         rlRun "logger -p local0.info 'flush test message3'" 0 "Logging the test message3"
-        sleep 5
+        rlRun "sleep 5"
         # now check the log - there should be no messages since they are still in the buffer
         rlRun "grep 'flush test message1' /var/log/rsyslog.test.log" 1 "The message1 should not be in the log"
         rlRun "grep 'flush test message2' /var/log/rsyslog.test.log" 1 "The message2 should not be in the log"
