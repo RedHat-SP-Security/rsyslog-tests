@@ -57,14 +57,18 @@ EOF
 
   while IFS='~' read -r title options message expected unexpected; do
     rlPhaseStartTest "Title: $title" && {
+      rlLog "Using mmfields options: ${options:-<default>}"
+
       rsyslogConfigReplace "RULES_MMFIELDS" <<EOF
-        local2.* action(type="mmfields"${options:+" $options"})
+        local2.* action(type="mmfields"${options:+ $options})
         local2.* action(type="omfile" file="/var/log/rsyslog.test-cef.log" template="cef")
 EOF
+
       rlRun "rsyslogPrintEffectiveConfig -n"
+
       :> /var/log/rsyslog.test-cef.log
-      rlRun "rsyslogServiceStart"
-      rlRun "logger -p local2.info '$message'"
+      rlRun "rsyslogServiceStart" 0 "Starting rsyslog"
+      rlRun "logger -p local2.info '$message'" 0 "Sending log message"
 
       for i in {1..5}; do
         grep "$expected" /var/log/rsyslog.test-cef.log && break
@@ -72,16 +76,18 @@ EOF
       done
 
       rlRun "cat /var/log/rsyslog.test-cef.log"
-      rlAssertGrep "$expected" "/var/log/rsyslog.test-cef.log"
-
-      if [[ -n "$unexpected" ]]; then
-        rlAssertNotGrep "$unexpected" "/var/log/rsyslog.test-cef.log"
+      if grep -q "$expected" /var/log/rsyslog.test-cef.log; then
+        rlAssertGrep "$expected" "/var/log/rsyslog.test-cef.log"
+        [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" "/var/log/rsyslog.test-cef.log"
+      else
+        rlLogWarning "Expected pattern not found: $expected"
+        rlFail "Test failed for mmfields options: $options"
       fi
     rlPhaseEnd; }
   done << 'EOF'
 default~~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
-separator pipe~separator="|"~CEF: 0|ArcSight|Logger|5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
-jsonRoot cef~jsonRoot="!cef"~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"cef": { "f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0" }
+separator pipe~separator=\"|\"~CEF: 0|ArcSight|Logger|5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
+jsonRoot cef~jsonRoot=\"!cef\"~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"cef": { "f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0" }
 EOF
 
   rlPhaseStartCleanup && {
