@@ -62,7 +62,7 @@ EOF
       sleep 2
       rlRun "logger -p local2.info 'CEF:0|Vendor|Product|Version|Signature ID|some name|Severity| aa=field1 bb=this is a value cc=field 3'"
       for i in {1..30}; do
-        grep '"cef": {' /var/log/rsyslog.test-cef.log && break
+        grep '"cef": {' $rlRun_LOG && break
         sleep 1
       done
       rlRun -s "cat /var/log/rsyslog.test-cef.log"
