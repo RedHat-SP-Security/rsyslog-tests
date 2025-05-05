@@ -206,6 +206,7 @@ EOF
         rlRun "cat server-cert.pem ca-cert.pem ca2-cert.pem > /etc/rsyslogd.d/server-cert.pem"
         rlRun "chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d"
       fi
+      rlRun "chmod 644 $rsyslogServerLogDir/messages"
       rlRun "rsyslogServerStart"
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
@@ -214,6 +215,8 @@ EOF
       rlRun "systemctl status rsyslog"
       rlRun "logger 'test message'"
       rlRun "sleep 3s"
+      rlRun "ls -l $rsyslogServerLogDir/messages"
+      rlRun "logger -d 'test message'"
       rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
     rlPhaseEnd; }
