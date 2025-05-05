@@ -153,6 +153,7 @@ EOF
     RebindInterval="50"
     StreamDriverAuthMode="x509/name"
     StreamDriverPermittedPeers="$(hostname)")
+local2.*    $rsyslogServerLogDir/messages
 EOF
       rlRun "rsyslogPrintEffectiveConfig -n"
     tcfFin; }
@@ -205,8 +206,7 @@ EOF
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
-      rlRun "logger 'test message'"
-      rlRun "tcpdump -i lo port 6514 -A"
+      logger -p local2.info 'test message'
       rlRun "sleep 3s"
       rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
