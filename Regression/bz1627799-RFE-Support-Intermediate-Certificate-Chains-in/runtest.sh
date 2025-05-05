@@ -143,7 +143,7 @@ global(
 )
 EOF
 
-      rsyslogConfigAppend "MODULES" <<EOF
+      rsyslogConfigAppend "RULES" <<EOF
 *.* action(type="omfwd"
     Protocol="tcp"
     Target="127.0.0.1"
@@ -204,10 +204,9 @@ EOF
       rlRun "rsyslogServerStart"
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
-      rlRun "sleep 10s"
-      rlRun "ss -tnlp | grep 6514"
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
-      rlRun "logger --tcp --server localhost --port 514 "test message""
+      rlRun "logger 'test message'"
+      rlRun "tcpdump -i lo port 6514 -A"
       rlRun "sleep 3s"
       rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
