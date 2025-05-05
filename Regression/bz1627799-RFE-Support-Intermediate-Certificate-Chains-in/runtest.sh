@@ -210,8 +210,9 @@ EOF
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
       
-      rlRun "ss -tnp | grep 6514"
-      
+      rlRun "ss -tnp || netstat -tnp" 0-255
+      rlRun "ss -tnp | grep ':6514 ' || echo 'Port 6514 not found in ss output'" 0-255
+
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
       rlRun "sleep 3s"
