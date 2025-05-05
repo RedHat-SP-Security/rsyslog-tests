@@ -213,11 +213,8 @@ EOF
       
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "sleep 3s"
-      rlRun "cat /var/log/syslog"
-      rlRun "cat /var/log/rsyslog.log"
-      rlRun "logger -t test 'Test message'"
       rlRun "logger -d 'test message'"
-      rlRun "journalctl -xe"
+      rlRun "journalctl | grep 'test message'"
       rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
     rlPhaseEnd; }
