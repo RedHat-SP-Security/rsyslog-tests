@@ -211,8 +211,6 @@ EOF
       rlRun "rsyslogServerPrintEffectiveConfig -n"
       
       rlRun "ss -tnp | grep 6514"
-      rlRun "global(debug.whatever="on")"
-      rlRun "journalctl -u rsyslog"
       
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
