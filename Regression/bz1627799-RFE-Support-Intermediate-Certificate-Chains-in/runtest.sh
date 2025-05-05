@@ -121,7 +121,7 @@ serial = 002
 expiration_days = 365
 dns_name = "$(hostname)"
 ip_address = "127.0.0.1"
-email = "root@$(hostname)
+email = "root@$(hostname)"
 tls_www_server
 EOF
     cat server.tmpl
@@ -189,7 +189,7 @@ EOF
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
       rlRun "sleep 3s"
-      rlAssertNotGrep 'test message' $rsyslogServerLogDir/messages
+      rlRun "journalctl | grep -v 'test message'"
       rlRun "rsyslogServiceStop"
       rlRun "rsyslogServerStop"
       rlRun "> $rsyslogServerLogDir/messages"
@@ -207,7 +207,7 @@ EOF
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
       rlRun "sleep 3s"
-      rlAssertGrep 'test message' $rsyslogServerLogDir/messages
+      rlRun "journalctl | grep 'test message'"
     rlPhaseEnd; }
   tcfFin; }
 
