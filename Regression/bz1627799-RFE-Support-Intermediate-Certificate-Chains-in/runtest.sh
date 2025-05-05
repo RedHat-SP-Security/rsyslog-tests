@@ -206,6 +206,11 @@ EOF
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
+      rlRun "cat /etc/rsyslogd.d/ca-root-cert.pem"
+      echo "test message manual" | logger -p local2.info
+      sleep 3
+      cat /var/log-server/messages
+
       logger -p local2.info 'test message'
       rlRun "sleep 3s"
       rlRun "cat $rsyslogServerLogDir/messages"
