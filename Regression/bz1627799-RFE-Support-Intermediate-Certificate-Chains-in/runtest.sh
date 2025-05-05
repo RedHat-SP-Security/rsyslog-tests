@@ -42,8 +42,9 @@ rlJournalStart && {
     rlRun "rsyslogSetup"
     CleanupRegister 'rlRun "rsyslogServerCleanup"'
     rlRun "rsyslogServerSetup"
-    rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
-    CleanupRegister "rlRun 'rm -r $TmpDir' 0 'Removing tmp directory'"
+    TmpDir="/var/tmp/rsyslog-tls-test.$$"
+    rlRun "mkdir -p $TmpDir" 0 "Creating tmp directory under /var/tmp"
+    CleanupRegister "rlRun 'rm -rf $TmpDir' 0 'Removing tmp directory'"
     CleanupRegister 'rlRun "popd"'
     rlRun "pushd $TmpDir"
 
@@ -121,7 +122,7 @@ serial = 002
 expiration_days = 365
 dns_name = "$(hostname)"
 ip_address = "127.0.0.1"
-email = "root@$(hostname)
+email = "root@$(hostname)"
 tls_www_server
 EOF
     cat server.tmpl
@@ -136,14 +137,18 @@ EOF
 
     tcfChk "config client" && {
       rlRun "rsyslogPrepareConf"
-      rsyslogConfigAppend "GLOBALS" <<EOF
+    rlRun "cat ca2-cert.pem ca-cert.pem ca-root-cert.pem > /etc/rsyslogd.d/ca-chain.pem"
+    rlRun "chmod 400 /etc/rsyslogd.d/ca-chain.pem && restorecon /etc/rsyslogd.d/ca-chain.pem"
+    rsyslogConfigAppend "GLOBALS" <<EOF
 global(
     DefaultNetstreamDriver="$driver"
-    DefaultNetstreamDriverCAFile="/etc/rsyslogd.d/ca-root-cert.pem"
+    DefaultNetstreamDriverCAFile="/etc/rsyslogd.d/ca-chain.pem"
+    debug.file="/var/log/rsyslog-debug.log" debug.level="2"
 )
 EOF
 
-      rsyslogConfigAppend "RULES" <<EOF
+
+      rsyslogConfigAppend "MODULES" <<EOF
 *.* action(type="omfwd"
     Protocol="tcp"
     Target="127.0.0.1"
@@ -153,7 +158,6 @@ EOF
     RebindInterval="50"
     StreamDriverAuthMode="x509/name"
     StreamDriverPermittedPeers="$(hostname)")
-local2.*    $rsyslogServerLogDir/messages
 EOF
       rlRun "rsyslogPrintEffectiveConfig -n"
     tcfFin; }
@@ -205,13 +209,13 @@ EOF
       rlRun "rsyslogServerStart"
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
+      
+      rlRun "ss -tnp | grep 6514"
+      rlRun "global(debug.whatever="on")"
+      rlRun "journalctl -u rsyslog"
+      
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
-      rlRun "cat /etc/rsyslogd.d/ca-root-cert.pem"
-      echo "test message manual" | logger -p local2.info
-      sleep 3
-      cat /var/log-server/messages
-
-      logger -p local2.info 'test message'
+      rlRun "logger 'test message'"
       rlRun "sleep 3s"
       rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
