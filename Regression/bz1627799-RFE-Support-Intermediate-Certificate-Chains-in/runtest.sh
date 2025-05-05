@@ -212,11 +212,12 @@ EOF
       rlRun "rsyslogServerPrintEffectiveConfig -n"
       
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
-      rlRun "systemctl status rsyslog"
-      rlRun "logger 'test message'"
       rlRun "sleep 3s"
-      rlRun "ls -l $rsyslogServerLogDir/messages"
+      rlRun "cat /var/log/syslog"
+      rlRun "cat /var/log/rsyslog.log"
+      rlRun "logger -t test 'Test message'"
       rlRun "logger -d 'test message'"
+      rlRun "journalctl -xe"
       rlRun "cat $rsyslogServerLogDir/messages"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
     rlPhaseEnd; }
