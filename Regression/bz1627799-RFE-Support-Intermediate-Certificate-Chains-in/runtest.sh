@@ -204,6 +204,8 @@ EOF
       rlRun "rsyslogServerStart"
       rlRun "rsyslogServiceStart"
       rlRun "rsyslogServerPrintEffectiveConfig -n"
+      rlRun "sleep 10s"
+      rlRun "ss -tnlp | grep 6514"
       rlRun "echo 'ahoj' | openssl s_client -CAfile ca-root-cert.pem -port 6514"
       rlRun "logger 'test message'"
       rlRun "sleep 3s"
