@@ -60,13 +60,13 @@ local0.info    /var/log/rsyslog.test.gz
 EOF
 )
         rsyslogServiceStart
-        rlRun "logger -p local0.info 'ZIPTEST: logfile compression test'" 0 "Logging the test message"
+        rlRun "logger -p local0.info 'logfile compression test'" 0 "Logging the test message"
         sleep 5
         rsyslogServiceStop
         sleep 5
         rlRun "file /var/log/rsyslog.test.gz | grep 'gzip compressed data'" 0 "Checking that logfile is a gzip archive"
         rlRun -s "gunzip -c --stdout /var/log/rsyslog.test.gz"
-        rlAssertGrep "ZIPTEST: logfile compression test" $rlRun_LOG
+        rlAssertGrep "logfile compression test" $rlRun_LOG
         rlAssertNotGrep "unexpected end of file" $rlRun_LOG
         rm -f $rlRun_LOG
     rlPhaseEnd
@@ -105,7 +105,7 @@ EOF
         rlRun "logger -p local0.info 'flush test message1'" 0 "Logging the test message1"
         rlRun "logger -p local0.info 'flush test message2'" 0 "Logging the test message2"
         rlRun "logger -p local0.info 'flush test message3'" 0 "Logging the test message3"
-        rlRun "sleep 5"
+        sleep 5
         # now check the log - there should be no messages since they are still in the buffer
         rlRun "grep 'flush test message1' /var/log/rsyslog.test.log" 1 "The message1 should not be in the log"
         rlRun "grep 'flush test message2' /var/log/rsyslog.test.log" 1 "The message2 should not be in the log"
