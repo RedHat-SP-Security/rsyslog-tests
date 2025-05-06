@@ -47,7 +47,7 @@ rlJournalStart && {
     rsyslogConfigReplace "MODULES_MMFIELDS" <<'EOF'
       module(load="mmfields")
       template(name="cef" type="list") {
-        property(name="$!" format="json")
+        property(name="$!cef" format="json")
         constant(value="\n")
       }
 EOF
