@@ -35,70 +35,46 @@ rlJournalStart && {
     rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
     CleanupRegister 'rlRun "rsyslogCleanup"'
     rlRun "rsyslogSetup"
-
     rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
-    CleanupRegister "rlRun 'rm -r \"\$TmpDir\"' 0 'Removing tmp directory'"
+    CleanupRegister "rlRun 'rm -r $TmpDir' 0 'Removing tmp directory'"
     CleanupRegister 'rlRun "popd"'
-    rlRun "pushd \"\$TmpDir\""
-
+    rlRun "pushd $TmpDir"
     CleanupRegister 'rlRun "rsyslogServiceStop"; rlRun "rlFileRestore"'
     rlRun "rlFileBackup --clean /var/log/rsyslog.test-cef.log"
-
     rlRun "rsyslogServiceStop"
-
-    # Setup template early so it's always defined before usage
     rsyslogConfigAddTo "MODULES" < <(rsyslogConfigCreateSection 'MODULES_MMFIELDS')
+    rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
     rsyslogConfigReplace "MODULES_MMFIELDS" <<'EOF'
       module(load="mmfields")
-      template(name="cef" type="string" string="%json!cef%\n")
+      template(name="cef" type="string" string="%$!%\n")
 EOF
 
-    rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
-    rlRun "grep mmfields /var/log/messages || true"
   rlPhaseEnd; }
 
   while IFS='~' read -r title options message expected unexpected; do
     rlPhaseStartTest "Title: $title" && {
-      rlLog "Using mmfields options: ${options:-<default>}"
-
-      # Define the parsing and logging rules
       rsyslogConfigReplace "RULES_MMFIELDS" <<EOF
-        local2.* action(type="mmfields"${options:+ $options})
+        local2.* action(type="mmfields"${options:+" $options"})
         local2.* action(type="omfile" file="/var/log/rsyslog.test-cef.log" template="cef")
 EOF
-
       rlRun "rsyslogPrintEffectiveConfig -n"
-
       :> /var/log/rsyslog.test-cef.log
-      rlRun "rsyslogServiceStart" 0 "Starting rsyslog"
-      rlRun "logger -p local2.info '$message'" 0 "Sending log message"
-
-      for i in {1..20}; do
-        grep "$expected" /var/log/rsyslog.test-cef.log && break
-        sleep 1
-      done
-
-      rlRun "rsyslogd -N1" 0 "Check configuration syntax"
-      rlRun "journalctl -u rsyslog | tail -n 50"
-      rlRun "cat /var/log/rsyslog.test-cef.log"
-
-      if grep -q "$expected" /var/log/rsyslog.test-cef.log; then
-        rlAssertGrep "$expected" "/var/log/rsyslog.test-cef.log"
-        [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" "/var/log/rsyslog.test-cef.log"
-      else
-        rlLogWarning "Expected pattern not found: $expected"
-        rlFail "Test failed for mmfields options: $options"
-      fi
+      rlRun "rsyslogServiceStart"
+      rlRun "logger -p local2.info '$message'"
+      rlRun "sleep 3s"
+      rlRun -s "cat /var/log/rsyslog.test-cef.log"
+      rlAssertGrep "$expected" $rlRun_LOG
+      [[ -n "$unexpected" ]] && rlAssertNotGrep "$unexpected" $rlRun_LOG
+      rm -f $rlRun_LOG
     rlPhaseEnd; }
   done << 'EOF'
 default~~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
 separator pipe~separator="|"~CEF: 0|ArcSight|Logger|5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
-jsonRoot cef~jsonRoot="!cef"~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"cef": { "f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0" }
+jsonRoot cef~jsonRoot="cef"~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"cef": { "f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0" }
 EOF
 
   rlPhaseStartCleanup && {
     CleanupDo
   rlPhaseEnd; }
-
   rlJournalPrintText
 rlJournalEnd; }
