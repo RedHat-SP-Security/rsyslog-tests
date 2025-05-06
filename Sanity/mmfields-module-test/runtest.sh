@@ -46,10 +46,7 @@ rlJournalStart && {
     rsyslogConfigAddTo --begin "RULES" < <(rsyslogConfigCreateSection 'RULES_MMFIELDS')
     rsyslogConfigReplace "MODULES_MMFIELDS" <<'EOF'
       module(load="mmfields")
-      template(name="cef" type="list") {
-        property(name="$!cef" format="json")
-        constant(value="\n")
-      }
+      template(name="cef" type="string" string="%$!cef%\n")
 EOF
 
   rlPhaseEnd; }
@@ -73,7 +70,7 @@ EOF
   done << 'EOF'
 default~~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
 separator pipe~separator="|"~CEF: 0|ArcSight|Logger|5.3.1.6838.0~"f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0"~"cef": { "
-jsonRoot cef~jsonRoot="cef"~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"cef": { "f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0" }
+jsonRoot cef~jsonRoot="!cef"~CEF: 0,ArcSight,Logger,5.3.1.6838.0~"cef": { "f1": "CEF: 0", "f2": "ArcSight", "f3": "Logger", "f4": "5.3.1.6838.0" }
 EOF
 
   rlPhaseStartCleanup && {
