@@ -43,9 +43,33 @@ rlJournalStart && {
     CleanupRegister "rlRun 'rm -r $TmpDir' 0 'Removing tmp directory'"
     CleanupRegister 'rlRun "popd"'
     rlRun "pushd $TmpDir"
+    #Usage of PQC sign algorithms
+    if rlIsRHEL '>=10.1'; then
+      HOSTNAME=$(hostname)
+      ORG="Red Hat"
+      OU_GSS="GSS"
+      LOCALITY="Brno"
+      STATE="Moravia"
+      COUNTRY="CZ"
+      CN_COMMON="rsyslog\+openssl"
+      EMAIL_ADDR="root@${HOSTNAME}"
+      SUBJ_BASE="/C=${COUNTRY}/ST=${STATE}/L=${LOCALITY}/O=${ORG}/OU=${OU_GSS}/CN=${CN_COMMON}/emailAddress=${EMAIL_ADDR}"
+      # --- CA Certificate ---
+      rlRun "openssl genpkey -algorithm ${CRYPTO_ALGO} -out ca-key.pem"
+      rlRun "openssl req -new -x509 -key ca-key.pem -out ca-cert.pem -days 365 -subj \"${SUBJ_BASE}\" -addext \"basicConstraints=critical,CA:true\" -addext \"keyUsage=critical,keyCertSign,cRLSign\" -addext \"subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1\" -addext \"crlDistributionPoints=URI:http://127.0.0.1/getcrl/\""
+      # --- Server Certificate ---
+      rlRun "openssl genpkey -algorithm ${CRYPTO_ALGO} -out server-key.pem"
+      rlRun "openssl req -new -key server-key.pem -out server-request.pem -subj \"${SUBJ_BASE}\" -addext \"basicConstraints=CA:FALSE\" -addext \"keyUsage=digitalSignature,keyEncipherment\" -addext \"extendedKeyUsage=serverAuth\" -addext \"subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1\""
+      rlRun "openssl x509 -req -in server-request.pem -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -days 365 -set_serial 02 -copy_extensions copyall"
+      # --- Client Certificate ---
+      rlRun "openssl genpkey -algorithm ${CRYPTO_ALGO} -out client-key.pem"
+      rlRun "openssl req -new -key client-key.pem -out client-request.pem -subj \"${SUBJ_BASE}\" -addext \"basicConstraints=CA:FALSE\" -addext \"keyUsage=digitalSignature\" -addext \"extendedKeyUsage=clientAuth\" -addext \"subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1\""
+      rlRun "openssl x509 -req -in client-request.pem -CA ca-cert.pem -CAkey ca-key.pem -CAserial ca.srl -out client-cert.pem -days 365 -set_serial 03 -copy_extensions copyall"
+    # Usage of common asymetric algorithms
+    elif rlIsRHEL '<10.1'; then
+      TLSv1_3_EXLUCED="-TLSv1.3"
 
-
-    cat > ca.tmpl <<EOF
+      cat > ca.tmpl <<EOF
 organization = "Red Hat"
 unit = "GSS"
 locality = "Brno"
@@ -62,8 +86,8 @@ ca
 cert_signing_key
 crl_signing_key
 EOF
-    rlRun "certtool --generate-privkey --outfile ca-key.pem" 0 "Generate key for CA"
-    rlRun "certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem" 0 "Generate self-signed CA cert"
+      rlRun "certtool --generate-privkey  --key-type ${CRYPTO_ALGO} --outfile ca-key.pem" 0 "Generate key for CA"
+      rlRun "certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem" 0 "Generate self-signed CA cert"
 
     cat > server.tmpl <<EOF
 organization = "Red Hat"
@@ -79,10 +103,10 @@ ip_address = "127.0.0.1"
 email = "root@$(hostname)"
 tls_www_server
 EOF
-    cat server.tmpl
-    rlRun "certtool --generate-privkey --outfile server-key.pem --bits 2048" 0 "Generate key for server"
-    rlRun "certtool --generate-request --template server.tmpl --load-privkey server-key.pem --outfile server-request.pem" 0 "Generate server cert request"
-    rlRun "certtool --generate-certificate --template server.tmpl --load-request server-request.pem  --outfile server-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate server cert"
+      cat server.tmpl
+      rlRun "certtool --generate-privkey --key-type ${CRYPTO_ALGO} --outfile server-key.pem" 0 "Generate key for server"
+      rlRun "certtool --generate-request --template server.tmpl --load-privkey server-key.pem --outfile server-request.pem" 0 "Generate server cert request"
+      rlRun "certtool --generate-certificate --template server.tmpl --load-request server-request.pem  --outfile server-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate server cert"
 
     cat > client.tmpl <<EOF
 organization = "Red Hat"
@@ -98,11 +122,11 @@ ip_address = "127.0.0.1"
 email = "root@$(hostname)"
 tls_www_client
 EOF
-    cat client.tmpl
-    rlRun "certtool --generate-privkey --outfile client-key.pem --bits 2048" 0 "Generate key for client"
-    rlRun "certtool --generate-request --template client.tmpl --load-privkey client-key.pem --outfile client-request.pem" 0 "Generate client cert request"
-    rlRun "certtool --generate-certificate --template client.tmpl --load-request client-request.pem  --outfile client-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate client cert"
-
+      cat client.tmpl
+      rlRun "certtool --generate-privkey --key-type ${CRYPTO_ALGO} --outfile client-key.pem" 0 "Generate key for client"
+      rlRun "certtool --generate-request --template client.tmpl --load-privkey client-key.pem --outfile client-request.pem" 0 "Generate client cert request"
+      rlRun "certtool --generate-certificate --template client.tmpl --load-request client-request.pem  --outfile client-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate client cert"
+    fi
     rlRun "mkdir -p /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
     rlRun "cp *.pem /etc/rsyslogd.d/"
     rlRun "chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d"
@@ -161,7 +185,7 @@ EOF
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest "client" && tcfChk && {
       tcfChk "setup" && {
-        client_config 'tls.tlscfgcmd="Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2"'
+        client_config "tls.tlscfgcmd=\"Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2,${TLSv1_3_EXLUCED}\""
         server_config
         > $rsyslogServerLogDir/messages
         rlRun "rsyslogServerStart"
@@ -192,7 +216,7 @@ EOF
     rlPhaseStartTest "server" && tcfChk && {
       tcfChk "setup" && {
         client_config
-        server_config 'tls.tlscfgcmd="Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2"'
+        server_config "tls.tlscfgcmd=\"Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2,${TLSv1_3_EXLUCED}\""
         > $rsyslogServerLogDir/messages
         rlRun "rsyslogServerStart"
         rlRun -s "rsyslogServerStatus"
