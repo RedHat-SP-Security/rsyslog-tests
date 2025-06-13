@@ -45,6 +45,7 @@ rlJournalStart && {
     rlRun "pushd $TmpDir"
     #Usage of PQC sign algorithms
     if rlIsRHEL '>=10.1'; then
+      rlLog "Generating certificates using the rsyslog crypto key generation"
       HOSTNAME=$(hostname)
       ORG="Red Hat"
       OU_GSS="GSS"
@@ -55,19 +56,39 @@ rlJournalStart && {
       EMAIL_ADDR="root@${HOSTNAME}"
       SUBJ_BASE="/C=${COUNTRY}/ST=${STATE}/L=${LOCALITY}/O=${ORG}/OU=${OU_GSS}/CN=${CN_COMMON}/emailAddress=${EMAIL_ADDR}"
       # --- CA Certificate ---
-      rlRun "openssl genpkey -algorithm ${CRYPTO_ALGO} -out ca-key.pem"
-      rlRun "openssl req -new -x509 -key ca-key.pem -out ca-cert.pem -days 365 -subj \"${SUBJ_BASE}\" -addext \"basicConstraints=critical,CA:true\" -addext \"keyUsage=critical,keyCertSign,cRLSign\" -addext \"subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1\" -addext \"crlDistributionPoints=URI:http://127.0.0.1/getcrl/\""
+      rsyslogGeneratePrivateKey "ca-key.pem" "${CRYPTO_ALGO}"
+      declare -a ca_extensions=(
+          "subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1"
+          "crlDistributionPoints=URI:http://127.0.0.1/getcrl/"
+      )
+      rsyslogCreateSelfSignedCa "ca-key.pem" "ca-cert.pem" "${SUBJ_BASE}" 365 ca_extensions
+
       # --- Server Certificate ---
-      rlRun "openssl genpkey -algorithm ${CRYPTO_ALGO} -out server-key.pem"
-      rlRun "openssl req -new -key server-key.pem -out server-request.pem -subj \"${SUBJ_BASE}\" -addext \"basicConstraints=CA:FALSE\" -addext \"keyUsage=digitalSignature,keyEncipherment\" -addext \"extendedKeyUsage=serverAuth\" -addext \"subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1\""
-      rlRun "openssl x509 -req -in server-request.pem -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -days 365 -set_serial 02 -copy_extensions copyall"
+      rsyslogGeneratePrivateKey "server-key.pem" "${CRYPTO_ALGO}"
+      declare -a server_extensions=(
+          "basicConstraints=CA:FALSE"
+          "keyUsage=digitalSignature,keyEncipherment"
+          "extendedKeyUsage=serverAuth"
+          "subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1"
+      )
+      rsyslogCreateCsr "server-key.pem" "server-request.pem" "${SUBJ_BASE}" server_extensions
+      # Note the empty params for unused config_path/extensions, and "yes" to copy extensions from the CSR
+      rsyslogSignCertificate "server-request.pem" "ca-cert.pem" "ca-key.pem" "server-cert.pem" 365 "" "" "yes"
+
       # --- Client Certificate ---
-      rlRun "openssl genpkey -algorithm ${CRYPTO_ALGO} -out client-key.pem"
-      rlRun "openssl req -new -key client-key.pem -out client-request.pem -subj \"${SUBJ_BASE}\" -addext \"basicConstraints=CA:FALSE\" -addext \"keyUsage=digitalSignature\" -addext \"extendedKeyUsage=clientAuth\" -addext \"subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1\""
-      rlRun "openssl x509 -req -in client-request.pem -CA ca-cert.pem -CAkey ca-key.pem -CAserial ca.srl -out client-cert.pem -days 365 -set_serial 03 -copy_extensions copyall"
-    # Usage of common asymetric algorithms
+      rsyslogGeneratePrivateKey "client-key.pem" "${CRYPTO_ALGO}"
+      declare -a client_extensions=(
+          "basicConstraints=CA:FALSE"
+          "keyUsage=digitalSignature"
+          "extendedKeyUsage=clientAuth"
+          "subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1"
+      )
+      rsyslogCreateCsr "client-key.pem" "client-request.pem" "${SUBJ_BASE}" client_extensions
+      # Note: The original test used -CAserial ca.srl here. For consistency, -CAcreateserial is used by the library.
+      # This is generally safe and often preferred.
+      rsyslogSignCertificate "client-request.pem" "ca-cert.pem" "ca-key.pem" "client-cert.pem" 365 "" "" "yes"
     elif rlIsRHEL '<10.1'; then
-      TLSv1_3_EXLUCED="-TLSv1.3"
+      #TLSv1_3_EXLUCED="-TLSv1.3"
 
       cat > ca.tmpl <<EOF
 organization = "Red Hat"
@@ -127,9 +148,9 @@ EOF
       rlRun "certtool --generate-request --template client.tmpl --load-privkey client-key.pem --outfile client-request.pem" 0 "Generate client cert request"
       rlRun "certtool --generate-certificate --template client.tmpl --load-request client-request.pem  --outfile client-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate client cert"
     fi
-    rlRun "mkdir -p /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
-    rlRun "cp *.pem /etc/rsyslogd.d/"
-    rlRun "chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d"
+    rlRun "mkdir -p /etc/rsyslog.d && chmod 700 /etc/rsyslog.d" 0 "Create /etc/rsyslog.d"
+    rlRun "cp *.pem /etc/rsyslog.d/"
+    rlRun "chmod 400 /etc/rsyslog.d/* && restorecon -R /etc/rsyslog.d"
 
     client_config() {
       local options="$1"
@@ -139,9 +160,9 @@ module(load="omrelp" tls.tlslib="openssl")
     Target="127.0.0.1"
     Port="6514"
     tls="on"
-    tls.cacert="/etc/rsyslogd.d/ca-cert.pem"
-    tls.mycert="/etc/rsyslogd.d/client-cert.pem"
-    tls.myprivkey="/etc/rsyslogd.d/client-key.pem"
+    tls.cacert="/etc/rsyslog.d/ca-cert.pem"
+    tls.mycert="/etc/rsyslog.d/client-cert.pem"
+    tls.myprivkey="/etc/rsyslog.d/client-key.pem"
     tls.authmode="certvalid"
     tls.permittedpeer="$(hostname)"
     $options
@@ -164,9 +185,9 @@ module(
 )
 input(type="imrelp" Port="6514"
     tls="on"
-    tls.cacert="/etc/rsyslogd.d/ca-cert.pem"
-    tls.mycert="/etc/rsyslogd.d/server-cert.pem"
-    tls.myprivkey="/etc/rsyslogd.d/server-key.pem"
+    tls.cacert="/etc/rsyslog.d/ca-cert.pem"
+    tls.mycert="/etc/rsyslog.d/server-cert.pem"
+    tls.myprivkey="/etc/rsyslog.d/server-key.pem"
     tls.authmode="certvalid"
     tls.permittedpeer="$(hostname)"
     $options
