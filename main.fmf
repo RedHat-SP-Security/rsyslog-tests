@@ -5,4 +5,5 @@ require:
   - url: https://github.com/RedHat-SP-Security/rsyslog-tests.git
     name: /Library/basic
     type: library
+    ref: pk_func_key_generations
   - rsyslog

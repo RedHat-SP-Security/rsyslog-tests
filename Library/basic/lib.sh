@@ -1517,6 +1517,174 @@ rsyslogCheckDelivered() {
   return $res
 }
 
+# ==============================================================================
+# Rsyslog OpenSSL Certificate Generation Library
+#
+# To use, source this file in your script: `source /path/to/this/library.sh`
+# Assumes BeakerLib/rlRun for execution and logging.
+# ==============================================================================
+
+###
+# Generates a private key for a given algorithm.
+#
+# @param1: key_path   - The output path for the private key file (e.g., "server.key").
+# @param2: algorithm  - The cryptographic algorithm (e.g., "RSA", "ML-DSA-65").
+# @param3: rsa_bits   - [Optional] The key size for RSA keys. Defaults to 2048.
+###
+rsyslogGeneratePrivateKey() {
+    local key_path="$1"
+    local algorithm="$2"
+    local rsa_bits="${3:-2048}"
+    local cmd
+
+    if [ "$algorithm" = "RSA" ]; then
+        cmd="openssl genrsa -out \"$key_path\" $rsa_bits"
+    else
+        # For modern algorithms like ML-DSA-65 (which maps to 'dilithium3' in OpenSSL 3.x)
+        # The caller must provide the algorithm name recognized by `openssl genpkey`.
+        cmd="openssl genpkey -algorithm \"$algorithm\" -out \"$key_path\""
+    fi
+
+    rlRun "$cmd" 0 "Generate private key ($algorithm) -> $key_path"
+}
+
+###
+# Creates a self-signed Certificate Authority (CA) certificate with optional custom extensions.
+#
+# @param1: ca_key_path    - Path to the CA's private key.
+# @param2: ca_cert_path   - The output path for the CA certificate.
+# @param3: subject        - The subject string for the CA.
+# @param4: days           - [Optional] Validity period in days. Defaults to 3650.
+# @param5: extensions_array_name - [Optional] Name of a bash array containing extra extension strings
+#                                  (e.g., "subjectAltName=DNS:localhost").
+###
+rsyslogCreateSelfSignedCa() {
+    local ca_key_path="$1"
+    local ca_cert_path="$2"
+    local subject="$3"
+    local days="${4:-3650}"
+    # Use nameref to get the array if its name is passed as the 5th argument
+    local -n extensions_array_ref=${5:-__empty_array_}
+    declare -a __empty_array_ # Ensure the nameref has a valid target if not provided
+
+    # Start with base extensions for a valid CA
+    local cmd="openssl req -new -x509 -key \"$ca_key_path\" -out \"$ca_cert_path\" -days \"$days\" -subj \"$subject\" \
+               -addext \"basicConstraints=critical,CA:true\" \
+               -addext \"keyUsage=critical,keyCertSign,cRLSign\""
+
+    # Append any custom extensions from the array
+    for ext in "${extensions_array_ref[@]}"; do
+        cmd+=" -addext \"$ext\""
+    done
+
+    rlRun "$cmd" 0 "Create self-signed CA certificate -> $ca_cert_path"
+}
+
+###
+# Creates a Certificate Signing Request (CSR) with optional custom extensions.
+#
+# @param1: key_path       - Path to the entity's private key.
+# @param2: csr_path       - The output path for the CSR file.
+# @param3: subject        - The subject string for the certificate.
+# @param4: extensions_array_name - [Optional] Name of a bash array containing extension strings
+#                                  to embed in the CSR.
+###
+rsyslogCreateCsr() {
+    local key_path="$1"
+    local csr_path="$2"
+    local subject="$3"
+    # Use nameref to get the array if its name is passed as the 4th argument
+    local -n extensions_array_ref=${4:-__empty_array_}
+    declare -a __empty_array_ # Ensure the nameref has a valid target if not provided
+
+    local cmd="openssl req -new -key \"$key_path\" -out \"$csr_path\" -subj \"$subject\""
+
+    # Append any custom extensions from the array
+    for ext in "${extensions_array_ref[@]}"; do
+        cmd+=" -addext \"$ext\""
+    done
+
+    rlRun "$cmd" 0 "Create CSR with subject '$subject' -> $csr_path"
+}
+
+###
+# Signs a certificate using a CA, with optional extension handling.
+#
+# @param1: csr_path       - Path to the CSR to be signed.
+# @param2: ca_cert_path   - Path to the CA's certificate.
+# @param3: ca_key_path    - Path to the CA's private key.
+# @param4: cert_path      - The output path for the signed certificate.
+# @param5: days           - [Optional] Validity period in days. Defaults to 365.
+# @param6: config_path    - [Optional] Path to an OpenSSL config for copying extensions.
+# @param7: extensions     - [Optional] Name of the extensions section in the config file.
+# @param8: copy_all_exts  - [Optional] Set to "yes" to use `-copy_extensions copyall`.
+###
+rsyslogSignCertificate() {
+    local csr_path="$1"
+    local ca_cert_path="$2"
+    local ca_key_path="$3"
+    local cert_path="$4"
+    local days="${5:-365}"
+    local config_path="$6"
+    local extensions="$7"
+    local copy_all_exts="$8"
+    local cmd="openssl x509 -req -in \"$csr_path\" -CA \"$ca_cert_path\" -CAkey \"$ca_key_path\" -out \"$cert_path\" -days \"$days\" -CAcreateserial"
+
+    if [ "$copy_all_exts" = "yes" ]; then
+        # Copy extensions directly from the CSR
+        cmd+=" -copy_extensions copyall"
+    elif [ -n "$config_path" ] && [ -n "$extensions" ]; then
+        # Use a specific extensions section from an external config file
+        cmd+=" -extfile \"$config_path\" -extensions \"$extensions\""
+    fi
+
+    rlRun "$cmd" 0 "Sign certificate for '$csr_path' -> $cert_path"
+}
+
+###
+# Creates a dynamic OpenSSL config file for generating certificates with SANs.
+#
+# @param1: config_path  - The output path for the config file.
+# @param2: dns_names    - A comma-separated string of DNS names (e.g., "localhost,example.com").
+# @param3: ip_addresses - A comma-separated string of IP addresses (e.g., "127.0.0.1,::1").
+###
+rsyslogCreateSanConfig() {
+    local config_path="$1"
+    local dns_names="$2"
+    local ip_addresses="$3"
+
+    # Write the static part of the config
+    cat > "$config_path" <<EOF
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+CN = localhost
+[v3_req]
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+[alt_names]
+EOF
+
+    # Append DNS and IP entries dynamically
+    local i=1
+    IFS=',' read -ra dns_array <<< "$dns_names"
+    for name in "${dns_array[@]}"; do
+        echo "DNS.$i = $name" >> "$config_path"
+        ((i++))
+    done
+
+    local j=1
+    IFS=',' read -ra ip_array <<< "$ip_addresses"
+    for ip in "${ip_array[@]}"; do
+        echo "IP.$j = $ip" >> "$config_path"
+        ((j++))
+    done
+
+    rlLog "Created OpenSSL SAN config -> $config_path"
+}
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   Verification
