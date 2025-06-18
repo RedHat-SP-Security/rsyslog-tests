@@ -44,7 +44,7 @@ fi
 # This conditional logic is syntactically correct in Bash.
 # rlIsRHEL is a BeakerLib function, assumed to work as intended.
 # driver == "ossl" is a valid string comparison within [[ ... ]].
-if [ "${CRYPTO_ALGO}" == "ML-DSA-65" ] && [ "${driver}" == "ossl" ] ; then
+if [ "${CRYPTO_ALG}" == "ML-DSA-65" ] && [ "${driver}" == "ossl" ] ; then
   rlLog "Adjust rsyslog configuration to use particular version of TLS due PQC key exchange."
   # This line has several problems for its likely intended use:
   TLS_VER="gnutlsPriorityString=\"Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2\""
@@ -68,9 +68,9 @@ rlJournalStart && {
       rlLog "Generating certificate chain for suffix: '${keys}'"
 
       # 1. Generate all private keys
-      rsyslogGeneratePrivateKey "ca${keys}.key" "${CRYPTO_ALGO}"
-      rsyslogGeneratePrivateKey "server${keys}.key" "${CRYPTO_ALGO}"
-      rsyslogGeneratePrivateKey "client${keys}.key" "${CRYPTO_ALGO}"
+      rsyslogGeneratePrivateKey "ca${keys}.key" "${CRYPTO_ALG}"
+      rsyslogGeneratePrivateKey "server${keys}.key" "${CRYPTO_ALG}"
+      rsyslogGeneratePrivateKey "client${keys}.key" "${CRYPTO_ALG}"
 
       # 2. Create the self-signed CA certificate
       rsyslogCreateSelfSignedCa "ca${keys}.key" "ca${keys}.pem" "/CN=ca${keys}"
