@@ -64,7 +64,6 @@ EOF
 
     # Install Elasticsearch and Java
     rlRun "yum install -y java-openjdk elasticsearch" 0 "Install Java and Elasticsearch"
-
     CleanupRegister 'tcfRun "rsyslogCleanup"'
     tcfRun "rsyslogSetup"
     rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
@@ -245,6 +244,7 @@ EOF
 
   rlPhaseStartCleanup && {
     CleanupDo
+    rlRun "yum remove -y elasticsearch"
     tcfCheckFinal
   rlPhaseEnd; }
 
