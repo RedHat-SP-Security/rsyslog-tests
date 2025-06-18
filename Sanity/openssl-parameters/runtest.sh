@@ -56,7 +56,7 @@ rlJournalStart && {
       EMAIL_ADDR="root@${HOSTNAME}"
       SUBJ_BASE="/C=${COUNTRY}/ST=${STATE}/L=${LOCALITY}/O=${ORG}/OU=${OU_GSS}/CN=${CN_COMMON}/emailAddress=${EMAIL_ADDR}"
       # --- CA Certificate ---
-      rsyslogGeneratePrivateKey "ca-key.pem" "${CRYPTO_ALGO}"
+      rsyslogGeneratePrivateKey "ca-key.pem" "${CRYPTO_ALG}"
       declare -a ca_extensions=(
           "subjectAltName=DNS:${HOSTNAME},IP:127.0.0.1"
           "crlDistributionPoints=URI:http://127.0.0.1/getcrl/"
@@ -64,7 +64,7 @@ rlJournalStart && {
       rsyslogCreateSelfSignedCa "ca-key.pem" "ca-cert.pem" "${SUBJ_BASE}" 365 ca_extensions
 
       # --- Server Certificate ---
-      rsyslogGeneratePrivateKey "server-key.pem" "${CRYPTO_ALGO}"
+      rsyslogGeneratePrivateKey "server-key.pem" "${CRYPTO_ALG}"
       declare -a server_extensions=(
           "basicConstraints=CA:FALSE"
           "keyUsage=digitalSignature,keyEncipherment"
@@ -76,7 +76,7 @@ rlJournalStart && {
       rsyslogSignCertificate "server-request.pem" "ca-cert.pem" "ca-key.pem" "server-cert.pem" 365 "" "" "yes"
 
       # --- Client Certificate ---
-      rsyslogGeneratePrivateKey "client-key.pem" "${CRYPTO_ALGO}"
+      rsyslogGeneratePrivateKey "client-key.pem" "${CRYPTO_ALG}"
       declare -a client_extensions=(
           "basicConstraints=CA:FALSE"
           "keyUsage=digitalSignature"
@@ -107,7 +107,7 @@ ca
 cert_signing_key
 crl_signing_key
 EOF
-      rlRun "certtool --generate-privkey  --key-type ${CRYPTO_ALGO} --outfile ca-key.pem" 0 "Generate key for CA"
+      rlRun "certtool --generate-privkey  --key-type ${CRYPTO_ALG} --outfile ca-key.pem" 0 "Generate key for CA"
       rlRun "certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem" 0 "Generate self-signed CA cert"
 
     cat > server.tmpl <<EOF
@@ -125,7 +125,7 @@ email = "root@$(hostname)"
 tls_www_server
 EOF
       cat server.tmpl
-      rlRun "certtool --generate-privkey --key-type ${CRYPTO_ALGO} --outfile server-key.pem" 0 "Generate key for server"
+      rlRun "certtool --generate-privkey --key-type ${CRYPTO_ALG} --outfile server-key.pem" 0 "Generate key for server"
       rlRun "certtool --generate-request --template server.tmpl --load-privkey server-key.pem --outfile server-request.pem" 0 "Generate server cert request"
       rlRun "certtool --generate-certificate --template server.tmpl --load-request server-request.pem  --outfile server-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate server cert"
 
@@ -144,7 +144,7 @@ email = "root@$(hostname)"
 tls_www_client
 EOF
       cat client.tmpl
-      rlRun "certtool --generate-privkey --key-type ${CRYPTO_ALGO} --outfile client-key.pem" 0 "Generate key for client"
+      rlRun "certtool --generate-privkey --key-type ${CRYPTO_ALG} --outfile client-key.pem" 0 "Generate key for client"
       rlRun "certtool --generate-request --template client.tmpl --load-privkey client-key.pem --outfile client-request.pem" 0 "Generate client cert request"
       rlRun "certtool --generate-certificate --template client.tmpl --load-request client-request.pem  --outfile client-cert.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem" 0 "Generate client cert"
     fi

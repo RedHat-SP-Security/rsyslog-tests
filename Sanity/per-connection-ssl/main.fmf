@@ -22,17 +22,17 @@ link:
     require+:
      - rsyslog-gnutls
     environment:
-        CRYPTO_ALGO: RSA
+        CRYPTO_ALG: RSA
         DRIVER_GTLS: YES
 /ossl:
     require+:
      - rsyslog-openssl
     /rsa:
       environment:
-        CRYPTO_ALGO: RSA
+        CRYPTO_ALG: RSA
     /pqc_alg:
       environment:
-        CRYPTO_ALGO: ML-DSA-65
+        CRYPTO_ALG: ML-DSA-65
       adjust+:
         - enabled: false
           when: distro < rhel-10.1
