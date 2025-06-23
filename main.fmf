@@ -4,5 +4,6 @@ component:
 require:
   - url: https://github.com/RedHat-SP-Security/rsyslog-tests.git
     name: /Library/basic
+    ref: pk_PQC_testing
     type: library
   - rsyslog

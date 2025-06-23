@@ -21,6 +21,19 @@ link:
 /gtls:
     require+:
      - rsyslog-gnutls
+    environment:
+        CRYPTO_ALG: RSA
+        DRIVER_GTLS: YES
 /ossl:
     require+:
      - rsyslog-openssl
+    /rsa:
+      environment:
+        CRYPTO_ALG: RSA
+    /pqc_alg:
+      environment:
+        CRYPTO_ALG: ML-DSA-65
+      adjust+:
+        - enabled: false
+          when: distro < rhel-10.1
+          because: PQC is availble from 10.1

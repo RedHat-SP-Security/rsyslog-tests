@@ -32,9 +32,23 @@
 
 PACKAGE="rsyslog"
 
-[[ -n "$TMT_TEST_NAME" ]] && driver=${TMT_TEST_NAME##*/}
-driver=${driver-gtls}
+if [ "${DRIVER_GTLS}" != "YES" ] ; then
+  # Get the part of the path before the last component (e.g., "/Sanity/per-connection-ssl/ossl")
+  parent_path=$(dirname "$TMT_TEST_NAME")
+  # Get the last component of that result, which is the driver name (e.g., "ossl")
+  [[ -n "$TMT_TEST_NAME" ]] && driver=$(basename "$parent_path")
+else
+  driver="gtls"
+fi
 
+# This conditional logic is syntactically correct in Bash.
+# rlIsRHEL is a BeakerLib function, assumed to work as intended.
+# driver == "ossl" is a valid string comparison within [[ ... ]].
+if [ "${CRYPTO_ALG}" == "ML-DSA-65" ] && [ "${driver}" == "ossl" ] ; then
+  rlLog "Adjust rsyslog configuration to use particular version of TLS due PQC key exchange."
+  # This line has several problems for its likely intended use:
+  TLS_VER="gnutlsPriorityString=\"Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2\""
+fi
 rlJournalStart && {
   rlPhaseStartSetup && {
     rlRun "rlCheckRecommended; rlCheckRequired" || rlDie "cannot continue"
@@ -48,52 +62,43 @@ rlJournalStart && {
     CleanupRegister 'rlRun "popd"'
     rlRun "pushd $TmpDir"
     CleanupRegister 'rlRun "rlSEPortRestore"'
-    rlRun "rlSEPortAdd tcp 50514-50517 syslogd_port_t" 0 "Enabling ports 50514-50516 in SElinux" 
-: <<'DISABLE'
-    # Generate keys and certs
+    rlRun "rlSEPortAdd tcp 50514-50517 syslogd_port_t" 0 "Enabling ports 50514-50516 in SElinux"
+    # Generate 3 full sets of keys and certificates using the library
     for keys in '' 1 2; do
-      rlRun "x509KeyGen ca${keys}"
-      rlRun "x509KeyGen server${keys}"
-      rlRun "x509KeyGen client${keys}"
+      rlLog "Generating certificate chain for suffix: '${keys}'"
 
-      rlRun "x509SelfSign ca${keys}"
-      rlRun "x509CertSign --CA ca${keys} server${keys}"
-      rlRun "x509CertSign --CA ca${keys} client${keys}"
+      # 1. Generate all private keys
+      rsyslogGeneratePrivateKey "ca${keys}.key" "${CRYPTO_ALG}"
+      rsyslogGeneratePrivateKey "server${keys}.key" "${CRYPTO_ALG}"
+      rsyslogGeneratePrivateKey "client${keys}.key" "${CRYPTO_ALG}"
 
-      rlRun "cp $(x509Cert ca${keys}) /etc/rsyslog.d/ca${keys}.pem"
-      rlRun "cp $(x509Cert client${keys}) /etc/rsyslog.d/client${keys}-cert.pem"
-      rlRun "cp $(x509Key client${keys}) /etc/rsyslog.d/client${keys}-key.pem"
-      rlRun "cp $(x509Cert server${keys}) /etc/rsyslog.d/server${keys}-cert.pem"
-      rlRun "cp $(x509Key server${keys}) /etc/rsyslog.d/server${keys}-key.pem"
-    done
-DISABLE
-    for keys in '' 1 2; do
-      # Generate private keys
-      openssl genpkey -algorithm RSA -out ca${keys}.key
-      openssl genpkey -algorithm RSA -out server${keys}.key
-      openssl genpkey -algorithm RSA -out client${keys}.key
+      # 2. Create the self-signed CA certificate
+      rsyslogCreateSelfSignedCa "ca${keys}.key" "ca${keys}.pem" "/CN=ca${keys}"
 
-      # Create self-signed CA certificates
-      openssl req -new -x509 -key ca${keys}.key -out ca${keys}.pem -days 365 -subj "/CN=ca${keys}"
+      # 3. Create and sign the server certificate
+      rsyslogCreateCsr "server${keys}.key" "server${keys}.csr" "/CN=server${keys}"
+      rsyslogSignCertificate "server${keys}.csr" "ca${keys}.pem" "ca${keys}.key" "server${keys}.pem"
 
-      # Create certificate signing requests (CSRs)
-      openssl req -new -key server${keys}.key -out server${keys}.csr -subj "/CN=server${keys}"
-      openssl req -new -key client${keys}.key -out client${keys}.csr -subj "/CN=client${keys}"
+      # 4. Create and sign the client certificate
+      rsyslogCreateCsr "client${keys}.key" "client${keys}.csr" "/CN=client${keys}"
+      rsyslogSignCertificate "client${keys}.csr" "ca${keys}.pem" "ca${keys}.key" "client${keys}.pem"
 
-      # Sign the server and client certificates with the CA certificate
-      openssl x509 -req -in server${keys}.csr -CA ca${keys}.pem -CAkey ca${keys}.key -CAcreateserial -out server${keys}.pem -days 365
-      openssl x509 -req -in client${keys}.csr -CA ca${keys}.pem -CAkey ca${keys}.key -CAcreateserial -out client${keys}.pem -days 365
-      # Copy the certificates and keys to the desired directory
-      cp ca${keys}.pem /etc/rsyslog.d/ca${keys}.pem
-      cp client${keys}.pem /etc/rsyslog.d/client${keys}-cert.pem
-      cp client${keys}.key /etc/rsyslog.d/client${keys}-key.pem
-      cp server${keys}.pem /etc/rsyslog.d/server${keys}-cert.pem
-      cp server${keys}.key /etc/rsyslog.d/server${keys}-key.pem
-      cp /etc/rsyslog.d/server${keys}-cert.pem /etc/pki/ca-trust/source/anchors/server${keys}-cert.pem
-      update-ca-trust
+      # 5. Clean up intermediate CSR files
+      rlRun "rm ./*${keys}.csr" 0 "Clean up CSR files"
+
+      # 6. Copy the final keys and certificates to the rsyslog config directory
+      rlRun "cp ca${keys}.pem /etc/rsyslog.d/ca${keys}.pem"
+      rlRun "cp client${keys}.pem /etc/rsyslog.d/client${keys}-cert.pem"
+      rlRun "cp client${keys}.key /etc/rsyslog.d/client${keys}-key.pem"
+      rlRun "cp server${keys}.pem /etc/rsyslog.d/server${keys}-cert.pem"
+      rlRun "cp server${keys}.key /etc/rsyslog.d/server${keys}-key.pem"
+
+      # 7. Add server cert to the system trust store
+      rlRun "cp /etc/rsyslog.d/server${keys}-cert.pem /etc/pki/ca-trust/source/anchors/server${keys}-cert.pem"
     done
 
-
+    # 8. Update the system trust store once after all certs are copied
+    rlRun "update-ca-trust"
     rlRun "ls -l /etc/rsyslog.d"
 
     rsyslogConfigAppend "GLOBALS" <<EOF
@@ -130,6 +135,7 @@ EOF
         StreamDriver="$driver"
         StreamDriverMode="1"
         StreamDriverAuthMode="x509/certvalid"
+        ${TLS_VER}
       )
 
       local2.* action(
@@ -143,6 +149,7 @@ EOF
         streamDriver.CAFile="/etc/rsyslog.d/ca1.pem"
         streamDriver.CertFile="/etc/rsyslog.d/client1-cert.pem"
         streamDriver.KeyFile="/etc/rsyslog.d/client1-key.pem"
+        ${TLS_VER}
       )
 
       local3.* action(
@@ -156,6 +163,7 @@ EOF
         streamDriver.CAFile="/etc/rsyslog.d/ca2.pem"
         streamDriver.CertFile="/etc/rsyslog.d/client2-cert.pem"
         streamDriver.KeyFile="/etc/rsyslog.d/client2-key.pem"
+        ${TLS_VER}
       )
 
       local4.* action(
@@ -170,6 +178,7 @@ EOF
         streamDriver.CAFile="/etc/rsyslog.d/ca2.pem"
         streamDriver.CertFile="/etc/rsyslog.d/client2-cert.pem"
         streamDriver.KeyFile="/etc/rsyslog.d/client2-key.pem"
+        ${TLS_VER}
       )
 EOF
 
@@ -184,13 +193,13 @@ EOF
 
     rsyslogServerConfigReplace "RULESETS" << EOF
       ruleset(name="TestRuleSet1"){
-        *.*     $rsyslogServerLogDir/in1
+        *.* $rsyslogServerLogDir/in1
       }
       ruleset(name="TestRuleSet2"){
-        *.*     $rsyslogServerLogDir/in2
+        *.* $rsyslogServerLogDir/in2
       }
       ruleset(name="TestRuleSet3"){
-        *.*     $rsyslogServerLogDir/in3
+        *.* $rsyslogServerLogDir/in3
       }
 EOF
 
@@ -199,6 +208,7 @@ EOF
         type="imtcp"
         Port="50514"
         ruleset="TestRuleSet1"
+        ${TLS_VER}
       )
 EOF
 
@@ -210,6 +220,7 @@ EOF
         streamdriver.CertFile="/etc/rsyslog.d/server1-cert.pem"
         streamdriver.KeyFile="/etc/rsyslog.d/server1-key.pem"
         ruleset="TestRuleSet2"
+        ${TLS_VER}
       )
 EOF
 
@@ -221,6 +232,7 @@ EOF
         streamDriver.CertFile="/etc/rsyslog.d/server2-cert.pem"
         streamDriver.KeyFile="/etc/rsyslog.d/server2-key.pem"
         ruleset="TestRuleSet3"
+        ${TLS_VER}
       )
 EOF
 
@@ -230,7 +242,7 @@ EOF
     rlRun "rsyslogPrintEffectiveConfig -n"
     rlRun "rsyslogServiceStart"
     rlRun "rsyslogServiceStatus"
-    
+
     rlRun "> $rsyslogServerLogDir/messages"
   rlPhaseEnd; }
 

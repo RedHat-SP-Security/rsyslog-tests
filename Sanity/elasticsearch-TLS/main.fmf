@@ -1,0 +1,30 @@
+summary: Smoke test for elastic search feature with TLS communication
+description: ''
+contact: Patrik Koncity <pkoncity@redhat.com>
+test: ./runtest.sh
+require+:
+  - library(distribution/dpcommon)
+  - library(selinux-policy/common)
+  - initscripts
+  - rsyslog-elasticsearch
+  - net-tools
+  - java-openjdk
+duration: 5m
+enabled: true
+adjust:
+  - enabled: false
+    when: arch == s390x,ppc64,ia64
+    continue: false
+/rsa:
+    environment:
+        CRYPTO_ALG: RSA
+/pqc_alg:
+    environment:
+        CRYPTO_ALG: ML-DSA-65
+    continue: false
+    adjust+:
+      - enabled: false
+        because: PQC it's not implement for ElasticSearch
+      - enabled: false
+        when: distro < rhel-10.1 or distro < fedora-43
+        because: PQC is available from this version of OS

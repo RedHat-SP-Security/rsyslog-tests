@@ -20,3 +20,13 @@ adjust:
     continue: false
 extra-summary: /Sanity/openssl-parameters
 extra-nitrate: TC#0611161
+/rsa:
+    environment:
+        CRYPTO_ALG: RSA
+/pqc_alg:
+    environment:
+        CRYPTO_ALG: ML-DSA-65
+    adjust+:
+      - enabled: false
+        when: distro < rhel-10.1
+        because: PQC is availble from 10.1
