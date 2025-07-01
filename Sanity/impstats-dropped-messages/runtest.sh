@@ -33,14 +33,15 @@
 PACKAGE="rsyslog"
 SOCKET="/tmp/rsyslog-test.sock"
 STATSFILE="/tmp/rsyslog.stats"
-RSYSLOG_CONF="/etc/rsyslog.conf" # We are still replacing this for simplicity
+RSYSLOG_CONF="/tmp/rsyslog-test.conf" # We are still replacing this for simplicity
 LOGFILE="/tmp/rsyslog-test.log"
+RSYSLOG_PIDFILE="/tmp/rsyslog-test.pid"
 
 rlJournalStart
     rlPhaseStartSetup
         rlAssertRpm "$PACKAGE"
 
-        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Clean up any pre-existing files"
+        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\" \"$RSYSLOG_CONF\"" 0 "Clean up any pre-existing files"
         rlRun "systemctl stop rsyslog" 0 "Stopping system rsyslog"
         rlFileBackup "/etc/rsyslog.conf" # Backup the system's rsyslog.conf
 
@@ -62,7 +63,7 @@ ruleset(name=\"stats\") {
 :msg, regex, \"msgnum:.*\" action(type=\"omfile\" file=\"$LOGFILE\" template=\"outfmt\")
 EOF" 0 "Writing custom rsyslog config"
 
-        rlRun "rsyslogd -N1 | tee /tmp/rsyslog-check.log" 0 "Validating rsyslog config"
+        rlRun "rsyslogd -N1 -f \"$RSYSLOG_CONF\" | tee /tmp/rsyslog-check.log" 0 "Validating rsyslog config"
         # Ensure the log file exists before grepping, and quote pattern for grep
         rlAssertExists "/tmp/rsyslog-check.log"
 
@@ -94,7 +95,7 @@ EOF" 0 "Writing custom rsyslog config"
 
     rlPhaseStartCleanup
         rlLog "Performing final cleanup actions."
-        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\"" 0 "Removing temporary files"
+        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_CONF\"" 0 "Removing temporary files"
         # Kill the directly run rsyslogd if it's still running
         if [ -f "$RSYSLOG_PIDFILE" ]; then
             rlRun "kill \$(cat \"$RSYSLOG_PIDFILE\")" 0 "Killing custom rsyslogd"
