@@ -1,0 +1,7 @@
+summary: Tests dropped messages of impstats module
+contact: Adam Prikryl <aprikryl@redhat.com>
+test: ./runtest.sh
+duration: 5m
+enabled: true
+require:
+  - rsyslog
