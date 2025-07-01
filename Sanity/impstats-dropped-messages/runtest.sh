@@ -33,7 +33,7 @@
 PACKAGE="rsyslog"
 SOCKET="/tmp/rsyslog-test.sock"
 STATSFILE="/tmp/rsyslog.stats"
-RSYSLOG_CONF="/tmp/rsyslog-test.conf" # We are still replacing this for simplicity
+RSYSLOG_CONF="/tmp/rsyslog-test.conf"
 LOGFILE="/tmp/rsyslog-test.log"
 RSYSLOG_PIDFILE="/tmp/rsyslog-test.pid"
 
