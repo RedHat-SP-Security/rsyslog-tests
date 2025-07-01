@@ -67,8 +67,9 @@ EOF" 0 "Writing custom rsyslog config"
         # Ensure the log file exists before grepping, and quote pattern for grep
         rlAssertExists "/tmp/rsyslog-check.log"
 
-        rlLog "Starting rsyslogd directly with custom config"
         rlRun "rsyslogd -n -f \"$RSYSLOG_CONF\" -i \"$RSYSLOG_PIDFILE\" &" 0 "Starting rsyslogd directly"
+        RSYSLOGD_BG_PID=$!
+        rlLog "rsyslogd background PID: $RSYSLOGD_BG_PID"
         rlRun "sleep 2" 0 "Waiting for rsyslog to initialize"
         rlAssertExists "$SOCKET"
 
