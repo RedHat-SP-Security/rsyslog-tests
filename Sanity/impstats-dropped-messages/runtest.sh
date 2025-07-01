@@ -67,10 +67,6 @@ EOF" 0 "Writing custom rsyslog config"
         rlAssertExists "/tmp/rsyslog-check.log"
 
         rlLog "Starting rsyslogd directly with custom config"
-        # Start rsyslogd in the background using our custom config
-        # -n: do not daemonize (run in foreground)
-        # -f: specify config file
-        # -i: specify PID file
         rlRun "rsyslogd -n -f \"$RSYSLOG_CONF\" -i \"$RSYSLOG_PIDFILE\" &" 0 "Starting rsyslogd directly"
         rlRun "sleep 2" 0 "Waiting for rsyslog to initialize"
         rlAssertExists "$SOCKET"
