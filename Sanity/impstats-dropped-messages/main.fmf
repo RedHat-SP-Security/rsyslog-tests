@@ -1,0 +1,14 @@
+summary: Tests dropped messages of impstats module
+contact: Adam Prikryl <aprikryl@redhat.com>
+test: ./runtest.sh
+duration: 5m
+enabled: true
+require:
+  - url: https://github.com/RedHat-SP-Security/rsyslog-tests.git
+    name: /Library/basic
+    type: library
+  - rsyslog
+tag:
+  - NoRHEL6
+  - Tier3
+tier: 3
