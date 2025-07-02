@@ -33,43 +33,53 @@
 PACKAGE="rsyslog"
 SOCKET="/tmp/rsyslog-test.sock"
 STATSFILE="/tmp/rsyslog.stats"
-RSYSLOG_CONF="/tmp/rsyslog-test.conf"
+RSYSLOG_CONF="/etc/rsyslog.conf" # Use the standard rsyslog.conf path if using rsyslog/basic library
 LOGFILE="/tmp/rsyslog-test.log"
 RSYSLOG_PIDFILE="/tmp/rsyslog-test.pid"
 
 rlJournalStart
     rlPhaseStartSetup
+        rlImport --all
         rlAssertRpm "$PACKAGE"
 
-        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\" \"$RSYSLOG_CONF\"" 0 "Clean up any pre-existing files"
-        rlRun "systemctl stop rsyslog" 0 "Stopping system rsyslog"
-        rlFileBackup "/etc/rsyslog.conf" # Backup the system's rsyslog.conf
+        # Initial cleanup of test-specific files
+        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Clean up any pre-existing test files"
 
-        rlRun "cat > \"$RSYSLOG_CONF\" << EOF
-# Minimal rsyslog configuration for this test
-module(load=\"imuxsock\")
-input(type=\"imuxsock\" Socket=\"$SOCKET\" CreatePath=\"on\"
-      RateLimit.Interval=\"1\" RateLimit.Burst=\"750\")
+        rlRun "rsyslogSetup" 0 "Initialize rsyslog test environment"
 
-module(load=\"impstats\" log.file=\"$STATSFILE\" interval=\"1\" ruleset=\"stats\" log.syslog=\"off\")
+        rlRun "rsyslogServiceStop" 0 "Stopping system rsyslog service"
+        rlRun "systemctl stop syslog.socket" 0 "Stop default syslog.socket"
+        rlRun "systemctl disable syslog.socket" 0 "Disable default syslog.socket"
 
-template(name=\"outfmt\" type=\"string\" string=\"%msg%\\n\")
+        rlRun "rsyslogPrepareConf" 0 "Prepare base rsyslog configuration"
 
-ruleset(name=\"stats\") {
+        rsyslogConfigReplace MODULES <<EOF
+module(load="imuxsock")
+input(type="imuxsock" Socket="$SOCKET" CreatePath="on"
+      RateLimit.Interval="1" RateLimit.Burst="750")
+module(load="impstats" log.file="$STATSFILE" interval="1" ruleset="stats" log.syslog="off")
+EOF
+
+        rsyslogConfigReplace RULES <<EOF
+template(name="outfmt" type="string" string="%msg%\\n")
+
+ruleset(name="stats") {
     stop # Discard stats messages after processing by impstats
 }
 
 # Using property filter syntax for regex matching
-:msg, regex, \"msgnum:.*\" action(type=\"omfile\" file=\"$LOGFILE\" template=\"outfmt\")
-EOF" 0 "Writing custom rsyslog config"
+:msg, regex, "msgnum:.*" action(type="omfile" file="$LOGFILE" template="outfmt")
+EOF
+
+        rlRun "rsyslogPrintEffectiveConfig -n" 0 "Printing effective rsyslog config (grep non-commented lines)"
 
         rlRun "rsyslogd -N1 -f \"$RSYSLOG_CONF\" | tee /tmp/rsyslog-check.log" 0 "Validating rsyslog config"
-        # Ensure the log file exists before grepping, and quote pattern for grep
-        rlAssertExists "/tmp/rsyslog-check.log"
+        rlAssertExists "/tmp/rsyslog-check.log" # Ensure the validation log exists
 
         rlRun "rsyslogd -n -f \"$RSYSLOG_CONF\" -i \"$RSYSLOG_PIDFILE\" &" 0 "Starting rsyslogd directly"
         RSYSLOGD_BG_PID=$!
         rlLog "rsyslogd background PID: $RSYSLOGD_BG_PID"
+
         rlRun "sleep 2" 0 "Waiting for rsyslog to initialize"
         rlAssertExists "$SOCKET"
 
@@ -80,9 +90,8 @@ EOF" 0 "Writing custom rsyslog config"
         rlRun "seq 1 1000 | sed 's/^/msgnum: /' | logger -d -u \"$SOCKET\"" 0 "Sending messages"
 
         rlLog "Waiting for impstats to flush"
-        rlRun "sleep 5" # Increased sleep to ensure impstats has multiple intervals to flush
+        rlRun "sleep 5"
 
-        rlAssertExists "$STATSFILE"
         rlLog "Contents of stats file:"
         rlRun "cat \"$STATSFILE\""
 
