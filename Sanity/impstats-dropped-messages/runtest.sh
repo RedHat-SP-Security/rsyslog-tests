@@ -33,7 +33,7 @@
 PACKAGE="rsyslog"
 SOCKET="/tmp/rsyslog-test.sock"
 STATSFILE="/tmp/rsyslog.stats"
-RSYSLOG_CONF="/etc/rsyslog.conf" # Use the standard rsyslog.conf path if using rsyslog/basic library
+RSYSLOG_CONF="/etc/rsyslog.conf"
 LOGFILE="/tmp/rsyslog-test.log"
 RSYSLOG_PIDFILE="/tmp/rsyslog-test.pid"
 
@@ -42,7 +42,6 @@ rlJournalStart
         rlImport --all
         rlAssertRpm "$PACKAGE"
 
-        # Initial cleanup of test-specific files
         rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Clean up any pre-existing test files"
 
         rlRun "rsyslogSetup" 0 "Initialize rsyslog test environment"
@@ -74,7 +73,7 @@ EOF
         rlRun "rsyslogPrintEffectiveConfig -n" 0 "Printing effective rsyslog config (grep non-commented lines)"
 
         rlRun "rsyslogd -N1 -f \"$RSYSLOG_CONF\" | tee /tmp/rsyslog-check.log" 0 "Validating rsyslog config"
-        rlAssertExists "/tmp/rsyslog-check.log" # Ensure the validation log exists
+        rlAssertExists "/tmp/rsyslog-check.log"
 
         rlRun "rsyslogd -n -f \"$RSYSLOG_CONF\" -i \"$RSYSLOG_PIDFILE\" &" 0 "Starting rsyslogd directly"
         RSYSLOGD_BG_PID=$!
@@ -113,6 +112,6 @@ EOF
         fi
         rlFileRestore # This restores original /etc/rsyslog.conf
         rlRun "systemctl daemon-reload" 0 "Reloading systemd daemons"
-        rlRun "systemctl start rsyslog || :" 0 "Starting system rsyslog (if it was active)"
+        rlRun "rsyslogServiceStart"
     rlPhaseEnd
 rlJournalEnd
