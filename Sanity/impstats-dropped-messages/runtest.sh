@@ -103,15 +103,6 @@ EOF
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlLog "Performing final cleanup actions."
-        rlRun "rm -f \"$SOCKET\" \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_CONF\"" 0 "Removing temporary files"
-        # Kill the directly run rsyslogd if it's still running
-        if [ -f "$RSYSLOG_PIDFILE" ]; then
-            rlRun "kill \$(cat \"$RSYSLOG_PIDFILE\")" 0 "Killing custom rsyslogd"
-            rlRun "rm -f \"$RSYSLOG_PIDFILE\"" 0 "Removing PID file"
-        fi
-        rlFileRestore # This restores original /etc/rsyslog.conf
-        rlRun "systemctl daemon-reload" 0 "Reloading systemd daemons"
-        rlRun "rsyslogServiceStart"
+        CleanupDo
     rlPhaseEnd
 rlJournalEnd
