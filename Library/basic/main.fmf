@@ -2,8 +2,8 @@ summary: rsystlog testing library
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 require:
 - library(distribution/Log)
-- policycoreutils-python-utils
 - patch
 - openssl
 recommend:
 - rsyslog
+- policycoreutils-python-utils
