@@ -11,6 +11,13 @@ require+:
   - java-openjdk
 duration: 5m
 enabled: true
+tag:
+- NoRHEL4
+- NoRHEL5
+- NoRHEL6
+- NoRHEL7
+- NoRHEL8
+- Tier2
 adjust:
   - enabled: false
     when: arch == s390x,ppc64,ia64

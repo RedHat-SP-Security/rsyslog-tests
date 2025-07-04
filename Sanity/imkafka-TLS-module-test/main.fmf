@@ -22,6 +22,7 @@ tag:
 - NoRHEL6
 - NoRHEL7
 - NoRHEL8
+- Tier2
 adjust:
   - enabled: false
     when: distro < rhel-9
