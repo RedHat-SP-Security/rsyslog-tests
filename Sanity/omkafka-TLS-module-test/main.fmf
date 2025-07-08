@@ -23,6 +23,7 @@ tag:
 - NoRHEL7
 - NoRHEL8
 - TIPpass_Security
+- Tier2
 adjust:
   - enabled: false
     when: distro < rhel-9
