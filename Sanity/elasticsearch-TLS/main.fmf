@@ -20,7 +20,7 @@ tag:
 - Tier2
 adjust:
   - enabled: false
-    when: arch == s390x,ppc64,ia64
+    when: arch == s390x,ppc64le,ia64
     continue: false
 /rsa:
     environment:
