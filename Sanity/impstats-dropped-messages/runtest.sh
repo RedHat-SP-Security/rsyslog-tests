@@ -103,6 +103,6 @@ EOF
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        CleanupDo
+        rsyslogCleanup
     rlPhaseEnd
 rlJournalEnd
