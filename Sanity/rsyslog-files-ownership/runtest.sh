@@ -27,6 +27,23 @@
 # Include Beaker environment
 . /usr/share/beakerlib/beakerlib.sh || exit 1
 
+TESTDIR=`pwd`
+
+function checkFile() {
+    MUSTEXIST=false
+    if [ "$1" == "-e" ]; then
+        MUSTEXIST=true
+        shift
+    fi
+    FILEPATH=$1
+    OWNER=$2
+    GROUP=$3
+    if "$MUSTEXIST" || [ -e "$FILEPATH" ]; then
+        ls -ld "$FILEPATH"
+        rlRun "ls -ld '$FILEPATH' | grep -qE -- ' $OWNER[ ]+$GROUP '"
+    fi
+}
+
 rlJournalStart
     rlPhaseStartTest "Rsyslog File Ownership"
         checkFile /etc/rsyslog.conf root root
