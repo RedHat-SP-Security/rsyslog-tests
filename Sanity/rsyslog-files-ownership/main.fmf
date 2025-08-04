@@ -1,0 +1,19 @@
+summary: verify correct file ownership
+description: verifies if important rsyslog files have correct ownership
+contact: Adam Prikryl <aprikryl@redhat.com>
+component:
+- rsyslog
+test: ./runtest.sh
+framework: beakerlib
+recommend:
+- rsyslog
+duration: 5m
+enabled: true
+tag:
+- CI-Tier-1
+- Tier1
+tier: '1'
+adjust:
+-   enabled: false
+    when: distro == rhel-4, rhel-5, rhel-6, rhel-7, rhel-8
+    continue: false
