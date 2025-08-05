@@ -137,7 +137,7 @@ EOF
       if [[ ${#fqdn} -gt 64 ]]; then
         rlLog "Skipping test: FQDN length (${#fqdn}) is 64 or more characters."
       elif [[ "$short" == "$fqdn" ]]; then
-        rlFail "there's no difference between fqdn and short name on this machine!"
+        rlLog "there's no difference between fqdn and short name on this machine!"
       else
         rsyslogConfigIsNewSyntax || {
           rsyslogConfigPrepend --begin "MODULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection FQDN <<EOF
