@@ -2,20 +2,20 @@ summary: openssl connection parameters
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
-- library(ControlFlow/ConditionalPhases)
-- gnutls-utils
-- wireshark-cli
-- rsyslog-openssl
-- rsyslog-relp
-- librelp
+  - library(distribution/dpcommon)
+  - library(ControlFlow/ConditionalPhases)
+  - gnutls-utils
+  - wireshark-cli
+  - rsyslog-openssl
+  - rsyslog-relp
+  - librelp
 duration: 15m
 enabled: true
 tag:
-- Tier2
+  - Tier2
 tier: '2'
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.5
     continue: false
 extra-summary: /Sanity/openssl-parameters
@@ -23,6 +23,7 @@ extra-nitrate: TC#0611161
 /rsa:
     environment:
         CRYPTO_ALG: RSA
+    id: c8da86a5-7070-48cf-b62b-b8dfd66d1dff
 /pqc_alg:
     environment:
         CRYPTO_ALG: ML-DSA-65
@@ -30,3 +31,4 @@ extra-nitrate: TC#0611161
       - enabled: false
         when: distro < rhel-10.1
         because: PQC is availble from 10.1
+    id: cafc62cf-9c98-4aae-8872-1da46c84c3a7

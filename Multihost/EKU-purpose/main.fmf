@@ -2,20 +2,21 @@ summary: Test for extended key usage purpose
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- rsyslog-gnutls
-- gnutls-utils
+  - rsyslog-gnutls
+  - gnutls-utils
 recommend:
-- rng-utils
-- rng-tools
+  - rng-utils
+  - rng-tools
 duration: 2h
 enabled: true
 tag+:
-- fedora-wanted
-- rhel-8.1
-- rhel-8.1.0
+  - fedora-wanted
+  - rhel-8.1
+  - rhel-8.1.0
 extra-summary: /CoreOS/rsyslog/Multihost/EKU-purpose
 extra-nitrate: TC#0604425
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.2
     continue: false
+id: 66c91859-1367-4c53-b6da-b93448713494

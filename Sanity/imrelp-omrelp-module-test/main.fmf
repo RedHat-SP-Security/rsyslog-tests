@@ -2,31 +2,32 @@ summary: Sanity test for imrelp and omrelp modules using openssl/gnutls tls libs
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
-- library(ControlFlow/ConditionalPhases)
-- wireshark-cli
-- gnutls-utils
-- librelp
+  - library(distribution/dpcommon)
+  - library(ControlFlow/ConditionalPhases)
+  - wireshark-cli
+  - gnutls-utils
+  - librelp
 recommend:
-- rsyslog
-- rsyslog-relp
-- gnutls
-- gnutls-utils
-- rsyslog-gnutls
-- openssl
-- rpmlint
+  - rsyslog
+  - rsyslog-relp
+  - gnutls
+  - gnutls-utils
+  - rsyslog-gnutls
+  - openssl
+  - rpmlint
 duration: 15m
 enabled: true
 tag:
-- Tier1
-- CI-Tier-1
-- ImageMode
+  - Tier1
+  - CI-Tier-1
+  - ImageMode
 tier: '1'
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.5
     continue: false
 extra-summary: /Sanity/imrelp-omrelp-module-test
 link:
     verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1932783
 extra-nitrate: TC#0610860
+id: 15715573-adad-4821-95b8-3980ec608e5b

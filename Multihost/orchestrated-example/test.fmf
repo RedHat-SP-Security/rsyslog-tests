@@ -10,12 +10,15 @@ adjust:
       - library(ControlFlow/Cleanup)
       - library(ControlFlow/SessionControl)
     test: ./runtest.sh
+    id: 8d5083d4-3e62-4992-bdb4-060d166796e9
 /role:
     framework: shell
     test: "true"
     /server:
         require:
           - rsyslog
+        id: 38f6b480-8306-45ad-8ee5-8dd63866049a
     /client:
         require:
           - rsyslog
+        id: df752ea2-f3bc-438f-b880-8013413e80c7

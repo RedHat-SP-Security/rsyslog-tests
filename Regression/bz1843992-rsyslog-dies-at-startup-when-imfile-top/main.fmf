@@ -5,26 +5,29 @@ description: |
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
+  - library(distribution/dpcommon)
 recommend:
-- rsyslog
+  - rsyslog
 duration: 5m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- TIPfail
-- Tier3
-- rhel-7.9.0
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - TIPfail
+  - Tier3
+  - rhel-7.9.0
 tier: '3'
-extra-summary: /CoreOS/rsyslog/Regression/bz1843992-rsyslog-dies-at-startup-when-imfile-top
-extra-task: /CoreOS/rsyslog/Regression/bz1843992-rsyslog-dies-at-startup-when-imfile-top
+extra-summary: 
+    /CoreOS/rsyslog/Regression/bz1843992-rsyslog-dies-at-startup-when-imfile-top
+extra-task: 
+    /CoreOS/rsyslog/Regression/bz1843992-rsyslog-dies-at-startup-when-imfile-top
 extra-nitrate: TC#0607500
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4, rhel-5
     continue: false
--   enabled: false
+  - enabled: false
     when: distro < rhel-7.9
     continue: false
+id: 7e930679-e662-4b67-a3f0-b6d22861e952

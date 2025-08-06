@@ -1,5 +1,7 @@
 environment:
     ANSIBLE: '1'
     MODES: normal
-extra-summary: ANSIBLE=1 MODES=normal /CoreOS/rsyslog/Multihost/rsyslog-send-messages-to-remote
+extra-summary: ANSIBLE=1 MODES=normal 
+    /CoreOS/rsyslog/Multihost/rsyslog-send-messages-to-remote
 extra-nitrate: TC#0167027
+id: cf677c4f-38e1-4e2d-813e-eac708f0591b

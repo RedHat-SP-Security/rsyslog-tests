@@ -1,6 +1,7 @@
 tag+:
-- TIPpass_Security
-- notip
-- rsyslogSyntaxOLD
+  - TIPpass_Security
+  - notip
+  - rsyslogSyntaxOLD
 extra-summary: /CoreOS/rsyslog/Multihost/rsyslog-send-messages-to-remote
 extra-nitrate: TC#0167028
+id: db10d4d4-ebfd-4efb-886a-8db75bc1ddc6

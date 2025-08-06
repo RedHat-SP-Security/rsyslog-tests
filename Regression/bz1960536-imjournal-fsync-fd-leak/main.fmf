@@ -3,16 +3,17 @@ contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 duration: 10m
 require+:
-- lsof
-- library(distribution/dpcommon)
+  - lsof
+  - library(distribution/dpcommon)
 tag:
-- Tier3
-- CI-Tier-1
+  - Tier3
+  - CI-Tier-1
 tier: '3'
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.5
 link:
--   verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1960536
+  - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1960536
 extra-summary: /Regression/bz1960536-imjournal-fsync-fd-leak
 extra-nitrate: TC#0610838
+id: 3021117c-8c3e-4f1d-b915-7c6829984a91

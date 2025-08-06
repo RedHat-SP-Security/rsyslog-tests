@@ -1,14 +1,15 @@
 summary: test RELP with TLS
 duration: 20m
 tag+:
-- NoRHEL4
-- NoRHEL5
+  - NoRHEL4
+  - NoRHEL5
 environment:
-  TEST: Multihost/relp/direct-config
+    TEST: Multihost/relp/direct-config
 extra-summary: /Multihost/relp
 extra-task: /Multihost/relp
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-6
     continue: false
 extra-nitrate: TC#0609486
+id: 5abc8328-a6ce-4de2-a414-d5ad644d76f2
