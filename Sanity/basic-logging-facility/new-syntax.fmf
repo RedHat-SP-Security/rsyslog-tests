@@ -1,21 +1,22 @@
 component:
-- rsyslog7
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog5
 environment:
     rsyslogSyntax: new
 tag:
-- NoRHEL4
-- fedora-wanted
-- notip
-- rsyslogSyntaxNEW
-- ImageMode
+  - NoRHEL4
+  - fedora-wanted
+  - notip
+  - rsyslogSyntaxNEW
+  - ImageMode
 extra-summary: rsyslogSyntax=new /CoreOS/rsyslog/Sanity/basic-logging-facility
 extra-nitrate: TC#0419209
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-6
     continue: false
--   enabled: false
+  - enabled: false
     when: distro == rhel-6 and component == rsyslog
     continue: false
+id: e2bfd512-1e20-41f6-994a-f12ce21c4b2c

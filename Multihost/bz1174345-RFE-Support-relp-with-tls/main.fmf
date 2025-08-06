@@ -4,32 +4,33 @@ description: |
     Bugzilla link: https://bugzilla.redhat.com/show_bug.cgi?id=1174345
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog
+  - rsyslog
 test: ./runtest.sh
 require+:
-- rsyslog
-- rsyslog-relp
-- gnutls
-- gnutls-utils
-- rsyslog-gnutls
-- bind-utils
-- nc
-- lsof
+  - rsyslog
+  - rsyslog-relp
+  - gnutls
+  - gnutls-utils
+  - rsyslog-gnutls
+  - bind-utils
+  - nc
+  - lsof
 recommend:
-- rng-utils
-- rng-tools
-- wireshark
-- psmisc
+  - rng-utils
+  - rng-tools
+  - wireshark
+  - psmisc
 duration: 20m
 enabled: true
 tag+:
-- NoRHEL4
-- NoRHEL5
-- fedora-wanted
+  - NoRHEL4
+  - NoRHEL5
+  - fedora-wanted
 extra-summary: /CoreOS/rsyslog/Multihost/bz1174345-RFE-Support-relp-with-tls
 extra-task: /CoreOS/rsyslog/Multihost/bz1174345-RFE-Support-relp-with-tls
 extra-nitrate: TC#0548081
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-6
     continue: false
+id: f3b3aeea-9489-434d-8d4a-7860baeb9941

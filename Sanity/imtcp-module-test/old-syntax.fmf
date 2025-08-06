@@ -1,23 +1,24 @@
 component:
-- rsyslog7
-- rsyslog
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog
+  - rsyslog5
 environment:
     rsyslogSyntax: old
 tag:
-- CI-Tier-1
-- NoRHEL4
-- SP-TBU
-- TIPpass
-- TIPpass_Security
-- Tier1
-- Tier1security
-- rsyslogSyntaxOLD
+  - CI-Tier-1
+  - NoRHEL4
+  - SP-TBU
+  - TIPpass
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - rsyslogSyntaxOLD
 tier: '1'
 extra-summary: rsyslogSyntax=old /CoreOS/rsyslog/Sanity/imtcp-module-test
 extra-nitrate: TC#0059836
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4
     continue: false
+id: 02fe24e4-a4c2-4717-99c9-ec9ce127ba55

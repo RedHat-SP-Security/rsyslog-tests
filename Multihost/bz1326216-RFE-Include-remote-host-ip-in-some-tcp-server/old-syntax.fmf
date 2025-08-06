@@ -1,8 +1,10 @@
 environment:
     rsyslogSyntax: old
-extra-summary: rsyslogSyntax=old /CoreOS/rsyslog/Multihost/bz1326216-RFE-Include-remote-host-ip-in-some-tcp-server
+extra-summary: rsyslogSyntax=old 
+    /CoreOS/rsyslog/Multihost/bz1326216-RFE-Include-remote-host-ip-in-some-tcp-server
 extra-nitrate: TC#0549675
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-7
     continue: false
+id: 7a1da5e4-0475-4b96-98f3-09b670f23cb4

@@ -1,17 +1,19 @@
 component:
-- rsyslog7
-- rsyslog
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog
+  - rsyslog5
 environment:
     rsyslogSyntax: old
 tag:
-- TIPfail
-- TIPfail_Security
-- Tier2
-- Tier2security
-- rhel-6.3
-- rsyslogSyntaxOLD
+  - TIPfail
+  - TIPfail_Security
+  - Tier2
+  - Tier2security
+  - rhel-6.3
+  - rsyslogSyntaxOLD
 tier: '2'
-extra-summary: rsyslogSyntax=old /CoreOS/rsyslog/Sanity/bz672182-RFE-Provide-rate-limiting-support
+extra-summary: rsyslogSyntax=old 
+    /CoreOS/rsyslog/Sanity/bz672182-RFE-Provide-rate-limiting-support
 extra-nitrate: TC#0137702
+id: 3a89fbbd-0a5d-4304-ae4d-4f4f801369ce

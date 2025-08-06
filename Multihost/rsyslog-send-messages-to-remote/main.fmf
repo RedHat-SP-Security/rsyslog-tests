@@ -2,24 +2,23 @@ summary: Check that rsyslog send messages to remote if in forked debug mode
 description: ''
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog7
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog5
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
-- library(distribution/RpmSnapshot)
-- library(distribution/epel)
+  - library(distribution/dpcommon)
+  - library(distribution/RpmSnapshot)
+  - library(distribution/epel)
 recommend:
-- rsyslog
-- ansible
-- rhel-system-roles
+  - rsyslog
+  - ansible
+  - rhel-system-roles
 adjust:
-- enabled: false
-  when: distro ~< rhel-7 || distro = fedora
+  - enabled: false
+    when: distro ~< rhel-7 || distro = fedora
 duration: 60m
 enabled: true
-
 /plan:
     discover:
       - how: fmf
@@ -34,3 +33,4 @@ enabled: true
         guest: sopos-rhel93-brq.usersys.redhat.com
     execute:
         how: tmt
+    id: d726b611-2d89-42eb-9fcf-59b1cc50c86c

@@ -3,37 +3,38 @@ description: |
     Simple test if rsyslog is able to log into a pipe.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog7
-- rsyslog
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog
+  - rsyslog5
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
+  - library(distribution/dpcommon)
 recommend:
-- rsyslog
+  - rsyslog
 environment:
     rsyslogSyntax: old
 duration: 5m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- TIPpass
-- TIPpass_Security
-- Tier2
-- Tier2security
-- rhel-7.6
-- rsyslogSyntaxOLD
+  - CI-Tier-1
+  - NoRHEL4
+  - TIPpass
+  - TIPpass_Security
+  - Tier2
+  - Tier2security
+  - rhel-7.6
+  - rsyslogSyntaxOLD
 tier: '2'
 extra-summary: rsyslogSyntax=old /CoreOS/rsyslog/Sanity/ompipe-module-test
 extra-task: /CoreOS/rsyslog/Sanity/ompipe-module-test
 extra-nitrate: TC#0059838
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4
     continue: false
--   enabled: false
+  - enabled: false
     when: distro = rhel-8
     continue: false
     because: unstable for rhel-8, needed to provide further investigation
+id: 60782a3f-12cd-41a8-9c04-1ca41f40abeb

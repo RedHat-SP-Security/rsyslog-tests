@@ -14,7 +14,6 @@ recommend+:
   - /bin/netstat
 duration: 10m
 enabled: true
-
 /old-syntax:
     environment:
         rsyslogSyntax: old
@@ -26,7 +25,7 @@ enabled: true
       - rsyslogSyntaxOLD
     tier: '2'
     extra-nitrate: TC#0138205
-
+    id: 9fecbd67-2877-45c6-93c9-cd156a8129f4
 /new-syntax:
     environment:
         rsyslogSyntax: new
@@ -41,3 +40,4 @@ enabled: true
       - enabled: false
         when: distro == rhel-6 and component == rsyslog
         continue: false
+    id: 840243cf-2bb4-4135-a9d5-dd458b386c8d

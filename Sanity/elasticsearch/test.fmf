@@ -23,7 +23,10 @@ link:
 /bulk_on:
     environment:
         elasticBulkmode: on
+    id: 9951a93a-a211-49aa-a6df-7d2e0c7982fb
 /bulk_off:
     environment:
         elasticBulkmode: off
+    id: bc26c69f-c31f-4d13-88ab-969c3abf3b9b
 /no_bulk:
+    id: bd66c26a-134e-46d7-b529-0bd0d2084147

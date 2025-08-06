@@ -10,30 +10,33 @@ require+:
 duration: 5m
 enabled: true
 adjust:
- -  enabled: false
+  - enabled: false
     when: distro ~< rhel-9.4
     continue: false
- -  enabled: false
+  - enabled: false
     when: distro < rhel-8.10
     continue: false
 link:
- - verifies: https://issues.redhat.com/browse/RHEL-937
+  - verifies: https://issues.redhat.com/browse/RHEL-937
 /gtls:
     require+:
-     - rsyslog-gnutls
+      - rsyslog-gnutls
     environment:
         CRYPTO_ALG: RSA
         DRIVER_GTLS: YES
+    id: 8830a588-4051-49d6-9cd9-78b4e103fb95
 /ossl:
     require+:
-     - rsyslog-openssl
+      - rsyslog-openssl
     /rsa:
-      environment:
-        CRYPTO_ALG: RSA
+        environment:
+            CRYPTO_ALG: RSA
+        id: e37ca156-d789-4d59-bbd1-9b422d6a467f
     /pqc_alg:
-      environment:
-        CRYPTO_ALG: ML-DSA-65
-      adjust+:
-        - enabled: false
-          when: distro < rhel-10.1
-          because: PQC is availble from 10.1
+        environment:
+            CRYPTO_ALG: ML-DSA-65
+        adjust+:
+          - enabled: false
+            when: distro < rhel-10.1
+            because: PQC is availble from 10.1
+        id: 9ab05ac3-1db9-463f-9dde-ceaf529726fb

@@ -2,19 +2,20 @@ summary: tests basic mmfields module functionality
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- rsyslog-mmnormalize
-- library(ControlFlow/Cleanup)
+  - rsyslog-mmnormalize
+  - library(ControlFlow/Cleanup)
 duration: 5m
 enabled: true
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.6
 tag:
-- rhel-8.6
-- Tier1
-- CI-Tier-1
-- ImageMode
+  - rhel-8.6
+  - Tier1
+  - CI-Tier-1
+  - ImageMode
 tier: 1
 link:
--   verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1866900
+  - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1866900
 extra-nitrate: TC#0612555
+id: 44c84378-bb79-41a2-977f-5ec4bf0d2ff1
