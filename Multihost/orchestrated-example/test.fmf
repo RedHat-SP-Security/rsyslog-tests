@@ -13,7 +13,7 @@ adjust:
     id: 8d5083d4-3e62-4992-bdb4-060d166796e9
 /role:
     framework: shell
-    test: 'true'
+    test: "true"
     /server:
         require:
           - rsyslog
