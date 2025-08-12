@@ -103,6 +103,14 @@ EOF
     rlPhaseEnd
 
     rlPhaseStartCleanup
+        local pid
+        if [ -f "$RSYSLOG_PIDFILE" ] && pid=$(cat "$RSYSLOG_PIDFILE") && kill -0 "$pid" 2>/dev/null; then
+            rlLog "Found running rsyslogd with PID $pid, attempting to stop it."
+            rlRun "kill $pid" 0,1 "Stopping background rsyslogd"
+            # Wait for the specific PID stored in the variable.
+            # Exit code 127 is added in case the process is already gone.
+            rlRun "wait $pid" 0,1,127 "Waiting for rsyslogd to exit"
+        fi
         rsyslogCleanup
     rlPhaseEnd
 rlJournalEnd
