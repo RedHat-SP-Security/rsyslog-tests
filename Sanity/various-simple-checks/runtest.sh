@@ -54,6 +54,7 @@ rlJournalStart
     rlPhaseStartTest "BZ#1399562"
         rlServiceStop "rsyslog"
         rlServiceStart "rsyslog"
+        rlRun "sleep 2"
         rlAssertNotGrep "rsyslogd.*segfault" /var/log/messages
     rlPhaseEnd
 
