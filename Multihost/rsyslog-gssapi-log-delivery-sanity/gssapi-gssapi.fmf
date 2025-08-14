@@ -1,21 +1,23 @@
 component:
-- rsyslog7
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog5
 environment:
     CLIENT_SETUP: gssapi
     SERVER_SETUP: gssapi
 enabled: false
 tag+:
-- rsyslogSyntaxOLD
-extra-summary: CLIENT_SETUP=gssapi SERVER_SETUP=gssapi /CoreOS/rsyslog/Multihost/rsyslog-gssapi-log-delivery-sanity
+  - rsyslogSyntaxOLD
+extra-summary: CLIENT_SETUP=gssapi SERVER_SETUP=gssapi 
+    /CoreOS/rsyslog/Multihost/rsyslog-gssapi-log-delivery-sanity
 extra-nitrate: TC#0232024
 adjust:
--   because: selinux issue, as no customers face it there is no chance to fix it in
-        rhel-5
+  - because: selinux issue, as no customers face it there is no chance to fix it
+        in rhel-5
     enabled: false
     when: distro < rhel-6
     continue: false
--   enabled: false
+  - enabled: false
     when: distro >= rhel-8
     continue: false
+id: 31a388dc-4c1e-48d3-a26c-5f977124c771

@@ -1,6 +1,8 @@
 environment:
     MODES: normal
 tag+:
-- CI-Tier-1
-extra-summary: MODES=normal /CoreOS/rsyslog/Multihost/rsyslog-send-messages-to-remote
+  - CI-Tier-1
+extra-summary: MODES=normal 
+    /CoreOS/rsyslog/Multihost/rsyslog-send-messages-to-remote
 extra-nitrate: TC#0167026
+id: 32ed768e-d97f-4661-aa53-949c9d2f3d59

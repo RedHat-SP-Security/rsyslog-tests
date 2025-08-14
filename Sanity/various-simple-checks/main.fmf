@@ -3,21 +3,22 @@ description: ''
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/RpmSnapshot)
+  - library(distribution/RpmSnapshot)
 recommend:
-- rsyslog
+  - rsyslog
 duration: 10m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- TIPpass_Security
-- TierCandidatesFAIL
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - TIPpass_Security
+  - TierCandidatesFAIL
 extra-summary: /CoreOS/rsyslog/Sanity/various-simple-checks
 extra-task: /CoreOS/rsyslog/Sanity/various-simple-checks
 extra-nitrate: TC#0551877
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4, rhel-5
     continue: false
+id: 4f7dc676-ec12-4b39-927d-8256e249eec3

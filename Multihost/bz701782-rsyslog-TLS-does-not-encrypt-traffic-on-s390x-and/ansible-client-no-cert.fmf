@@ -1,14 +1,16 @@
-summary: TCP/TLS connection, set up using ansible linux-system-roles, without client's key/cert
+summary: TCP/TLS connection, set up using ansible linux-system-roles, without 
+    client's key/cert
 environment:
     rsyslogSyntax: new
     ANSIBLE: 1
     CLIENT_NO_CERT: 1
 tag+:
-- rsyslogSyntaxOLD
-
+  - rsyslogSyntaxOLD
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.3
     continue: false
 extra-nitrate: TC#0607999
-extra-summary: ANSIBLE=1 CLIENT_NO_CERT=1 rsyslogSyntax=new /CoreOS/rsyslog/Multihost/bz701782-rsyslog-TLS-does-not-encrypt-traffic-on-s390x-and
+extra-summary: ANSIBLE=1 CLIENT_NO_CERT=1 rsyslogSyntax=new 
+    /CoreOS/rsyslog/Multihost/bz701782-rsyslog-TLS-does-not-encrypt-traffic-on-s390x-and
+id: c23211c1-5c74-4718-8acd-318945ea5d35

@@ -5,26 +5,29 @@ description: |
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/ConditionalPhases)
+  - library(distribution/ConditionalPhases)
 recommend:
-- rsyslog
+  - rsyslog
 duration: 10m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- NoRHEL6
-- TIPpass_Security
-- TierCandidatesPASS
-- rhel-7.4.z
-- rhel-7.5.z
-- rhel-7.6
-- rhel-8.0
-extra-summary: /CoreOS/rsyslog/Regression/bz1419228-rsyslog-imjournal-module-no-longer-receives-logs
-extra-task: /CoreOS/rsyslog/Regression/bz1419228-rsyslog-imjournal-module-no-longer-receives-logs
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - NoRHEL6
+  - TIPpass_Security
+  - TierCandidatesPASS
+  - rhel-7.4.z
+  - rhel-7.5.z
+  - rhel-7.6
+  - rhel-8.0
+extra-summary: 
+    /CoreOS/rsyslog/Regression/bz1419228-rsyslog-imjournal-module-no-longer-receives-logs
+extra-task: 
+    /CoreOS/rsyslog/Regression/bz1419228-rsyslog-imjournal-module-no-longer-receives-logs
 extra-nitrate: TC#0553944
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4, rhel-5, rhel-6
     continue: false
+id: 6de60c2a-0fad-4ad7-9068-a0e8e7dd7752

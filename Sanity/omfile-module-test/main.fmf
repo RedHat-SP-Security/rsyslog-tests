@@ -9,43 +9,45 @@ description: |+
 
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog7
-- rsyslog
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog
+  - rsyslog5
 test: ./runtest.sh
 require+:
-- rsyslog
-- /usr/bin/file
-- /usr/bin/gunzip
+  - rsyslog
+  - /usr/bin/file
+  - /usr/bin/gunzip
 duration: 5m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- TIPpass_Security
-- Tier1
-- Tier1security
-- ImageMode
+  - CI-Tier-1
+  - NoRHEL4
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - ImageMode
 tier: '1'
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4
     continue: false
 link:
-- verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2013816
-- verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2013818
+  - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2013816
+  - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2013818
 /oldSyntax:
-  environment:
-    rsyslogSyntax: old
-  extra-summary: rsyslogSyntax=old /CoreOS/rsyslog/Sanity/omfile-module-test
-  extra-nitrate: TC#0059837
-  tag+:
-  - rsyslogSyntaxOLD
+    environment:
+        rsyslogSyntax: old
+    extra-summary: rsyslogSyntax=old /CoreOS/rsyslog/Sanity/omfile-module-test
+    extra-nitrate: TC#0059837
+    tag+:
+      - rsyslogSyntaxOLD
+    id: eb8a67f8-8c01-49fe-a362-eb30ead71cd0
 /newSyntax:
-  environment:
-    rsyslogSyntax: new
-  extra-summary: rsyslogSyntax=new /CoreOS/rsyslog/Sanity/omfile-module-test
-  extra-nitrate: TC#0419213
-  tag+:
-  - rsyslogSyntaxNEW
+    environment:
+        rsyslogSyntax: new
+    extra-summary: rsyslogSyntax=new /CoreOS/rsyslog/Sanity/omfile-module-test
+    extra-nitrate: TC#0419213
+    tag+:
+      - rsyslogSyntaxNEW
+    id: 3659ec01-a73a-4874-b356-5aeb99812afd

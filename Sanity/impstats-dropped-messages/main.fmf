@@ -10,5 +10,8 @@ require:
   - rsyslog
 tag:
   - NoRHEL6
+  - NoRHEL7
+  - NoRHEL8
   - Tier3
 tier: 3
+id: f1625804-8447-491f-a78c-14b9338127c9

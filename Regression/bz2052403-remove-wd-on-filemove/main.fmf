@@ -1,4 +1,5 @@
-description: Test for BZ#2052403 imfile does not remove watch descriptor on inode change
+description: Test for BZ#2052403 imfile does not remove watch descriptor on 
+    inode change
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 duration: 10m
@@ -16,3 +17,4 @@ extra-nitrate: TC#0613182
 adjust:
   - enabled: false
     when: distro < rhel-8.7
+id: 10f4b33d-13f8-4c30-b186-9036d21c83a7

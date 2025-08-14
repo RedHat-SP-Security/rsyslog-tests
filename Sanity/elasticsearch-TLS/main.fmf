@@ -12,12 +12,12 @@ require+:
 duration: 5m
 enabled: true
 tag:
-- NoRHEL4
-- NoRHEL5
-- NoRHEL6
-- NoRHEL7
-- NoRHEL8
-- Tier2
+  - NoRHEL4
+  - NoRHEL5
+  - NoRHEL6
+  - NoRHEL7
+  - NoRHEL8
+  - Tier2
 adjust:
   - enabled: false
     when: arch == s390x,ppc64le,ia64
@@ -25,6 +25,7 @@ adjust:
 /rsa:
     environment:
         CRYPTO_ALG: RSA
+    id: daadc7b7-92e7-4fab-9fcf-be01dfc72181
 /pqc_alg:
     environment:
         CRYPTO_ALG: ML-DSA-65
@@ -35,3 +36,4 @@ adjust:
       - enabled: false
         when: distro < rhel-10.1 or distro < fedora-43
         because: PQC is available from this version of OS
+    id: 4a254740-c0ff-4424-ab5c-8ef540c190fd

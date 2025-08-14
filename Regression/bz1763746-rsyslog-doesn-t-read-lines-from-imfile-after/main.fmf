@@ -5,24 +5,27 @@ description: |
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
+  - library(distribution/dpcommon)
 recommend:
-- rsyslog
+  - rsyslog
 duration: 15m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- TIPfail
-- TIPfail_Security
-- Tier2
-- rhel-7.8
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - TIPfail
+  - TIPfail_Security
+  - Tier2
+  - rhel-7.8
 tier: '2'
-extra-summary: /CoreOS/rsyslog/Regression/bz1763746-rsyslog-doesn-t-read-lines-from-imfile-after
-extra-task: /CoreOS/rsyslog/Regression/bz1763746-rsyslog-doesn-t-read-lines-from-imfile-after
+extra-summary: 
+    /CoreOS/rsyslog/Regression/bz1763746-rsyslog-doesn-t-read-lines-from-imfile-after
+extra-task: 
+    /CoreOS/rsyslog/Regression/bz1763746-rsyslog-doesn-t-read-lines-from-imfile-after
 extra-nitrate: TC#0604434
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-7.7
     continue: false
+id: 7620b959-5732-443d-b67e-46afb5251a65

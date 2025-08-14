@@ -1,10 +1,11 @@
 summary: TCP/TLS connection, set up using ansible linux-system-roles
 environment:
     ANSIBLE: 1
-
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.3
     continue: false
 extra-nitrate: TC#0607998
-extra-summary: ANSIBLE=1 /CoreOS/rsyslog/Multihost/bz701782-rsyslog-TLS-does-not-encrypt-traffic-on-s390x-and
+extra-summary: ANSIBLE=1 
+    /CoreOS/rsyslog/Multihost/bz701782-rsyslog-TLS-does-not-encrypt-traffic-on-s390x-and
+id: 46f0fd2c-cd8a-4754-a682-34ac5f46cda5

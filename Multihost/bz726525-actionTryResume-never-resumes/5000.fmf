@@ -1,15 +1,16 @@
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog7
-- rsyslog
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog
+  - rsyslog5
 enabled: true
 tag+:
-- TIPfail_Security
-- fedora-wanted
-- notip
-- rhel-5.8
-- rsyslogSyntaxOLD
+  - TIPfail_Security
+  - fedora-wanted
+  - notip
+  - rhel-5.8
+  - rsyslogSyntaxOLD
 extra-summary: /CoreOS/rsyslog/Multihost/bz726525-actionTryResume-never-resumes
 extra-nitrate: TC#0115306
+id: a4a5013a-4037-4c94-b06f-38f83dc28dca

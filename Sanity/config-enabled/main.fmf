@@ -3,29 +3,30 @@ description: ''
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/ConditionalPhases)
-- library(distribution/Cleanup)
-- library(distribution/tcf)
+  - library(distribution/ConditionalPhases)
+  - library(distribution/Cleanup)
+  - library(distribution/tcf)
 recommend:
-- rsyslog
-- /usr/bin/netstat
+  - rsyslog
+  - /usr/bin/netstat
 duration: 5m
 enabled: true
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- NoRHEL6
-- NoRHEL7
-- TIPfail
-- TIPfail_Security
-- Tier2
-- rhel-8.0.0
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - NoRHEL6
+  - NoRHEL7
+  - TIPfail
+  - TIPfail_Security
+  - Tier2
+  - rhel-8.0.0
 tier: '2'
 extra-summary: /CoreOS/rsyslog/Sanity/config-enabled
 extra-task: /CoreOS/rsyslog/Sanity/config-enabled
 extra-nitrate: TC#0605354
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.2
     continue: false
+id: 487cbe45-f190-499f-a54b-25a22d702816

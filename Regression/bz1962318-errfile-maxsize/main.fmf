@@ -5,7 +5,7 @@ require+:
   - rsyslog
   - library(selinux-policy/common)
 environment:
-  AVC_ERROR: +no_avc_check
+    AVC_ERROR: +no_avc_check
 duration: 15m
 enabled: true
 tag:
@@ -23,3 +23,4 @@ extra-summary: /Regression/bz1962318-errfile-maxsize
 link:
     verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1962318
 extra-nitrate: TC#0613106
+id: 1d97414c-7123-4010-8370-d6dfd1d331de

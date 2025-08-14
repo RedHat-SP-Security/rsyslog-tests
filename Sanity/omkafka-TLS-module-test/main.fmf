@@ -2,28 +2,28 @@ summary: sanity test for omkafka module and TLS usage
 description: ''
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
-- rsyslog
-- librdkafka
+  - rsyslog
+  - librdkafka
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
-- library(selinux-policy/common)
-- wget
+  - library(distribution/dpcommon)
+  - library(selinux-policy/common)
+  - wget
 recommend:
-- rsyslog
-- librdkafka
-- rsyslog-kafka
-- java
+  - rsyslog
+  - librdkafka
+  - rsyslog-kafka
+  - java
 duration: 25m
 enabled: true
 tag:
-- NoRHEL4
-- NoRHEL5
-- NoRHEL6
-- NoRHEL7
-- NoRHEL8
-- TIPpass_Security
-- Tier2
+  - NoRHEL4
+  - NoRHEL5
+  - NoRHEL6
+  - NoRHEL7
+  - NoRHEL8
+  - TIPpass_Security
+  - Tier2
 adjust:
   - enabled: false
     when: distro < rhel-9
@@ -34,6 +34,7 @@ adjust:
 /rsa:
     environment:
         CRYPTO_ALG: RSA
+    id: 7cefc56e-6109-45af-9a53-437d8339403b
 /pqc_alg:
     environment:
         CRYPTO_ALG: ML-DSA-65
@@ -44,3 +45,4 @@ adjust:
       - enabled: false
         when: distro < rhel-10.1 or distro < fedora-43
         because: PQC is available from this version of OS
+    id: d867388d-275a-4987-adcb-52fbc9325e29

@@ -4,25 +4,27 @@ description: |
     Bugzilla link: https://bugzilla.redhat.com/show_bug.cgi?id=654379
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog7
-- rsyslog
-- rsyslog
-- rsyslog5
+  - rsyslog7
+  - rsyslog
+  - rsyslog
+  - rsyslog5
 test: ./runtest.sh
 recommend:
-- rsyslog
+  - rsyslog
 duration: 5m
 enabled: true
 tag:
-- CI-Tier-1
-- SP-TBU
-- TIPpass_Security
-- Tier1
-- Tier1security
-- rhel-5.8
-- rsyslogSyntaxOLD
-- ImageMode
+  - CI-Tier-1
+  - SP-TBU
+  - TIPpass_Security
+  - Tier1
+  - Tier1security
+  - rhel-5.8
+  - rsyslogSyntaxOLD
+  - ImageMode
 tier: '1'
-extra-summary: /CoreOS/rsyslog/Regression/bz654379-service-rsyslog-start-cat-hangs
+extra-summary: 
+    /CoreOS/rsyslog/Regression/bz654379-service-rsyslog-start-cat-hangs
 extra-task: /CoreOS/rsyslog/Regression/bz654379-service-rsyslog-start-cat-hangs
 extra-nitrate: TC#0115305
+id: 88640f0c-5779-4d0e-8139-9c4fb3bd3c0f

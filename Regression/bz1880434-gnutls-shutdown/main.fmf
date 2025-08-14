@@ -2,23 +2,24 @@ summary: gnutls shutdown
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
-- /usr/sbin/iptables
-- gnutls-utils
-- rsyslog-gnutls
+  - library(distribution/dpcommon)
+  - /usr/sbin/iptables
+  - gnutls-utils
+  - rsyslog-gnutls
 recommend:
-- kernel-modules-core
+  - kernel-modules-core
 duration: 15m
 enabled: true
 tag:
-- Tier3
-- CI-Tier-1
+  - Tier3
+  - CI-Tier-1
 tier: '3'
 adjust:
--   enabled: false
+  - enabled: false
     when: distro < rhel-8.5
     continue: false
 extra-summary: /Regression/bz1880434-gnutls-shutdown
 extra-nitrate: TC#0610787
 link:
-  verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1880434
+    verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1880434
+id: e144be5f-ab3b-4ac7-9259-eed66cb64e37

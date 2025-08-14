@@ -4,22 +4,24 @@ description: |
     Bugzilla link: https://bugzilla.redhat.com/show_bug.cgi?id=1614181
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
-- rsyslog
+  - rsyslog
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
+  - library(distribution/dpcommon)
 recommend:
-- rsyslog
+  - rsyslog
 duration: 120m
 enabled: true
 tag+:
-- NoRHEL4
-- NoRHEL5
-- fedora-wanted
-- rhel-8.1
-extra-summary: /CoreOS/rsyslog/Multihost/bz1614181-fromhost-property-case-sensitive-when-using-UDP
+  - NoRHEL4
+  - NoRHEL5
+  - fedora-wanted
+  - rhel-8.1
+extra-summary: 
+    /CoreOS/rsyslog/Multihost/bz1614181-fromhost-property-case-sensitive-when-using-UDP
 extra-nitrate: TC#0600869
 adjust:
--   enabled: false
+  - enabled: false
     when: distro <= rhel-7.7
     continue: false
+id: a503820b-1112-4e29-878d-133f23a55cca

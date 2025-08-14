@@ -5,30 +5,33 @@ description: |
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
-- library(distribution/dpcommon)
+  - library(distribution/dpcommon)
 recommend:
-- rsyslog
-- nmap-ncat
-- gnutls
-- gnutls-utils
-- rsyslog-gnutls
+  - rsyslog
+  - nmap-ncat
+  - gnutls
+  - gnutls-utils
+  - rsyslog-gnutls
 duration: 45m
 enabled: true
 hardware:
-  memory: '>=4GB'
+    memory: '>=4GB'
 tag:
-- CI-Tier-1
-- NoRHEL4
-- NoRHEL5
-- TIPpass
-- Tier2
-- rhel-7.7.z
-- rhel-7.9
+  - CI-Tier-1
+  - NoRHEL4
+  - NoRHEL5
+  - TIPpass
+  - Tier2
+  - rhel-7.7.z
+  - rhel-7.9
 tier: '2'
-extra-summary: /CoreOS/rsyslog/Regression/bz1858297-Repeated-buffer-overflow-detected
-extra-task: /CoreOS/rsyslog/Regression/bz1858297-Repeated-buffer-overflow-detected
+extra-summary: 
+    /CoreOS/rsyslog/Regression/bz1858297-Repeated-buffer-overflow-detected
+extra-task: 
+    /CoreOS/rsyslog/Regression/bz1858297-Repeated-buffer-overflow-detected
 extra-nitrate: TC#0608025
 adjust:
--   enabled: false
+  - enabled: false
     when: distro == rhel-4, rhel-5
     continue: false
+id: 6d1a0511-94c5-4e6f-a4f3-66a711d78304
