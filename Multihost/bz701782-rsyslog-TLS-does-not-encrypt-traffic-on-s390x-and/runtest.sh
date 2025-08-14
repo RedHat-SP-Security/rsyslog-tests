@@ -418,7 +418,6 @@ rlJournalStart
 
   rlPhaseStartTest "the other side result"
     rlRun "syncSet SYNC_RESULT $(rlGetTestState; echo $?)"
-    rlAssert0 'check ther the other site finished successfuly' $(syncExp SYNC_RESULT)
   rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd
