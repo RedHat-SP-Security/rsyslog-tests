@@ -110,7 +110,14 @@ EOF
         rlRun "syncSet CERTS_READY - < certs.tar"
 
         # rsyslog setup
-        rlRun "mkdir -p /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
+        if [ -d "/etc/rsyslogd.d" ]; then
+            echo "Directory /etc/rsyslogd.d exists. Clearing it."
+            rlRun "rm -rf /etc/rsyslogd.d/*" 0 "Clear the directory"
+        else
+            echo "Directory /etc/rsyslogd.d does not exist. Creating it."
+            rlRun "mkdir -p /etc/rsyslogd.d" 0 "Creating the directory"
+        fi
+        rlRun "chmod 700 /etc/rsyslogd.d" 0 "Change permissions"
         rlRun "cp ca.pem server-key.pem server-cert.pem /etc/rsyslogd.d/ && chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d" 0 "Copy certificates to /etc/rsyslogd.d"
 
         rsyslogConfigIsNewSyntax || rsyslogConfigAppend "MODULES" /etc/rsyslog.conf <<EOF
