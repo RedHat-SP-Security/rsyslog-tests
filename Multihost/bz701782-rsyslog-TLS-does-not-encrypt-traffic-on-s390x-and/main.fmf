@@ -19,6 +19,8 @@ test: ./runtest.sh
 require+:
 - library(distribution/dpcommon)
 - library(distribution/epel)
+- ansible-core
+- rhel-system-roles
 recommend:
 - rsyslog
 - gnutls
@@ -30,6 +32,5 @@ recommend:
 - lsof
 - wireshark
 - ansible
-- rhel-system-roles
 duration: 2h
 enabled: true

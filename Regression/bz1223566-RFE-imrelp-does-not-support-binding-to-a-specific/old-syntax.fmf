@@ -1,13 +1,13 @@
 environment:
     rsyslogSyntax: old
 tag:
-  - NoRHEL4
-  - NoRHEL5
-  - TIPfail
-  - TIPfail_Security
-  - Tier2
-  - Tier2security
-  - ImageMode
+- NoRHEL4
+- NoRHEL5
+- TIPfail
+- TIPfail_Security
+- Tier2
+- Tier2security
+
 tier: '2'
 extra-summary: rsyslogSyntax=old 
     /CoreOS/rsyslog/Regression/bz1223566-RFE-imrelp-does-not-support-binding-to-a-specific
