@@ -139,7 +139,7 @@ y'"
       }
       rlRun "cat /root/.ssh/id*.pub >> /root/.ssh/authorized_keys"
       rlRun "cat /root/.ssh/id*.pub | syncSet SSH_KEY -"
-      rlRun "epel yum install ansible -y"
+      rlRun "yum --enablerepo epel --enablerepo epel-internal install ansible-core -y"
       rlRun "rlCheckRequirements ansible rhel-system-roles"
       cat > inventory.ini <<EOF
 [servers]
