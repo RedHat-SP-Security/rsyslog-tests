@@ -15,7 +15,7 @@ jobs:
     tf_extra_params:
       test:
         tmt:
-          name: "/Plans/ci/sanity"
+          name: "/Plans/ci"
       environment:
         tmt:
           context:

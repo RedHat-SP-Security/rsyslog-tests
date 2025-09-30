@@ -1,0 +1,20 @@
+summary: test plan for rsyslog errata testing
+
+prepare:
+  - how: shell
+    script:
+     - systemctl disable --now dnf-makecache.service || true
+     - systemctl disable --now dnf-makecache.timer || true
+     - dnf makecache
+
+discover:
+  - name: Upstream_rsyslog_tests
+    how: fmf
+    url: https://github.com/RedHat-SP-Security/rsyslog-tests
+    ref: master
+    test:
+      - /Regression
+      - /Sanity
+
+execute:
+    how: tmt
