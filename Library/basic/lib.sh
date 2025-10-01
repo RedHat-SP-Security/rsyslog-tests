@@ -880,11 +880,18 @@ _EOF
 
 
 rsyslogCleanup() {
-  rlRun "rlFileRestore --namespace rsyslog-lib" 0-255
-  rlRun "rlFileRestore /etc/systemd/journald.conf" 0,16 #possible that file doesn't exist for RHEL-10,nothing to restore, then used exit code 16
-  rsyslogServiceRestore
-  rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
+    rlRun "rlFileRestore --namespace rsyslog-lib" 0-255
+    rlRun "rlFileRestore /etc/systemd/journald.conf" 0,16 
+    rsyslogServiceRestore
 
+    # This counteracts the 'systemctl stop syslog.socket' inside rsyslogServiceRestore
+    rlIsRHEL '<7' || {
+      __INTERNAL_PrintText "starting syslog.socket to restore /dev/log for next test" "LOG"
+      # Use rlServiceStart to ensure proper logging/handling
+      rlServiceStart syslog.socket
+      rlRun "sleep 1" # Give the kernel time to recreate the socket file
+    }
+    rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 }
 
 
