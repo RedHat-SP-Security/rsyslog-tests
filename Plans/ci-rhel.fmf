@@ -1,4 +1,4 @@
-summary: test plan for rsyslog errata testing
+summary: test plan for rsyslog CI testing targeting RHEL systems
 
 prepare:
   - how: shell

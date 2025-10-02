@@ -1,21 +1,37 @@
 jobs:
   - 
-    job: tests
+    job: tests for RHEL
     trigger: pull_request
     branch: master
     use_internal_tf: True
     targets:
-      fedora-stable: {}
       centos-stream-9-x86_64:
         distros: [RHEL-9-Nightly]
       centos-stream-10-x86_64:
         distros: [RHEL-10-Nightly]
     skip_build: true
-    identifier: "sanity"
+    identifier: "Sanity and Regression Tests"
     tf_extra_params:
       test:
         tmt:
-          name: "/Plans/ci"
+          name: "/Plans/ci-rhel"
+      environment:
+        tmt:
+          context:
+            target_PR_branch: master
+  - 
+    job: tests for Fedora
+    trigger: pull_request
+    branch: master
+    use_internal_tf: True
+    targets:
+      fedora-stable: {}
+    skip_build: true
+    identifier: "Sanity and Regression Tests"
+    tf_extra_params:
+      test:
+        tmt:
+          name: "/Plans/ci-fedora"
       environment:
         tmt:
           context:
