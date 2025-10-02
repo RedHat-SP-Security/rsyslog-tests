@@ -1,6 +1,6 @@
 jobs:
   - 
-    job: tests for RHEL
+    job: tests
     trigger: pull_request
     branch: master
     use_internal_tf: True
@@ -20,7 +20,7 @@ jobs:
           context:
             target_PR_branch: master
   - 
-    job: tests for Fedora
+    job: tests
     trigger: pull_request
     branch: master
     use_internal_tf: True
