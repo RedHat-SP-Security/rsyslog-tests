@@ -4,8 +4,6 @@ test: ./runtest.sh
 require+:
   - rsyslog
   - library(selinux-policy/common)
-environment:
-    AVC_ERROR: +no_avc_check
 duration: 15m
 enabled: true
 tag:

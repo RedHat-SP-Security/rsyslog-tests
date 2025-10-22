@@ -41,7 +41,7 @@ rlJournalStart
         rlRun "rsyslogSetup"
         rlLog "Updating /etc/rsyslog.conf"
         rsyslogConfigAppend "RULES" <<EOF
-action(type="omfwd" target="1.2.3.4" port="1234" Protocol="tcp"
+action(type="omfwd" target="127.0.0.1" port="514" Protocol="tcp"
        action.errorfile="${RSYSLOG_ERRFILE}" action.errorfile.maxsize="${RSYSLOG_ERRFILE_MAXSIZE}")
 EOF
         rlRun "rsyslogPrintEffectiveConfig -n"
@@ -73,7 +73,6 @@ EOF
         rlAssertExists ${RSYSLOG_ERRFILE}
         size=$(ls -l ${RSYSLOG_ERRFILE} | awk {'print $5'})
         rlAssertEquals "Checking not initally empty error file:${RSYSLOG_ERRFILE} has size:${RSYSLOG_ERRFILE_MAXSIZE}" "${size}" "${RSYSLOG_ERRFILE_MAXSIZE}"
-        rlRun "rlSEAVCCheck --expect name_connect"
     rlPhaseEnd
 
     rlPhaseStartCleanup
