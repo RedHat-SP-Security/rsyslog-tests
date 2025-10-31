@@ -121,6 +121,51 @@ EOF
     rlPhaseEnd
 fi
 
+rlPhaseStartTest "Test omfile file owner, group, and mode directives"
+        # Setup: Create the user and group required for the test
+        rlRun "getent group adm || groupadd adm" 0 "Ensure 'adm' group exists"
+        rlRun "getent passwd syslog || useradd -N -M -r -g adm syslog" 0 "Ensure 'syslog' user exists"
+
+        # --- CONFIGURATION FOR NEW SYNTAX ---
+        rsyslogConfigIsNewSyntax && rsyslogConfigAddTo --begin "MODULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection OWNERTEST_MODULE <<EOF
+# Load omfile with specific owner/group/mode for testing
+module(load="builtin:omfile" fileCreateMode="0600" fileOwner="syslog" fileGroup="adm")
+EOF
+)
+        rsyslogConfigIsNewSyntax && rsyslogConfigAddTo --begin "RULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection OWNERTEST_RULE <<EOF
+# Rule to create the test log file
+*.* action(type="omfile" file="/var/log/rsyslog-owner-test.log")
+EOF
+)
+
+        # --- CONFIGURATION FOR OLD (LEGACY) SYNTAX ---
+        rsyslogConfigIsNewSyntax || rsyslogConfigAddTo --begin "RULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection OWNERTEST_RULE <<EOF
+# Set legacy directives for file creation
+\$FileOwner syslog
+\$FileGroup adm
+\$FileCreateMode 0600
+# Rule to create the test log file
+*.* /var/log/rsyslog-owner-test.log
+EOF
+)
+
+        # Execute the test
+        rsyslogServiceStop
+        rlRun "rm -f /var/log/rsyslog-owner-test.log" 0 "Remove old test log if it exists"
+        rsyslogServiceStart
+        rlRun "logger 'omfile owner and permission test'" 0 "Send a message to trigger file creation"
+        sleep 2 # Give rsyslog time to create and write to the file
+
+        # Verify the results
+        rlAssertExists "/var/log/rsyslog-owner-test.log" "Test log file must exist"
+        
+        rlRun -s "stat -c '%U:%G' /var/log/rsyslog-owner-test.log"
+        rlAssertEquals "File ownership should be 'syslog:adm'" "$(cat "$rlRun_LOG")" "syslog:adm"
+
+        rlRun -s "stat -c '%a' /var/log/rsyslog-owner-test.log"
+        rlAssertEquals "File permissions should be '600'" "$(cat "$rlRun_LOG")" "600"
+    rlPhaseEnd
+    
     rlPhaseStartCleanup
         rlFileRestore
         rsyslogServiceRestore
