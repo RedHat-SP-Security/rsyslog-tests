@@ -165,11 +165,13 @@ EOF
         rlRun -s "stat -c '%a' /var/log/rsyslog-owner-test.log"
         rlAssertEquals "File permissions should be '600'" "$(cat "$rlRun_LOG")" "600"
     rlPhaseEnd
-    
+
     rlPhaseStartCleanup
         rlFileRestore
         rsyslogServiceRestore
         rlRun "rm -f /var/log/rsyslog.test.log /var/log/rsyslog.test.gz /tmp/rsyslog.rel-path-test.log"
+        # Clean up the user created for the owner/group test
+        rlRun "userdel syslog" 0 "Remove test user 'syslog'"
     rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd
