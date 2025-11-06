@@ -70,9 +70,15 @@ rlJournalStart
         fi
         pid_of=`pidof rsyslogd`
         rlLogInfo "PID of rsyslogd: $pid_of"
-        pid_file=`cat /run/rsyslogd.pid`
-        rlIsRHELLike '<10' && pid_file='/var/run/rsyslog.pid'
+        if rlIsRHELLike '<10'; then
+            PID_FILE_PATH="/var/run/rsyslogd.pid"
+        else
+            PID_FILE_PATH="/run/rsyslogd.pid"
+        fi
+        # Now, read the PID from the correct file
+        pid_file=$(cat "$PID_FILE_PATH")
         rlLogInfo "PID in pidfile: $pid_file"
+        
         # dummy check
         [ $pid_of -ne $pid_file ] && rlFail "PIDs are not the same"
     rlPhaseEnd
