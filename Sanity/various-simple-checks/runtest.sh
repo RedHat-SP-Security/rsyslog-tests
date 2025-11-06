@@ -71,7 +71,7 @@ rlJournalStart
         pid_of=`pidof rsyslogd`
         rlLogInfo "PID of rsyslogd: $pid_of"
         if rlIsRHELLike '<10'; then
-            PID_FILE_PATH="/var/run/rsyslog.pid"
+            PID_FILE_PATH="/var/run/rsyslogd.pid"
         else
             PID_FILE_PATH="/run/rsyslogd.pid"
         fi
