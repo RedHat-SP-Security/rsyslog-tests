@@ -75,6 +75,9 @@ EOF
           #}}}
         tcfFin; }
         CleanupRegister 'rlRun "rlSEPortRestore"'
+        # Pre-cleanup: Delete the port first to avoid conflicts from a previous failed run
+        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514 || true" 0 "Pre-cleaning SELinux port"
+        # Now, add the port in a guaranteed clean state
         rlRun "rlSEPortAdd tcp 50514 syslogd_port_t" 0-255
         rlRun "rsyslogPrintEffectiveConfig -n"
         rlRun "rsyslogServiceStart"
