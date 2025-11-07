@@ -75,6 +75,9 @@ EOF
           #}}}
         tcfFin; }
         CleanupRegister 'rlRun "rlSEPortRestore"'
+        # Pre-cleanup: Delete the port first to avoid conflicts from a previous failed run
+        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514 || true" 0 "Pre-cleaning SELinux port"
+        # Now, add the port in a guaranteed clean state
         rlRun "rlSEPortAdd tcp 50514 syslogd_port_t" 0-255
         rlRun "rsyslogPrintEffectiveConfig -n"
         rlRun "rsyslogServiceStart"
@@ -87,7 +90,7 @@ EOF
           rlLog "This case is valid on RHEL-5 only for rsyslog5"
         else
           rlRun "netstat -putna"
-          rlRun "echo -e \"localhost 1r\r2r\n3rL\" | nc 127.0.0.1 50514"
+          rlRun "echo -e \"localhost 1r\r2r\n3rL\" | nc -N 127.0.0.1 50514"
           sleep 1s
           rlAssertGrep "1r#0152r#0123r" /var/log/messages_localhost
         fi

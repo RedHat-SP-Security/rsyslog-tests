@@ -50,8 +50,11 @@ rlJournalStart
         }
 
         CleanupRegister 'rlRun "rlSEPortRestore"'
+        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514-50516 || true" 0 "Pre-cleaning SELinux ports"
+
+        # Now, add the ports. This will run in a guaranteed clean state.
         rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0 "Enabling ports 50514-50516 in SElinux"
-	rlRun -s "semanage port -l | grep syslog"
+    rlRun -s "semanage port -l | grep syslog"
 	rlAssertGrep '50514' $rlRun_LOG
 	rm -f $rlRun_LOG
 
