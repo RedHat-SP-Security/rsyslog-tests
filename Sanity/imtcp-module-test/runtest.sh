@@ -50,15 +50,16 @@ rlJournalStart
         }
 
         CleanupRegister 'rlRun "rlSEPortRestore"'
-        # Pre-clean SELinux ports - try both individual ports and range
-        # (Fedora 43 has port 50514 in default policy as individual port)
-        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514 || true" 0 "Pre-cleaning SELinux port 50514"
+        # Pre-clean SELinux ports - only clean local customizations
+        # (Fedora 43 has port 50514 in default policy, so we can't delete it)
+        # We only need to clean ports 50515 and 50516 if they were added previously
         rlRun "semanage port -d -t syslogd_port_t -p tcp 50515 || true" 0 "Pre-cleaning SELinux port 50515"
         rlRun "semanage port -d -t syslogd_port_t -p tcp 50516 || true" 0 "Pre-cleaning SELinux port 50516"
-        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514-50516 || true" 0 "Pre-cleaning SELinux port range"
+        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514-50516 || true" 0 "Pre-cleaning SELinux port range (if it exists)"
 
-        # Now, add the ports. This will run in a guaranteed clean state.
-        rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0 "Enabling ports 50514-50516 in SElinux"
+        # Port 50514 is already in the base policy on Fedora 43, so we only add 50515 and 50516
+        rlRun "rlSEPortAdd tcp 50515 syslogd_port_t" 0 "Enabling port 50515 in SElinux"
+        rlRun "rlSEPortAdd tcp 50516 syslogd_port_t" 0 "Enabling port 50516 in SElinux"
     rlRun -s "semanage port -l | grep syslog"
 	rlAssertGrep '50514' $rlRun_LOG
 	rm -f $rlRun_LOG
