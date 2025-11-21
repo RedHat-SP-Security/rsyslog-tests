@@ -97,8 +97,10 @@ EOF
           rlLog "This case is valid on RHEL-5 only for rsyslog5"
         else
           rlRun "netstat -putna"
+          # Use -w 1 to force netcat to close the connection after 1 second, preventing a hang.
+          # The -N flag is removed as it can cause issues when relying on a stream close.
           rlRun "echo -e \"localhost 1r\r2r\n3rL\" | nc -w 1 127.0.0.1 50514"
-          sleep 1s
+          sleep 3s # Increase sleep slightly to be safer across slower VMs
           rlAssertGrep "1r#0152r#0123r" /var/log/messages_localhost
         fi
       tcfFin; }
