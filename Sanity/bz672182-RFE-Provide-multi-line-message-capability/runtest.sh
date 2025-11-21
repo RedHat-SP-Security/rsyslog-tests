@@ -76,9 +76,16 @@ EOF
         tcfFin; }
         CleanupRegister 'rlRun "rlSEPortRestore"'
         # Pre-cleanup: Delete the port first to avoid conflicts from a previous failed run
+        # In Fedora 43+, port 50514 may be in the default policy, so try to delete it
+        # from local customizations first (will fail if not there, that's OK)
         rlRun "semanage port -d -t syslogd_port_t -p tcp 50514 || true" 0 "Pre-cleaning SELinux port"
-        # Now, add the port in a guaranteed clean state
-        rlRun "rlSEPortAdd tcp 50514 syslogd_port_t" 0-255
+        # Check if port already has correct type (e.g., in base policy on Fedora 43+)
+        if semanage port -l | grep -q "^syslogd_port_t.*tcp.*50514"; then
+          rlLog "Port 50514 already has type syslogd_port_t, skipping add"
+        else
+          # Port doesn't exist or has wrong type, add it
+          rlRun "rlSEPortAdd tcp 50514 syslogd_port_t" 0-255
+        fi
         rlRun "rsyslogPrintEffectiveConfig -n"
         rlRun "rsyslogServiceStart"
       tcfFin; }
