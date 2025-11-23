@@ -31,7 +31,7 @@ jobs:
     tf_extra_params:
       test:
         tmt:
-          name: "/Plans/ci-fedora"
+          name: "ci-fedora"
       environment:
         tmt:
           context:
