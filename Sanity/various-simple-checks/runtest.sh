@@ -52,10 +52,14 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "BZ#1399562"
+        # Mark current position in log to check only new messages
+        LOG_MARK=$(wc -l < /var/log/messages)
         rlServiceStop "rsyslog"
         rlServiceStart "rsyslog"
         rlRun "sleep 2"
-        rlAssertNotGrep "rsyslogd.*segfault" /var/log/messages
+        # Check only new messages added since the mark
+        tail -n +$((LOG_MARK + 1)) /var/log/messages > $TmpDir/new_messages.log
+        rlAssertNotGrep "rsyslogd.*segfault" $TmpDir/new_messages.log
     rlPhaseEnd
 
     rlPhaseStartTest "BZ#1399652"
