@@ -58,11 +58,13 @@ rlJournalStart
         rlRun "semanage port -d -t syslogd_port_t -p tcp 50514-50516 || true" 0 "Pre-cleaning SELinux port range (if it exists)"
 
         # Port 50514 is already in the base policy on Fedora 43, so we only add 50515 and 50516
+        rlRun "rlSEPortAdd tcp 50514 syslogd_port_t" 0 "Enabling port 50514 in SElinux (Tolerant)"
         rlRun "rlSEPortAdd tcp 50515 syslogd_port_t" 0 "Enabling port 50515 in SElinux"
         rlRun "rlSEPortAdd tcp 50516 syslogd_port_t" 0 "Enabling port 50516 in SElinux"
-    rlRun -s "semanage port -l | grep syslog"
-	rlAssertGrep '50514' $rlRun_LOG
-	rm -f $rlRun_LOG
+
+        rlRun -s "semanage port -l | grep syslog"
+        rlAssertGrep '50514' $rlRun_LOG
+        rm -f $rlRun_LOG
 
         rsyslogPrepareConf
         rsyslogConfigAddTo "MODULES" < <(rsyslogConfigCreateSection 'IMTCP-MODLOAD')
