@@ -154,7 +154,7 @@ serial = 004
 expiration_days = 365
 dns_name = "$(hostname)"
 ip_address = "127.0.0.1"
-email = "root@$(hostname)
+email = "root@$(hostname)"
 tls_www_server
 EOF
         cat server.tmpl
