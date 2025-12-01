@@ -10,7 +10,6 @@ prepare:
 discover:
   - name: Upstream_rsyslog_tests
     how: fmf
-    url: https://github.com/RedHat-SP-Security/rsyslog-tests
     test:
       - /Regression
       - /Sanity
