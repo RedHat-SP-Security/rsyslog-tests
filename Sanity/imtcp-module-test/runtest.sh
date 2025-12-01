@@ -51,18 +51,15 @@ rlJournalStart
 
         CleanupRegister 'rlRun "rlSEPortRestore"'
         
-        # --- FIX START ---
-        # 1. Try adding the full range (Standard for F41/F42)
-        # We accept failure (0-255) because F43 will fail due to overlap on 50514.
-        rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0-255 "Try enabling ports 50514-50516"
-
-        # 2. Check if the upper ports (50515) were actually added.
-        # If 50515 is MISSING in the policy, the previous command failed (F43 scenario).
-        if ! semanage port -l | grep syslogd_port_t | grep -q "50515"; then
-            rlLog "Port 50515 not found (Overlap detected). Adding remaining ports 50515-50516."
-            rlRun "rlSEPortAdd tcp 50515-50516 syslogd_port_t" 0 "Enabling remaining ports 50515-50516"
+        # Check if 50514 is already present in the policy
+        # If yes (F43), we only add the upper ports. If no (F41/42), we add all.
+        if semanage port -l -n | grep -q "50514"; then
+            rlLog "Port 50514 is already defined. Adding only 50515-50516."
+            rlRun "rlSEPortAdd tcp 50515-50516 syslogd_port_t" 0 "Enabling ports 50515-50516"
+        else
+            rlLog "Port 50514 is missing. Adding full range 50514-50516."
+            rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0 "Enabling ports 50514-50516"
         fi
-        # --- FIX END ---
 
         rlRun -s "semanage port -l | grep syslog"
         rlAssertGrep '50514' $rlRun_LOG
