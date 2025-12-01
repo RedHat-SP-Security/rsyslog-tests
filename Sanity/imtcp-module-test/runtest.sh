@@ -51,11 +51,15 @@ rlJournalStart
 
         CleanupRegister 'rlRun "rlSEPortRestore"'
         
-        # --- FIX START: Handle Fedora 43 where 50514 is already default ---
-        # Try adding the full range (works on F41/F42). Allow failure (0-255).
-        rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0-255 "Try enabling ports 50514-50516 in SElinux"
-        if [ $? -ne 0 ]; then
-            rlLog "Full range add failed (likely overlap on 50514). Attempting to add 50515-50516."
+        # --- FIX START ---
+        # 1. Try adding the full range (Standard for F41/F42)
+        # We accept failure (0-255) because F43 will fail due to overlap on 50514.
+        rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0-255 "Try enabling ports 50514-50516"
+
+        # 2. Check if the upper ports (50515) were actually added.
+        # If 50515 is MISSING in the policy, the previous command failed (F43 scenario).
+        if ! semanage port -l | grep syslogd_port_t | grep -q "50515"; then
+            rlLog "Port 50515 not found (Overlap detected). Adding remaining ports 50515-50516."
             rlRun "rlSEPortAdd tcp 50515-50516 syslogd_port_t" 0 "Enabling remaining ports 50515-50516"
         fi
         # --- FIX END ---
