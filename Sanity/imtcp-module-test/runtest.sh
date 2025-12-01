@@ -50,10 +50,19 @@ rlJournalStart
         }
 
         CleanupRegister 'rlRun "rlSEPortRestore"'
-        rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0 "Enabling ports 50514-50516 in SElinux"
-	rlRun -s "semanage port -l | grep syslog"
-	rlAssertGrep '50514' $rlRun_LOG
-	rm -f $rlRun_LOG
+        
+        # --- FIX START: Handle Fedora 43 where 50514 is already default ---
+        # Try adding the full range (works on F41/F42). Allow failure (0-255).
+        rlRun "rlSEPortAdd tcp 50514-50516 syslogd_port_t" 0-255 "Try enabling ports 50514-50516 in SElinux"
+        if [ $? -ne 0 ]; then
+            rlLog "Full range add failed (likely overlap on 50514). Attempting to add 50515-50516."
+            rlRun "rlSEPortAdd tcp 50515-50516 syslogd_port_t" 0 "Enabling remaining ports 50515-50516"
+        fi
+        # --- FIX END ---
+
+        rlRun -s "semanage port -l | grep syslog"
+        rlAssertGrep '50514' $rlRun_LOG
+        rm -f $rlRun_LOG
 
         rsyslogPrepareConf
         rsyslogConfigAddTo "MODULES" < <(rsyslogConfigCreateSection 'IMTCP-MODLOAD')
@@ -76,7 +85,7 @@ EOF
 template(name="TestDynFile" type="string" string="/var/log/%inputname%.log")
 
 ruleset(name="TestRuleSet"){ ##############################
-	*.*     ?TestDynFile
+    *.* ?TestDynFile
 }
 
 input(type="imtcp" name="remote50514" port="50514" ruleset="TestRuleSet")
@@ -91,7 +100,7 @@ EOF
 \$template TestDynFile,"/var/log/%inputname%.log"
 
 \$RuleSet TestRuleSet
-*.*     ?TestDynFile
+*.* ?TestDynFile
 
 \$InputTCPServerInputName remote50514
 \$InputTCPServerBindRuleset TestRuleSet
@@ -121,35 +130,35 @@ EOF
     rlPhaseEnd; }
 
     rlPhaseStartTest "Multiple TCP instances test" && {
-	if rlIsRHEL 5; then
-	    lsof -i | grep rsyslog | grep IPv4 &> $TMPFILE
-	else
-	    lsof -iTCP -sTCP:LISTEN | grep rsyslog | grep IPv4 &> $TMPFILE
-	fi
-	cat $TMPFILE
-	IP4=`cat $TMPFILE | wc -l`
-	rlAssertEquals "3 rsyslog instancies on IPv4 should be running" $IP4 3
-	if rlIsRHEL 5; then
-	    lsof -i | grep rsyslog | grep IPv6 &> $TMPFILE
-	else
-	    lsof -iTCP -sTCP:LISTEN | grep rsyslog | grep IPv6 &> $TMPFILE
-	fi
-	cat $TMPFILE
-	IP6=`cat $TMPFILE | wc -l`
-	rlAssertEquals "3 rsyslog instancies on IPv6 should be running" $IP6 3
+    if rlIsRHEL 5; then
+        lsof -i | grep rsyslog | grep IPv4 &> $TMPFILE
+    else
+        lsof -iTCP -sTCP:LISTEN | grep rsyslog | grep IPv4 &> $TMPFILE
+    fi
+    cat $TMPFILE
+    IP4=`cat $TMPFILE | wc -l`
+    rlAssertEquals "3 rsyslog instancies on IPv4 should be running" $IP4 3
+    if rlIsRHEL 5; then
+        lsof -i | grep rsyslog | grep IPv6 &> $TMPFILE
+    else
+        lsof -iTCP -sTCP:LISTEN | grep rsyslog | grep IPv6 &> $TMPFILE
+    fi
+    cat $TMPFILE
+    IP6=`cat $TMPFILE | wc -l`
+    rlAssertEquals "3 rsyslog instancies on IPv6 should be running" $IP6 3
     rlPhaseEnd; }
 
     rlPhaseStartTest "Testing: \$InputTCPServerBindRuleset and TCP forwarding test" && {
-	rlRun "logger -p local4.info 'test message 50514'" 0 "Sending test message1 for port 50514"
-	rlRun "logger -p local5.info 'test message 50515'" 0 "Sending test message2 for port 50515"
-	rlRun "logger -p local6.info 'test message 50516'" 0 "Sending test message3 for port 50516"
-	#tail /var/log/messages
-	sleep 5
-	rsyslogServiceStop
-	sleep 3
-	rlRun "grep 'test message 50514' /var/log/remote50514.log" 0 "Checking that message1 was properly delivered"
-	rlRun "grep 'test message 50515' /var/log/remote50515.log" 0 "Checking that message2 was properly delivered"
-	rlRun "grep 'test message 50516' /var/log/remote50516.log" 0 "Checking that message3 was properly delivered"
+    rlRun "logger -p local4.info 'test message 50514'" 0 "Sending test message1 for port 50514"
+    rlRun "logger -p local5.info 'test message 50515'" 0 "Sending test message2 for port 50515"
+    rlRun "logger -p local6.info 'test message 50516'" 0 "Sending test message3 for port 50516"
+    #tail /var/log/messages
+    sleep 5
+    rsyslogServiceStop
+    sleep 3
+    rlRun "grep 'test message 50514' /var/log/remote50514.log" 0 "Checking that message1 was properly delivered"
+    rlRun "grep 'test message 50515' /var/log/remote50515.log" 0 "Checking that message2 was properly delivered"
+    rlRun "grep 'test message 50516' /var/log/remote50516.log" 0 "Checking that message3 was properly delivered"
     rlPhaseEnd; }
 
     rlPhaseStartCleanup 'cleanup test env' && {
@@ -158,8 +167,7 @@ EOF
 
     rlPhaseStartCleanup
         CleanupDo
-	rm $TMPFILE
+    rm $TMPFILE
     rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd
-
