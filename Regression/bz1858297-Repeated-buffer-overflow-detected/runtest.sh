@@ -132,40 +132,34 @@ EOF
     rlPhaseEnd
   }
 
-  tcfTry "Tests" --no-assert && {
-    rlPhaseStartTest && {
-      rsyslogResetLogFilePointer /var/log/messages
-      since=$(date +"%F %T")
-      tcfChk "open connections" && {
-        CleanupRegister 'rlRun "kill \$(pidof sleep)"'
-        progressHeader 1024
-        for ((i = 30000; i <= 31024; i++)); do
-          (
-            sleep 1200 | nc --ssl --ssl-cert /etc/rsyslogd.d/client-cert.pem \
-              --ssl-key /etc/rsyslogd.d/client-key.pem \
-              127.0.0.1 6514 &>/dev/null &
-          )
-          progressDraw $((i - 30000))
-        done
-        progressFooter
-        tcfFin
-      }
-      rlRun "echo 'muj test' | nc --ssl --ssl-cert /etc/rsyslog.d/client-cert.pem --ssl-key /etc/rsyslog.d/client-key.pem 127.0.0.1 6514"
-      rlRun -s "journalctl -u rsyslog -l --since '$since' --no-pager"
-      rlAssertNotGrep "code=dumped" $rlRun_LOG
-      rlAssertNotGrep "code=killed" $rlRun_LOG
-      rm -f $rlRun_LOG
-      rlRun "rsyslogServiceStatus"
-      sleepWithProgress 15
-      rlRun "rsyslogCatLogFileFromPointer /var/log/messages | grep 'muj test'"
-      rlPhaseEnd
-    }
-    tcfFin
+  rlPhaseStartTest && {
+    rsyslogResetLogFilePointer /var/log/messages
+    since=$(date +"%F %T")
+    rlLogInfo "Opening 1024 connections to test for buffer overflow"
+    CleanupRegister 'rlRun "kill \$(pidof sleep)"'
+    progressHeader 1024
+    for ((i = 30000; i <= 31024; i++)); do
+      (
+        sleep 1200 | nc --ssl --ssl-cert /etc/rsyslogd.d/client-cert.pem \
+          --ssl-key /etc/rsyslogd.d/client-key.pem \
+          127.0.0.1 6514 &>/dev/null &
+      )
+      progressDraw $((i - 30000))
+    done
+    progressFooter
+    rlRun "echo 'muj test' | nc --ssl --ssl-cert /etc/rsyslog.d/client-cert.pem --ssl-key /etc/rsyslog.d/client-key.pem 127.0.0.1 6514"
+    rlRun -s "journalctl -u rsyslog -l --since '$since' --no-pager"
+    rlAssertNotGrep "code=dumped" $rlRun_LOG
+    rlAssertNotGrep "code=killed" $rlRun_LOG
+    rm -f $rlRun_LOG
+    rlRun "rsyslogServiceStatus"
+    sleepWithProgress 15
+    rlRun "rsyslogCatLogFileFromPointer /var/log/messages | grep 'muj test'"
+    rlPhaseEnd
   }
 
   rlPhaseStartCleanup && {
     CleanupDo
-    tcfCheckFinal
     rlPhaseEnd
   }
   rlJournalPrintText

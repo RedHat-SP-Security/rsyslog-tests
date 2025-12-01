@@ -489,6 +489,8 @@ EOF
         rlRun -s "rsyslogServiceStatus"
         rlAssertGrep 'Some constraint limits were reached.' $rlRun_LOG
         test ! -f /var/log/rsyslog-stats.log || rlAssertNotGrep 'TLS driver: certificate chain depth' /var/log/rsyslog-stats.log
+        rlRun "rsyslogServiceStop"
+        rlRun "rsyslogServerStop"
     rlPhaseEnd; }
 
     rlPhaseStartTest "tls driver: certificate verify depth(max depth:3, actual depth:3)" && {
