@@ -50,20 +50,6 @@ rlJournalStart
         }
 
         CleanupRegister 'rlRun "rlSEPortRestore"'
-        # Pre-clean SELinux ports - only clean local customizations
-        # (Fedora 43 has port 50514 in default policy, so we can't delete it)
-        # We only need to clean ports 50515 and 50516 if they were added previously
-        rlRun "semanage port -d -t syslogd_port_t -p tcp 50515 || true" 0 "Pre-cleaning SELinux port 50515"
-        rlRun "semanage port -d -t syslogd_port_t -p tcp 50516 || true" 0 "Pre-cleaning SELinux port 50516"
-        rlRun "semanage port -d -t syslogd_port_t -p tcp 50514-50516 || true" 0 "Pre-cleaning SELinux port range (if it exists)"
-
-        # Port 50514 is already in the base policy on Fedora 43, so we only add 50515 and 50516
-        rlRun "rlSEPortAdd tcp 50514 syslogd_port_t" 0 "Enabling port 50514 in SElinux (Tolerant)"
-        rlRun "rlSEPortAdd tcp 50515 syslogd_port_t" 0 "Enabling port 50515 in SElinux"
-        rlRun "rlSEPortAdd tcp 50516 syslogd_port_t" 0 "Enabling port 50516 in SElinux"
-    rlRun -s "semanage port -l | grep syslog"
-	rlAssertGrep '50514' $rlRun_LOG
-	rm -f $rlRun_LOG
         
         # Check if 50514 is already present in the policy
         # If yes (F43), we only add the upper ports. If no (F41/42), we add all.
