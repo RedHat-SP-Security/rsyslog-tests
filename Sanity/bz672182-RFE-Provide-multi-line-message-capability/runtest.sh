@@ -87,7 +87,7 @@ EOF
           rlLog "This case is valid on RHEL-5 only for rsyslog5"
         else
           rlRun "netstat -putna"
-          rlRun "echo -e \"localhost 1r\r2r\n3rL\" | nc 127.0.0.1 50514"
+          rlRun "echo -e \"localhost 1r\r2r\n3rL\" | nc -w 1 127.0.0.1 50514"
           sleep 1s
           rlAssertGrep "1r#0152r#0123r" /var/log/messages_localhost
         fi
