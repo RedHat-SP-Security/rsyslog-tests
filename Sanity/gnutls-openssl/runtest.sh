@@ -293,14 +293,20 @@ EOF
         TSHARK_PID=$!
         sleep 1
         # Wait for TLS connection to be established (up to 10 seconds)
+        TLS_CONNECTED=0
         for i in {1..10}; do
             if ss -tn | grep -q ':6514.*ESTAB'; then
                 rlLog "TLS connection established after $i seconds"
+                TLS_CONNECTED=1
                 break
             fi
             sleep 1
         done
-        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
+        if [[ $TLS_CONNECTED -eq 0 ]]; then
+            rlRun "ss -tn state all '( dport = :6514 or sport = :6514 )'" 0 "Show all connections on port 6514 for debugging"
+            rlFail "TLS connection to port 6514 was not established within 10 seconds"
+        fi
+        rlRun "ss -tn | grep ':6514.*ESTAB'" 0 "Verify ESTABLISHED connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
@@ -333,14 +339,20 @@ EOF
         TSHARK_PID=$!
         sleep 1
         # Wait for TLS connection to be established (up to 10 seconds)
+        TLS_CONNECTED=0
         for i in {1..10}; do
             if ss -tn | grep -q ':6514.*ESTAB'; then
                 rlLog "TLS connection established after $i seconds"
+                TLS_CONNECTED=1
                 break
             fi
             sleep 1
         done
-        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
+        if [[ $TLS_CONNECTED -eq 0 ]]; then
+            rlRun "ss -tn state all '( dport = :6514 or sport = :6514 )'" 0 "Show all connections on port 6514 for debugging"
+            rlFail "TLS connection to port 6514 was not established within 10 seconds"
+        fi
+        rlRun "ss -tn | grep ':6514.*ESTAB'" 0 "Verify ESTABLISHED connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
@@ -373,14 +385,20 @@ EOF
         TSHARK_PID=$!
         sleep 1
         # Wait for TLS connection to be established (up to 10 seconds)
+        TLS_CONNECTED=0
         for i in {1..10}; do
             if ss -tn | grep -q ':6514.*ESTAB'; then
                 rlLog "TLS connection established after $i seconds"
+                TLS_CONNECTED=1
                 break
             fi
             sleep 1
         done
-        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
+        if [[ $TLS_CONNECTED -eq 0 ]]; then
+            rlRun "ss -tn state all '( dport = :6514 or sport = :6514 )'" 0 "Show all connections on port 6514 for debugging"
+            rlFail "TLS connection to port 6514 was not established within 10 seconds"
+        fi
+        rlRun "ss -tn | grep ':6514.*ESTAB'" 0 "Verify ESTABLISHED connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
@@ -413,14 +431,20 @@ EOF
         TSHARK_PID=$!
         sleep 1
         # Wait for TLS connection to be established (up to 10 seconds)
+        TLS_CONNECTED=0
         for i in {1..10}; do
             if ss -tn | grep -q ':6514.*ESTAB'; then
                 rlLog "TLS connection established after $i seconds"
+                TLS_CONNECTED=1
                 break
             fi
             sleep 1
         done
-        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
+        if [[ $TLS_CONNECTED -eq 0 ]]; then
+            rlRun "ss -tn state all '( dport = :6514 or sport = :6514 )'" 0 "Show all connections on port 6514 for debugging"
+            rlFail "TLS connection to port 6514 was not established within 10 seconds"
+        fi
+        rlRun "ss -tn | grep ':6514.*ESTAB'" 0 "Verify ESTABLISHED connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
