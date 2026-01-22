@@ -292,6 +292,15 @@ EOF
         rlRun "tshark -i any -f 'tcp port 6514' -a 'filesize:100' -w wireshark.dump 2>tshark.stderr &" 0 "Running wireshark"
         TSHARK_PID=$!
         sleep 1
+        # Wait for TLS connection to be established (up to 10 seconds)
+        for i in {1..10}; do
+            if ss -tn | grep -q ':6514.*ESTAB'; then
+                rlLog "TLS connection established after $i seconds"
+                break
+            fi
+            sleep 1
+        done
+        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
@@ -323,6 +332,15 @@ EOF
         rlRun "tshark -i any -f 'tcp port 6514' -a 'filesize:100' -w wireshark.dump 2>tshark.stderr &" 0 "Running wireshark"
         TSHARK_PID=$!
         sleep 1
+        # Wait for TLS connection to be established (up to 10 seconds)
+        for i in {1..10}; do
+            if ss -tn | grep -q ':6514.*ESTAB'; then
+                rlLog "TLS connection established after $i seconds"
+                break
+            fi
+            sleep 1
+        done
+        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
@@ -354,6 +372,15 @@ EOF
         rlRun "tshark -i any -f 'tcp port 6514' -a 'filesize:100' -w wireshark.dump 2>tshark.stderr &" 0 "Running wireshark"
         TSHARK_PID=$!
         sleep 1
+        # Wait for TLS connection to be established (up to 10 seconds)
+        for i in {1..10}; do
+            if ss -tn | grep -q ':6514.*ESTAB'; then
+                rlLog "TLS connection established after $i seconds"
+                break
+            fi
+            sleep 1
+        done
+        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
@@ -385,6 +412,15 @@ EOF
         rlRun "tshark -i any -f 'tcp port 6514' -a 'filesize:100' -w wireshark.dump 2>tshark.stderr &" 0 "Running wireshark"
         TSHARK_PID=$!
         sleep 1
+        # Wait for TLS connection to be established (up to 10 seconds)
+        for i in {1..10}; do
+            if ss -tn | grep -q ':6514.*ESTAB'; then
+                rlLog "TLS connection established after $i seconds"
+                break
+            fi
+            sleep 1
+        done
+        rlRun "ss -tn | grep ':6514'" 0 "Verify connection to port 6514 exists"
         rlRun "logger 'test message'"
         rlRun "sleep 3s"
         rlRun "cat $rsyslogServerLogDir/messages"
