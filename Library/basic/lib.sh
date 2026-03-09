@@ -26,10 +26,10 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   library-prefix = rsyslog
-#   library-version = 67
+#   library-version = 68
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 __INTERNAL_rsyslog_LIB_NAME="rsyslog/basic"
-__INTERNAL_rsyslog_LIB_VERSION=67
+__INTERNAL_rsyslog_LIB_VERSION=68
 
 : <<'=cut'
 =pod
@@ -884,12 +884,21 @@ rsyslogCleanup() {
     rlRun "rlFileRestore /etc/systemd/journald.conf" 0,16 
     rsyslogServiceRestore
 
-    # This counteracts the 'systemctl stop syslog.socket' inside rsyslogServiceRestore
+    # Restore /dev/log for next test.
+    # syslog.socket only manages /run/systemd/journal/syslog, not /dev/log.
+    # /dev/log is managed by systemd-journald. On RHEL 10+, syslog.socket
+    # fails entirely because syslog.service doesn't exist.
+    # Try syslog.socket first (for RHEL 7-9 compat), then check /dev/log
+    # and restart systemd-journald if it's missing.
     rlIsRHEL '<7' || {
       __INTERNAL_PrintText "starting syslog.socket to restore /dev/log for next test" "LOG"
-      # Use rlServiceStart to ensure proper logging/handling
-      rlServiceStart syslog.socket
-      rlRun "sleep 1" # Give the kernel time to recreate the socket file
+      rlServiceStart syslog.socket 2>/dev/null
+      sleep 1
+      if [[ ! -e /dev/log ]]; then
+        __INTERNAL_PrintText "restoring /dev/log by restarting systemd-journald" "LOG"
+        systemctl restart systemd-journald.socket systemd-journald.service 2>/dev/null
+        sleep 1
+      fi
     }
     rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 }
@@ -1350,6 +1359,11 @@ rsyslogServiceRestore() {
     __INTERNAL_PrintText "restoring syslog" "LOG"
     rlServiceRestore syslog || let res++
   }
+  if [[ ! -e /dev/log ]]; then
+    __INTERNAL_PrintText "restoring /dev/log by restarting systemd-journald" "LOG"
+    systemctl restart systemd-journald.socket systemd-journald.service 2>/dev/null
+    sleep 1
+  fi
   return $res
 }
 
