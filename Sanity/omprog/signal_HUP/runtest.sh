@@ -38,8 +38,8 @@ rlJournalStart && {
     rlRun "pushd $TmpDir"
     CleanupRegister 'rlRun "rsyslogCleanup"'
     rlRun "rsyslogSetup"
-    CleanupRegister 'rlRun "rlSEBooleanRestore domain_can_mmap_files logging_syslogd_list_non_security_dirs"'
-    rlRun 'rlSEBooleanOn domain_can_mmap_files logging_syslogd_list_non_security_dirs'
+    CleanupRegister 'rlRun "rlSEBooleanRestore domain_can_mmap_files logging_syslogd_list_non_security_dirs logging_syslogd_run_unconfined"'
+    rlRun 'rlSEBooleanOn domain_can_mmap_files logging_syslogd_list_non_security_dirs logging_syslogd_run_unconfined'
     CleanupRegister 'rlRun "rlServiceRestore rsyslog"'
     rlRun "rlServiceStop rsyslog"
     CleanupRegister 'rlRun "rlFileRestore"'
