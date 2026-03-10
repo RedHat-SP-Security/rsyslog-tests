@@ -885,20 +885,11 @@ rsyslogCleanup() {
     rsyslogServiceRestore
 
     # Restore /dev/log for next test.
-    # syslog.socket only manages /run/systemd/journal/syslog, not /dev/log.
-    # /dev/log is managed by systemd-journald. On RHEL 10+, syslog.socket
-    # fails entirely because syslog.service doesn't exist.
-    # Try syslog.socket first (for RHEL 7-9 compat), then check /dev/log
-    # and restart systemd-journald if it's missing.
     rlIsRHEL '<7' || {
       __INTERNAL_PrintText "starting syslog.socket to restore /dev/log for next test" "LOG"
       rlServiceStart syslog.socket 2>/dev/null
       sleep 1
-      if [[ ! -e /dev/log ]]; then
-        __INTERNAL_PrintText "restoring /dev/log by restarting systemd-journald" "LOG"
-        systemctl restart systemd-journald.socket systemd-journald.service 2>/dev/null
-        sleep 1
-      fi
+      __rsyslog_restore_dev_log
     }
     rm -f "${rsyslogOut[@]}" "${rsyslogServerOut[@]}"
 }
@@ -1284,6 +1275,45 @@ rsyslogBeakerlibUnhack() {
 }
 
 
+__rsyslog_restore_dev_log() {
+    [[ -e /dev/log ]] && return 0
+    __INTERNAL_PrintText "restoring /dev/log" "LOG"
+
+    # On RHEL 9+ (systemd 246+), /dev/log is a symlink to
+    # /run/systemd/journal/dev-log. The underlying socket is created by
+    # systemd-journald-dev-log.socket, and the symlink by systemd-tmpfiles.
+    # On RHEL 7-8 (systemd < 246), /dev/log is created directly by
+    # systemd-journald.
+
+    # 1. Try the RHEL 9+ specific unit first
+    if systemctl list-unit-files systemd-journald-dev-log.socket &>/dev/null; then
+      systemctl restart systemd-journald-dev-log.socket 2>/dev/null
+      systemd-tmpfiles --create --prefix /dev/log 2>/dev/null
+      sleep 1
+      [[ -e /dev/log ]] && return 0
+      # If socket exists but symlink is missing, create it manually
+      if [[ -S /run/systemd/journal/dev-log ]]; then
+        ln -sf /run/systemd/journal/dev-log /dev/log
+        [[ -e /dev/log ]] && return 0
+      fi
+    fi
+
+    # 2. Fall back to full journald restart (works on all versions)
+    __INTERNAL_PrintText "restarting systemd-journald to restore /dev/log" "LOG"
+    systemctl restart systemd-journald 2>/dev/null
+    sleep 1
+    # Re-create symlink if needed (RHEL 9+)
+    systemd-tmpfiles --create --prefix /dev/log 2>/dev/null
+    if [[ ! -e /dev/log ]] && [[ -S /run/systemd/journal/dev-log ]]; then
+      ln -sf /run/systemd/journal/dev-log /dev/log
+    fi
+    [[ -e /dev/log ]] && return 0
+
+    __INTERNAL_PrintText "WARNING: failed to restore /dev/log" "LOG"
+    return 1
+  }
+
+
 rsyslogServiceStart() {
   local res=0
   rsyslogServiceStop || let res++
@@ -1309,11 +1339,7 @@ rsyslogServiceStart() {
     __INTERNAL_PrintText "starting rsyslog" "LOG"
     rlServiceStart rsyslog || let res++
     sleep 1s
-    if [[ ! -e /dev/log ]]; then
-      __INTERNAL_PrintText "restoring /dev/log by restarting systemd-journald" "LOG"
-      systemctl restart systemd-journald.socket systemd-journald.service 2>/dev/null
-      sleep 1
-    fi
+    __rsyslog_restore_dev_log
     return $res
   fi
 }
@@ -1364,11 +1390,7 @@ rsyslogServiceRestore() {
     __INTERNAL_PrintText "restoring syslog" "LOG"
     rlServiceRestore syslog || let res++
   }
-  if [[ ! -e /dev/log ]]; then
-    __INTERNAL_PrintText "restoring /dev/log by restarting systemd-journald" "LOG"
-    systemctl restart systemd-journald.socket systemd-journald.service 2>/dev/null
-    sleep 1
-  fi
+  __rsyslog_restore_dev_log
   return $res
 }
 
