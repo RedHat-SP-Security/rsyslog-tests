@@ -70,8 +70,7 @@ rlJournalStart
         rlRun "pushd $TmpDir"
         CleanupRegister 'rlRun "rlFileRestore"; rlRun "rlServiceRestore systemd-journald"'
         rlRun "rlFileBackup --clean /var/log/bz701782-rsyslog.log /etc/systemd/journald.conf"
-        rlRun "sed -i 's/.*RateLimitInterval=.*/RateLimitInterval=1s/g;s/.*RateLimitBurst=.*/RateLimitBurst=1000000/g' /etc/systemd/journald.conf"
-        rlRun "rlServiceStart systemd-journald"
+        rlRun "sed -i 's/.*RateLimitInterval.*/RateLimitIntervalSec=1s/g; s/.*RateLimitBurst.*/RateLimitBurst=1000000/g' /etc/systemd/journald.conf"        rlRun "rlServiceStart systemd-journald"
         rlRun "mkdir -p /var/lib/rsyslog && restorecon -v /var/lib/rsyslog"
         rlRun "rm -f /var/log/bz701782-rsyslog.log"
         rsyslogServerConfigAppend "RULES" << EOF
@@ -81,13 +80,15 @@ local2.error   ${rsyslogServerLogDir}/bz701782-rsyslog.log
 EOF
         rsyslogConfigAppend "RULES" << EOF
 local2.error action(
-	type="omfwd"
-	target="127.0.0.1" port="514" protocol="tcp"
-	queue.filename="remoteq"
-	queue.type="Disk"
-	action.resumeRetryCount="-1"
-	action.resumeInterval="5"
-	action.resumeIntervalMax="10"
+    type="omfwd"
+    target="127.0.0.1" port="514" protocol="tcp"
+    queue.filename="remoteq"
+    queue.type="Disk"
+    queue.maxfilesize="${ACTIONQUEUEMAXFILESIZE}"
+    queue.size="${ACTIONQUEUESIZE}"
+    action.resumeRetryCount="-1"
+    action.resumeInterval="5"
+    action.resumeIntervalMax="10"
 )
 
 local2.error    /var/log/bz701782-rsyslog.log
