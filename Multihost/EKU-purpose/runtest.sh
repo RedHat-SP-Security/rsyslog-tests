@@ -117,8 +117,8 @@ rlJournalStart
           CleanupRegister "rlRun 'kill $(pidof rngd)'"
         }
         # prepare certificates
-        SERVER_IP=`host $SERVERS | awk '/has address/ {print $NF;exit}'`
-        CLIENT_IP=`host $CLIENTS | awk '/has address/ {print $NF;exit}'`
+        SERVER_IP=$(getent ahosts "$SERVERS" | awk '{print $1; exit}')
+        CLIENT_IP=$(getent ahosts "$CLIENTS" | awk '{print $1; exit}')
 
         cat > ca.tmpl <<EOF
 organization = "Red Hat"

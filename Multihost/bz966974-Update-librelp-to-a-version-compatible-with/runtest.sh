@@ -51,9 +51,13 @@ EOF
     tcfFin; }
   rlPhaseEnd; }
 
-  rlPhaseStartTest Server && {
+rlPhaseStartTest Server && {
     tcfChk "Server phase" && {
       rlRun "syncExp CLIENT_DONE"
+      
+      # Add this line to wait up to 10 seconds for the log to arrive
+      rlRun "rlWaitForCmd 'grep -q relptest /var/log/messages' -m 10 -d 1" 0 "Wait for log"
+      
       rlRun "rlServiceStop rsyslog"
       rlRun "sleep 15"
       rlRun "diff messages /var/log/messages > messages.log" 0-255
