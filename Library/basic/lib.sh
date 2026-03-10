@@ -1309,6 +1309,11 @@ rsyslogServiceStart() {
     __INTERNAL_PrintText "starting rsyslog" "LOG"
     rlServiceStart rsyslog || let res++
     sleep 1s
+    if [[ ! -e /dev/log ]]; then
+      __INTERNAL_PrintText "restoring /dev/log by restarting systemd-journald" "LOG"
+      systemctl restart systemd-journald.socket systemd-journald.service 2>/dev/null
+      sleep 1
+    fi
     return $res
   fi
 }
