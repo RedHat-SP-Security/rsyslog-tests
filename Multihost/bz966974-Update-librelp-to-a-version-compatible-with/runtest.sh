@@ -87,6 +87,7 @@ EOF
 EOF
       fi
       rlRun "cat rsyslog.conf.add | tee -a /etc/rsyslog.conf"
+      rlRun "rlServiceStop rsyslog"
       rlRun "rlServiceStart rsyslog"
       rlRun "syncExp SERVER_SETUP_READY"
     tcfFin; }
