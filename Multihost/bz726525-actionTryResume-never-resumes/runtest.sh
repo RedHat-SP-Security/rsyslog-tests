@@ -85,6 +85,7 @@ local2.error action(
 	target="127.0.0.1" port="514" protocol="tcp"
 	queue.filename="remoteq"
 	queue.type="Disk"
+	queue.checkpointinterval="100"
 	action.resumeRetryCount="-1"
 	action.resumeInterval="5"
 	action.resumeIntervalMax="10"

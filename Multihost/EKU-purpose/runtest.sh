@@ -77,10 +77,13 @@ checkMessage() {
   }
   syncWaitForClient
   rlRun "sleep 3s"
-  rlRun -s "rsyslogCatLogFileFromPointer /var/log/messages"
   if syncIsClient; then
+    rlWaitForCmd "rsyslogCatLogFileFromPointer /var/log/messages | grep -q '$msg'" -t 30 -d 3
+    rlRun -s "rsyslogCatLogFileFromPointer /var/log/messages"
     rlAssertGrep "$msg" $rlRun_LOG
   else
+    rlRun "sleep 10s"
+    rlRun -s "rsyslogCatLogFileFromPointer /var/log/messages"
     if [[ -z "$neg" ]]; then
       rlAssertGrep "$msg" $rlRun_LOG
     else

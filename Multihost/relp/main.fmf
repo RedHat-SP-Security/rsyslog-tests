@@ -3,6 +3,7 @@ test: ./runtest.sh
 require+:
 - library(ControlFlow/Cleanup)
 - library(rpm/snapshot)
+- library(distribution/dpcommon)
 - rsyslog
 - rsyslog-relp
 - gnutls
