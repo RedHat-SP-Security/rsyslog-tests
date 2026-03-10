@@ -87,15 +87,16 @@ EOF
 EOF
       fi
       rlRun "cat rsyslog.conf.add | tee -a /etc/rsyslog.conf"
+      rlRun "syncExp SERVER_SETUP_READY"
       rlRun "rlServiceStop rsyslog"
       rlRun "rlServiceStart rsyslog"
-      rlRun "syncExp SERVER_SETUP_READY"
     tcfFin; }
   rlPhaseEnd; }
 
   rlPhaseStartTest Client && {
     tcfChk "Client phase" && {
       rlRun "logger 'relptest'"
+      rlRun "sleep 3" 0 "Wait for rsyslog to forward the message via RELP"
       rlRun "syncSet CLIENT_DONE"
     tcfFin; }
   rlPhaseEnd; }
