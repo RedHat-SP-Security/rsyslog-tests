@@ -256,6 +256,7 @@ EOF
   else
     syncIsServer && rlPhaseStartSetup "Server setup" && {
       # rsyslog setup
+      mkdir -p /etc/rsyslog.d
       cat > /etc/rsyslog.d/test.conf <<EOF
 \$ModLoad imtcp.so
 \$InputTCPServerRun 514
@@ -268,6 +269,7 @@ EOF
     syncIsClient && rlPhaseStartSetup "Client setup" && {
       # rsyslog setup
       rlRun "mkdir -p /var/spool/rsyslog && restorecon -v /var/spool/rsyslog"
+      mkdir -p /etc/rsyslog.d
       cat > /etc/rsyslog.d/test.conf <<EOF
 local2.error    @@$syncOTHER_IP
 EOF

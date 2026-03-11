@@ -70,7 +70,8 @@ rlJournalStart
         rlRun "pushd $TmpDir"
         CleanupRegister 'rlRun "rlFileRestore"; rlRun "rlServiceRestore systemd-journald"'
         rlRun "rlFileBackup --clean /var/log/bz701782-rsyslog.log /etc/systemd/journald.conf"
-        rlRun "sed -i 's/.*RateLimitInterval.*/RateLimitIntervalSec=1s/g; s/.*RateLimitBurst.*/RateLimitBurst=1000000/g' /etc/systemd/journald.conf"        rlRun "rlServiceStart systemd-journald"
+        rlRun "sed -i 's/.*RateLimitInterval.*/RateLimitIntervalSec=1s/g; s/.*RateLimitBurst.*/RateLimitBurst=1000000/g' /etc/systemd/journald.conf"
+        rlRun "rlServiceStart systemd-journald"
         rlRun "mkdir -p /var/lib/rsyslog && restorecon -v /var/lib/rsyslog"
         rlRun "rm -f /var/log/bz701782-rsyslog.log"
         rsyslogServerConfigAppend "RULES" << EOF

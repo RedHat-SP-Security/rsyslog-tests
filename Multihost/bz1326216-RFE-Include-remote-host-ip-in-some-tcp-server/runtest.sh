@@ -194,9 +194,13 @@ Client() {
     rlPhaseStartSetup "Client setup"
         rlRun "syncExp CERTS_READY > certs.tar"
         rlRun "tar -xf certs.tar" 0 "Extract certificates"
-
-        rlRun "mkdir /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
-        rlRun "mv *.pem /etc/rsyslogd.d/ && chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d" 0 "Move certificates to /etc/rsyslogd.d"
+        if [ -d "/etc/rsyslogd.d" ]; then
+            rlRun "rm -f /etc/rsyslogd.d/*.pem" 0 "Remove existing test certificates from /etc/rsyslogd.d"
+        else
+            rlRun "mkdir -p /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
+        fi
+        rlRun "chmod 700 /etc/rsyslogd.d" 0 "Set permissions on /etc/rsyslogd.d"
+        rlRun "mv *.pem /etc/rsyslogd.d/ && chmod 400 /etc/rsyslogd.d/*.pem && restorecon -R /etc/rsyslogd.d" 0 "Move certificates to /etc/rsyslogd.d"
         rsyslogConfigIsNewSyntax || rsyslogConfigAppend "MODULES" /etc/rsyslog.conf <<EOF
 #\$LocalHostName $HOSTNAME
 \$DefaultNetstreamDriver gtls

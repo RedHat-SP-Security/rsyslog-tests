@@ -4,6 +4,7 @@ test: ./runtest.sh
 require+:
   - rsyslog-gnutls
   - gnutls-utils
+  - library(ControlFlow/Cleanup)
 recommend:
   - rng-utils
   - rng-tools

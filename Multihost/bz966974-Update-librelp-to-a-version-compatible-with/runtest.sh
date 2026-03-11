@@ -37,12 +37,17 @@
 Server() {
   rlPhaseStartSetup Server-setup && {
     tcfChk "Server setup phase" && {
-      cat >rsyslog.conf.add <<EOF
-#module(load="imrelp")
-#input(type="imrelp" port="2514")
+      if rsyslogConfigIsNewSyntax; then
+        cat >rsyslog.conf.add <<EOF
+module(load="imrelp")
+input(type="imrelp" port="2514")
+EOF
+      else
+        cat >rsyslog.conf.add <<EOF
 \$ModLoad imrelp
 \$InputRELPServerRun 2514
 EOF
+      fi
       rlRun "cat rsyslog.conf.add | tee -a /etc/rsyslog.conf"
       rlRun "rlServiceStop rsyslog"
       rlRun "cat /var/log/messages > messages"
@@ -70,21 +75,28 @@ rlPhaseStartTest Server && {
 Client() {
   rlPhaseStartSetup Client-setup && {
     tcfChk "Client setup phase" && {
-      cat >rsyslog.conf.add <<EOF
-#module(load="omrelp")
-#action(type="omrelp" target="$syncSERVER" port="2514")
+      if rsyslogConfigIsNewSyntax; then
+        cat >rsyslog.conf.add <<EOF
+module(load="omrelp")
+*.* action(type="omrelp" target="$syncSERVER" port="2514")
+EOF
+      else
+        cat >rsyslog.conf.add <<EOF
 \$ModLoad omrelp
 *.* :omrelp:$syncSERVER:2514
 EOF
+      fi
       rlRun "cat rsyslog.conf.add | tee -a /etc/rsyslog.conf"
-      rlRun "rlServiceStart rsyslog"
       rlRun "syncExp SERVER_SETUP_READY"
+      rlRun "rlServiceStop rsyslog"
+      rlRun "rlServiceStart rsyslog"
     tcfFin; }
   rlPhaseEnd; }
 
   rlPhaseStartTest Client && {
     tcfChk "Client phase" && {
       rlRun "logger 'relptest'"
+      rlRun "sleep 3" 0 "Wait for rsyslog to forward the message via RELP"
       rlRun "syncSet CLIENT_DONE"
     tcfFin; }
   rlPhaseEnd; }

@@ -307,7 +307,7 @@ Client() {
         rlRun "syncExp CERTS_READY > certs.tar"
         rlRun "tar -xf certs.tar" 0 "Extract certificates"
 
-        rlRun "mkdir /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
+        rlRun "mkdir -p /etc/rsyslogd.d && chmod 700 /etc/rsyslogd.d" 0 "Create /etc/rsyslogd.d"
         rlRun "mv *.pem /etc/rsyslogd.d/ && chmod 400 /etc/rsyslogd.d/* && restorecon -R /etc/rsyslogd.d" 0 "Move certificates to /etc/rsyslogd.d"
         rsyslogConfigIsNewSyntax || rsyslogConfigAppend "MODULES" /etc/rsyslog.conf <<EOF
 EOF
