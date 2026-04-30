@@ -160,7 +160,7 @@ EOF
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest && {
       rlRun "logger 'test message'"
-      rlRun "sleep 3s"
+      rlRun "rlWaitForCmd 'grep -q \"test message\" $rsyslogServerLogDir/messages' -t 60 -d 1" 0 "Wait for message to arrive"
       rlAssertGrep 'test message' $rsyslogServerLogDir/messages
       rlRun "iptables -I INPUT 1 -p tcp --dport 6514 -j DROP"
       rlRun "iptables -vnL INPUT"

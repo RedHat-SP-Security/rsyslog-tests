@@ -496,12 +496,13 @@ EOF
     rlPhaseStartTest "tls driver: certificate verify depth(max depth:3, actual depth:3)" && {
         client_config gtls 3
         server_config gtls 3
+        rlRun "rm -f /var/log/rsyslog-stats.log"
 
         rlRun "rsyslogServerStart"
         rlRun "rsyslogServiceStart"
         rlRun "sleep 1"
         rlRun "logger -p local6.info 'TLS driver: certificate chain depth'"
-        rlRun "sleep 3"
+        rlRun "rlWaitForCmd 'grep -q \"TLS driver: certificate chain depth\" /var/log/rsyslog-stats.log' -t 60 -d 1" 0 "Wait for message to arrive"
         rlRun "rsyslogServerStatus"
         rlRun -s "rsyslogServiceStatus"
         rlRun "cat /var/log/rsyslog-stats.log"
