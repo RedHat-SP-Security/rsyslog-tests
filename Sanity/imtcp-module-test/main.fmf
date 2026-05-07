@@ -33,3 +33,5 @@ recommend:
 duration: 10m
 enabled: true
 extra-task: /CoreOS/rsyslog/Sanity/imtcp-module-test
+tag:
+  - fips
