@@ -1,0 +1,33 @@
+summary: Test imkafka module granular metrics via impstats
+contact: Adam Prikryl <aprikryl@redhat.com>
+component:
+  - rsyslog
+  - librdkafka
+test: ./runtest.sh
+require:
+  - url: https://github.com/RedHat-SP-Security/rsyslog-tests.git
+    name: /Library/basic
+    type: library
+  - wget
+recommend:
+  - rsyslog
+  - librdkafka
+  - rsyslog-kafka
+  - java
+duration: 15m
+enabled: false
+tag:
+  - NoRHEL6
+  - NoRHEL7
+  - NoRHEL8
+  - NoRHEL9
+  - Tier3
+tier: 3
+adjust:
+  - enabled: false
+    when: distro < rhel-10
+    continue: false
+  - enabled: false
+    when: arch == s390x
+    continue: false
+id: 226eed9a-c89e-4f06-973b-bbdb403fd8d3
