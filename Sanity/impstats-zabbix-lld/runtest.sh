@@ -98,6 +98,9 @@ with open('$STATSFILE') as f:
         line = line.strip()
         if not line:
             continue
+        idx = line.find('{')
+        if idx >= 0:
+            line = line[idx:]
         data = json.loads(line)
         print('Parsed JSON successfully:', type(data).__name__)
 print('All lines are valid JSON')
@@ -112,6 +115,9 @@ with open('$STATSFILE') as f:
         line = line.strip()
         if not line:
             continue
+        idx = line.find('{')
+        if idx >= 0:
+            line = line[idx:]
         data = json.loads(line)
         if isinstance(data, dict):
             found_valid = True
@@ -132,7 +138,7 @@ print('Zabbix LLD format structure verified')
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        local pid
+        pid=""
         if [ -f "$RSYSLOG_PIDFILE" ] && pid=$(cat "$RSYSLOG_PIDFILE") && kill -0 "$pid" 2>/dev/null; then
             rlLog "Found running rsyslogd with PID $pid, attempting to stop it."
             rlRun "kill $pid" 0,1 "Stopping background rsyslogd"

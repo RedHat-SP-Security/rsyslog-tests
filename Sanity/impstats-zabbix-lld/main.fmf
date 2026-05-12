@@ -1,8 +1,8 @@
 summary: Test impstats module Zabbix LLD output format
 contact: Adam Prikryl <aprikryl@redhat.com>
 test: ./runtest.sh
-duration: 5m
-enabled: false
+duration: 10m
+enabled: true
 require:
   - url: https://github.com/RedHat-SP-Security/rsyslog-tests.git
     name: /Library/basic
@@ -13,6 +13,7 @@ tag:
   - NoRHEL7
   - NoRHEL8
   - NoRHEL9
-  - Tier3
-tier: 3
+  - Tier1
+  - CI-Tier-1
+tier: 1
 id: fcd9013f-153c-4057-aa63-58bfe4a73036

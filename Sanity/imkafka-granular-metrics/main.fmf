@@ -4,25 +4,25 @@ component:
   - rsyslog
   - librdkafka
 test: ./runtest.sh
-require:
-  - url: https://github.com/RedHat-SP-Security/rsyslog-tests.git
-    name: /Library/basic
-    type: library
+require+:
+  - library(distribution/dpcommon)
+  - library(selinux-policy/common)
   - wget
 recommend:
   - rsyslog
   - librdkafka
   - rsyslog-kafka
   - java
-duration: 15m
-enabled: false
+duration: 45m
+enabled: true
 tag:
   - NoRHEL6
   - NoRHEL7
   - NoRHEL8
   - NoRHEL9
-  - Tier3
-tier: 3
+  - Tier1
+  - CI-Tier-1
+tier: 1
 adjust:
   - enabled: false
     when: distro < rhel-10

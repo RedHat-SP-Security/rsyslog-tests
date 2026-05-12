@@ -97,7 +97,6 @@ EOF
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest "Verify imkafka metrics appear in impstats" && {
       rlLog "Sending messages to Kafka to generate imkafka activity"
-      local i
       for i in $(seq 1 10); do
           echo "imkafka-metrics-test-message-$i" | bin/kafka-console-producer.sh --broker-list localhost:$KAFKA_PORT --topic $KAFKA_TOPIC
       done
@@ -136,17 +135,18 @@ for line in lines:
     line = line.strip()
     if not line:
         continue
+    # impstats lines are prefixed with a timestamp, e.g.:
+    # Tue May 12 05:01:50 2026: { ... }
+    idx = line.find('{')
+    if idx >= 0:
+        line = line[idx:]
     try:
         data = json.loads(line)
         if isinstance(data, dict):
             for key in data:
                 found_metrics.add(key)
     except json.JSONDecodeError:
-        # try to parse as key=value legacy format
-        for part in line.split():
-            if '=' in part:
-                k, v = part.split('=', 1)
-                found_metrics.add(k)
+        pass
 
 print('All imkafka metrics found:', sorted(found_metrics))
 \"" 0 "Listing all imkafka metrics"
@@ -157,31 +157,27 @@ print('All imkafka metrics found:', sorted(found_metrics))
       rlRun "sleep 3"
 
       rlRun "python3 -c \"
-import re, sys
+import json, sys
 
 with open('$STATSFILE') as f:
     content = f.read()
 
-# Look for received counter in imkafka stats
-# JSON format: look for received field
-import json
 max_received = 0
 for line in content.strip().split('\n'):
     if 'imkafka' not in line:
         continue
+    # strip timestamp prefix before JSON
+    idx = line.find('{')
+    if idx < 0:
+        continue
     try:
-        data = json.loads(line)
+        data = json.loads(line[idx:])
         if 'received' in data:
             val = int(data['received'])
             if val > max_received:
                 max_received = val
     except (json.JSONDecodeError, ValueError, KeyError):
-        # fallback: try key=value format
-        m = re.search(r'received=(\d+)', line)
-        if m:
-            val = int(m.group(1))
-            if val > max_received:
-                max_received = val
+        pass
 
 print(f'Max received counter: {max_received}')
 if max_received >= 10:
