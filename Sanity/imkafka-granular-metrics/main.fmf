@@ -1,0 +1,33 @@
+summary: Test imkafka module granular metrics via impstats
+contact: Adam Prikryl <aprikryl@redhat.com>
+component:
+  - rsyslog
+  - librdkafka
+test: ./runtest.sh
+require+:
+  - library(distribution/dpcommon)
+  - library(selinux-policy/common)
+  - wget
+recommend:
+  - rsyslog
+  - librdkafka
+  - rsyslog-kafka
+  - java
+duration: 45m
+enabled: true
+tag:
+  - NoRHEL6
+  - NoRHEL7
+  - NoRHEL8
+  - NoRHEL9
+  - Tier1
+  - CI-Tier-1
+tier: 1
+adjust:
+  - enabled: false
+    when: distro < rhel-10
+    continue: false
+  - enabled: false
+    when: arch == s390x
+    continue: false
+id: 226eed9a-c89e-4f06-973b-bbdb403fd8d3
