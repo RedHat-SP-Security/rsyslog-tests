@@ -1,5 +1,8 @@
 summary: run rsyslog under a non-root user
-description: Verify that rsyslog can be started and can process log messages when running as a non-root user with a custom configuration, socket, and log directory.
+description: |
+    Verify that rsyslog can be started and can process log messages when
+    running as a non-root user with a custom configuration, socket, and log
+    directory.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

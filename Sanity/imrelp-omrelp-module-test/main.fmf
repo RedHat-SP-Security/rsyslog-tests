@@ -1,5 +1,8 @@
 summary: Sanity test for imrelp and omrelp modules using openssl/gnutls tls libs
-description: Verify that imrelp and omrelp modules correctly transmit messages over TLS using all combinations of GnuTLS and OpenSSL drivers, and that the traffic is encrypted on the wire.
+description: |
+    Verify that imrelp and omrelp modules correctly transmit messages over
+    TLS using all combinations of GnuTLS and OpenSSL drivers, and that the
+    traffic is encrypted on the wire.
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 require+:

@@ -1,5 +1,8 @@
 summary: Test imkafka module granular metrics via impstats
-description: Verify that the imkafka module exposes granular per-topic metrics through impstats, including submitted and received counters that correctly reflect the number of consumed Kafka messages.
+description: |
+    Verify that the imkafka module exposes granular per-topic metrics
+    through impstats, including submitted and received counters that
+    correctly reflect the number of consumed Kafka messages.
 contact: Adam Prikryl <aprikryl@redhat.com>
 component:
   - rsyslog

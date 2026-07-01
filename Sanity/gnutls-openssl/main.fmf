@@ -1,4 +1,5 @@
-description: a sanity test for TLS communication
+description: |
+    a sanity test for TLS communication
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

@@ -1,6 +1,10 @@
 summary: Test for BZ#1944718 rsyslog fails to execute actions due to having a
     too large group
-description: Verify that rsyslog correctly resolves group IDs and writes log files with proper ownership when the target group contains a large number of members (200 users), without producing "ID for group could not be found" errors.
+description: |
+    Verify that rsyslog correctly resolves group IDs and writes log files
+    with proper ownership when the target group contains a large number of
+    members (200 users), without producing "ID for group could not be found"
+    errors.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 duration: 10m

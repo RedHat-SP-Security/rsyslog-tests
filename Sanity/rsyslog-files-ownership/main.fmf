@@ -1,5 +1,6 @@
 summary: verify correct file ownership
-description: verifies if important rsyslog files have correct ownership
+description: |
+    verifies if important rsyslog files have correct ownership
 contact: Adam Prikryl <aprikryl@redhat.com>
 component:
   - rsyslog

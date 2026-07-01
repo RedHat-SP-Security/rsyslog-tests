@@ -1,7 +1,10 @@
 summary: Tests various configuration directives
-description: "The test tests various configuration directives \n(see http://www.rsyslog.com/doc-rsyslog_conf_global.html)\n\
-    \nAt the moment there are testcases for:\n$ActionExecOnlyOnceEveryInterval\n$ActionSendTCPRebindInterval\n\
-    \n"
+description: |
+    The test tests various configuration directives (see
+    http://www.rsyslog.com/doc-rsyslog_conf_global.html)
+
+    At the moment there are testcases for: $ActionExecOnlyOnceEveryInterval
+    $ActionSendTCPRebindInterval
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 path: /Sanity/test-various-configuration-directives

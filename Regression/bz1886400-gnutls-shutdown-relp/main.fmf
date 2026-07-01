@@ -1,5 +1,8 @@
 summary: relp gnutls shutdown
-description: Verify that rsyslog shuts down cleanly within a reasonable time when using RELP with GnuTLS TLS encryption and the remote port is blocked by iptables, ensuring the service is not killed due to a timeout.
+description: |
+    Verify that rsyslog shuts down cleanly within a reasonable time when
+    using RELP with GnuTLS TLS encryption and the remote port is blocked by
+    iptables, ensuring the service is not killed due to a timeout.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

@@ -1,5 +1,9 @@
 summary: Check that rsyslog send messages to remote if in forked debug mode
-description: Verify that rsyslog correctly sends messages to a remote server in all startup modes (normal, debug, non-forked normal, and non-forked debug), confirming that all 1000 test messages are delivered without loss or duplication in each mode.
+description: |
+    Verify that rsyslog correctly sends messages to a remote server in all
+    startup modes (normal, debug, non-forked normal, and non-forked debug),
+    confirming that all 1000 test messages are delivered without loss or
+    duplication in each mode.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
   - rsyslog7

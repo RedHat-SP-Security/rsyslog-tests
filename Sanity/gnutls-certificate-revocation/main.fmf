@@ -1,5 +1,9 @@
 summary: Test for GnuTLS certificate revocation checking (stapled OCSP)
-description: Verify that rsyslog with GnuTLS correctly handles OCSP certificate revocation by accepting connections when the server certificate is valid and refusing connections when the server certificate has been revoked via stapled OCSP responses.
+description: |
+    Verify that rsyslog with GnuTLS correctly handles OCSP certificate
+    revocation by accepting connections when the server certificate is valid
+    and refusing connections when the server certificate has been revoked
+    via stapled OCSP responses.
 contact: Anderson Toshiyuki Sasaki <ansasaki@redhat.com>
 component:
   - rsyslog

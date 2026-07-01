@@ -1,5 +1,10 @@
 summary: Test for BZ#1932795 rsyslog rebase to 2102
-description: 'Verify that features introduced in the rsyslog 2102 rebase work correctly, including the exists() RainerScript function, backtick cat of non-existent files without segfault, omfwd stats counters and rate limiting, imptcp max sessions, imfile per-minute rate limiting, immark custom messages, and TLS certificate verify depth validation.'
+description: |
+    Verify that features introduced in the rsyslog 2102 rebase work
+    correctly, including the exists() RainerScript function, backtick cat of
+    non-existent files without segfault, omfwd stats counters and rate
+    limiting, imptcp max sessions, imfile per-minute rate limiting, immark
+    custom messages, and TLS certificate verify depth validation.
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh
 duration: 10m

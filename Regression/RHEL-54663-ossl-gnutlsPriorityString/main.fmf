@@ -1,4 +1,5 @@
-description: Test for RHEL-54663 custom ciphers using gnutlsPriorityString 
+description: |
+    Test for RHEL-54663 custom ciphers using gnutlsPriorityString option
     option
 contact: Attila Lakatos <alakatos@redhat.com>
 test: ./runtest.sh

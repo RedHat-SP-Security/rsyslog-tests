@@ -1,5 +1,8 @@
 summary: sanity test for omkafka module and TLS usage
-description: Verify that the omkafka module can send log messages to a Kafka broker over a TLS-encrypted connection using configurable cryptographic algorithms and that the messages are received by a TLS-enabled consumer.
+description: |
+    Verify that the omkafka module can send log messages to a Kafka broker
+    over a TLS-encrypted connection using configurable cryptographic
+    algorithms and that the messages are received by a TLS-enabled consumer.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - rsyslog

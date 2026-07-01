@@ -1,5 +1,9 @@
 summary: sanity test for omkafka module and TLS usage
-description: Verify that the imkafka module can consume messages from a TLS-secured Kafka broker using mutual certificate authentication, confirming that messages produced to Kafka over SSL are successfully received and written to a log file by rsyslog.
+description: |
+    Verify that the imkafka module can consume messages from a TLS-secured
+    Kafka broker using mutual certificate authentication, confirming that
+    messages produced to Kafka over SSL are successfully received and
+    written to a log file by rsyslog.
 contact: Patrik Koncity <pkoncity@redhat.com>
 component:
   - rsyslog
