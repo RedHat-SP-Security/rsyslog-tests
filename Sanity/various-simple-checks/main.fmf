@@ -1,5 +1,5 @@
 summary: various-simple-checks
-description: ''
+description: Verify that rsyslog passes various basic sanity checks including correct PID file creation, absence of segfaults on restart, proper config validation return codes, and correct handling of the net.aclResolveHostname global option.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

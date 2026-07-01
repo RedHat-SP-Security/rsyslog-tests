@@ -1,4 +1,5 @@
 summary: Test impstats module Zabbix LLD output format
+description: Verify that the impstats module produces valid JSON output in Zabbix LLD format and does not emit legacy key=value format when configured with format="zabbix".
 contact: Adam Prikryl <aprikryl@redhat.com>
 test: ./runtest.sh
 duration: 10m

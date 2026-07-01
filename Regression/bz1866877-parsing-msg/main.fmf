@@ -1,4 +1,5 @@
 summary: Test for BZ#1866877 pasring msg's PRIORITY
+description: Verify that rsyslog does not produce "unexpected length" errors when parsing message priority fields, specifically after running ansible-playbook operations that may generate unusual log entries.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 duration: 10m

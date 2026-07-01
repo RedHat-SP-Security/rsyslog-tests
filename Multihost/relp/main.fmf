@@ -1,3 +1,5 @@
+summary: Test rsyslog RELP transport with TLS encryption
+description: Verify that rsyslog reliably delivers messages between client and server using RELP with GnuTLS encryption, confirming all 500 test messages arrive without loss or duplication and that traffic is encrypted on the wire.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

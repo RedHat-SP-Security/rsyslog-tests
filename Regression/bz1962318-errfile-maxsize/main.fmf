@@ -1,4 +1,5 @@
 summary: errfile maxsize
+description: Verify that the action.errorfile.maxsize parameter correctly limits the error file size to the configured value, both when the error file is initially empty and when it already contains data.
 contact: Sergio Arroutbi <sarroutb@redhat.com>
 test: ./runtest.sh
 require+:

@@ -1,4 +1,5 @@
 summary: tests basic mmfields module functionality
+description: Verify that the mmnormalize module correctly parses CEF-formatted log messages and extracts structured fields including device vendor, product, version, and extension key-value pairs.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
