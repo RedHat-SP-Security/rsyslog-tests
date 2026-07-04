@@ -1,4 +1,9 @@
 summary: tests dropping of capabilities
+description: |
+    Verify that rsyslog correctly drops Linux capabilities when configured
+    with PrivDropToUser or PrivDropToGroup directives, retaining only the
+    expected capability set for root and dropping all capabilities for non-
+    root users.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

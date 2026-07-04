@@ -1,5 +1,8 @@
 summary: basic ipv6 sanity testing
-description: ''
+description: |
+    Verify that rsyslog correctly sends and receives log messages over IPv6
+    using both UDP and TCP protocols, and that messages sent via IPv4 are
+    not received when the server is configured to listen on IPv6 only.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 component:
   - rsyslog7

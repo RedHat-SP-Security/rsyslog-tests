@@ -1,5 +1,9 @@
 summary: Smoke test for elastic search feature with TLS communication
-description: ''
+description: |
+    Verify that rsyslog can forward log messages to an Elasticsearch
+    instance over TLS using the omelasticsearch module, confirming that
+    messages sent via logger are indexed and retrievable through the
+    Elasticsearch HTTPS API.
 contact: Patrik Koncity <pkoncity@redhat.com>
 test: ./runtest.sh
 require+:

@@ -1,4 +1,9 @@
 summary: Test for BZ#1960536 rsyslog fd leak when Fsync="on" is set
+description: |
+    Verify that rsyslog does not leak file descriptors when the imjournal
+    module is configured with FSync="on", by checking that the number of
+    open file descriptors remains stable after processing multiple log
+    messages.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 duration: 10m
