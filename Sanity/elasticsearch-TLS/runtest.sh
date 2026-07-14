@@ -34,6 +34,37 @@
 # Using ML-DSA-65 (which corresponds to Dilithium3) for the PQC option.
 PQC_SIG_ALG="ML-DSA-65"
 
+# Replace the OMELASTIC config section with the base omelasticsearch action
+# plus any extra TLS parameters passed as arguments.
+# Args: $1 (optional) — extra TLS parameter string to append to the action
+configure_omelasticsearch() {
+    local extra_tls_opts="${1:-}"
+    rsyslogConfigReplace "OMELASTIC" <<EOF
+action(type="omelasticsearch"
+    server="127.0.0.1"
+    usehttps="on"
+    uid="elastic"
+    pwd="$ELASTIC_PASSWORD"
+    tls.cacert="/etc/rsyslog.d/pki/ca.crt"
+    template="plain-syslog-tpl"
+    $SearchIndex $ESv $elasticBulkmode
+    $extra_tls_opts)
+EOF
+    rlRun "rsyslogPrintEffectiveConfig -n"
+}
+
+# Send a unique message via logger and verify it is indexed in Elasticsearch.
+# Args: $1 — unique message string
+send_and_verify() {
+    local msg="$1"
+    rlRun "logger '${msg}'"
+    rlRun "sleep 15"
+    rlRun -s "curl $CURL_TLS_OPTS -u elastic:$ELASTIC_PASSWORD -XGET 'https://127.0.0.1:9200/_all/_search?q=${msg}&pretty'"
+    rlAssertGrep "\"message\"" "$rlRun_LOG"
+    rlAssertGrep "${msg}" "$rlRun_LOG"
+    rm -f "$rlRun_LOG"
+}
+
 
 rlJournalStart && {
   rlPhaseStartSetup && {
@@ -110,11 +141,11 @@ EOF
     rlRun "rm ./*.csr" 0 "Clean up intermediate CSR files"
     # --- Configure Elasticsearch for TLS ---
     rlLog "Configuring Elasticsearch to use TLS"
-    
+
     # Backup the original elasticsearch.yml and register its restoration for cleanup
     rlFileBackup /etc/elasticsearch/elasticsearch.yml
     CleanupRegister "rlFileRestore /etc/elasticsearch/elasticsearch.yml"
-    
+
     rlRun "mkdir -p /etc/elasticsearch/certs"
     rlRun "cp server.crt server.key ca.crt /etc/elasticsearch/certs/"
     rlRun "chown -R elasticsearch:elasticsearch /etc/elasticsearch/certs/"
@@ -154,7 +185,7 @@ EOF
     CleanupRegister 'rlRun "rlServiceStop elasticsearch"'
     rlRun "rlServiceStart elasticsearch"
     rlRun "rlWaitForSocket 9200 -t 90" 0 "Wait longer for secure Elasticsearch to start"
-    
+
     CURL_TLS_OPTS_NO_CLIENT_CERT="--cacert $TmpDir/ca.crt"
     # Health check loop to ensure Elasticsearch API is fully responsive
     rlLog "Waiting for Elasticsearch cluster to be healthy..."
@@ -185,12 +216,12 @@ EOF
 
     # --- Configure Rsyslog for TLS ---
     rlLog "Configuring rsyslog to use omelasticsearch with TLS"
-    
+
     # Create a directory for rsyslog certs and set permissions
     rlRun "mkdir -p /etc/rsyslog.d/pki"
     rlRun "cp $TmpDir/ca.crt /etc/rsyslog.d/pki/ca.crt"
     rlRun "chmod 644 /etc/rsyslog.d/pki/ca.crt" 0 "Set CA cert permissions for rsyslog"
-    
+
     ESv=${ESv:+esVersion.major=\"$ESv\"}
     SearchIndex=${SearchIndex:+searchindex=\"$SearchIndex\" searchtype=\"\"}
     if [[ "$elasticBulkmode" == "on" ]]; then
@@ -201,18 +232,9 @@ EOF
       elasticBulkmode=''
     fi
 
-    # Construct the omelasticsearch action with TLS parameters and credentials
-    OMES_ACTION="action(type=\"omelasticsearch\" \
-        server=\"127.0.0.1\" \
-        usehttps=\"on\" \
-        uid=\"elastic\" \
-        pwd=\"$ELASTIC_PASSWORD\" \
-        tls.cacert=\"/etc/rsyslog.d/pki/ca.crt\" \
-        template=\"plain-syslog-tpl\" \
-        $SearchIndex $ESv $elasticBulkmode)"
-
+    # Static config: module load and template (added once, never replaced)
     rsyslogConfigAddTo "RULES" /etc/rsyslog.conf <<EOF
-module(load="omelasticsearch") #for indexing to Elasticsearch
+module(load="omelasticsearch")
 
 template(name="plain-syslog-tpl" type="list") {
     constant(value="{")
@@ -224,23 +246,74 @@ template(name="plain-syslog-tpl" type="list") {
     constant(value="\",\"message\":\"")       property(name="msg" format="json")
     constant(value="\"}")
 }
-$OMES_ACTION
 EOF
+
+    # Replaceable section for the omelasticsearch action
+    rsyslogConfigAddTo "RULES" /etc/rsyslog.conf < <(rsyslogConfigCreateSection 'OMELASTIC')
+
+    # Fill the section with the base omelasticsearch action (no extra TLS params)
+    configure_omelasticsearch
+
     CleanupRegister 'rlRun "rlServiceStop rsyslog"'
-    rlRun "rsyslogPrintEffectiveConfig -n"
     rlRun "rlServiceStart rsyslog"
     rlRun "netstat -putna | grep 9200" 0-255; :
   rlPhaseEnd; }
 
   tcfTry "Tests" --no-assert && {
-    rlPhaseStartTest && {
-      rlRun "logger testMSG"
-      # Increase sleep time to allow for potential TLS handshake delays and async processing
-      rlRun "sleep 30"
-      rlRun -s "curl $CURL_TLS_OPTS -u elastic:$ELASTIC_PASSWORD -XGET 'https://127.0.0.1:9200/_all/_search?q=testMSG&pretty'"
-      rlAssertGrep '"message" *: *"testMSG"' $rlRun_LOG
-      rm -f $rlRun_LOG
+
+    # =========================================================================
+    # Phase 1: Basic TLS — baseline message delivery over HTTPS
+    # =========================================================================
+    rlPhaseStartTest "Basic TLS — message delivery over HTTPS" && {
+      send_and_verify "testMSG_basic_tls"
     rlPhaseEnd; }
+
+    # =========================================================================
+    # Phase 2: tls.tlsversion — enforce TLS 1.3 floor
+    # =========================================================================
+    rlPhaseStartTest "tls.tlsversion TLSv1.3 — message delivered" && {
+      rlRun "rsyslogServiceStop"
+      configure_omelasticsearch 'tls.tlsversion="TLSv1.3"'
+      rlRun "rsyslogServiceStart"
+      send_and_verify "testMSG_tlsversion13"
+    rlPhaseEnd; }
+
+    # =========================================================================
+    # Phase 3: tls.tlsversion — invalid value aborts startup
+    # =========================================================================
+    rlPhaseStartTest "tls.tlsversion invalid value — rsyslog aborts startup" && {
+      rlRun "rsyslogServiceStop"
+      configure_omelasticsearch 'tls.tlsversion="INVALID"'
+      rlRun "rsyslogServiceStart" 1 "rsyslog should fail to start with invalid tls.tlsversion"
+      # Restore valid config so subsequent phases and cleanup work
+      configure_omelasticsearch
+      rlRun "rsyslogServiceStart"
+    rlPhaseEnd; }
+
+    # =========================================================================
+    # Phase 4: tls.ciphersuites — valid TLS 1.3 ciphersuite
+    # =========================================================================
+    rlPhaseStartTest "tls.ciphersuites — TLS_AES_256_GCM_SHA384" && {
+      rlRun "rsyslogServiceStop"
+      configure_omelasticsearch 'tls.ciphersuites="TLS_AES_256_GCM_SHA384"'
+      rlRun "rsyslogServiceStart"
+      send_and_verify "testMSG_ciphersuites"
+    rlPhaseEnd; }
+
+    # =========================================================================
+    # Phase 5: tls.keyexchangegroups — PQC hybrid with classical fallback
+    # =========================================================================
+    rlPhaseStartTest "tls.keyexchangegroups — X25519MLKEM768:X25519 hybrid" && {
+      if ! openssl list -kem-algorithms 2>/dev/null | grep -q 'X25519MLKEM768'; then
+        rlLog "X25519MLKEM768 not available (requires OpenSSL 3.5+), skipping"
+      else
+        rlRun "rsyslogServiceStop"
+        configure_omelasticsearch 'tls.keyexchangegroups="X25519MLKEM768:X25519"'
+        rlRun "rsyslogServiceStart"
+        send_and_verify "testMSG_pqc_hybrid"
+      fi
+    rlPhaseEnd; }
+
   tcfFin; }
 
   rlPhaseStartCleanup && {

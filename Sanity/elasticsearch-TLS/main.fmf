@@ -1,5 +1,12 @@
-summary: Smoke test for elastic search feature with TLS communication
-description: ''
+summary: omelasticsearch TLS sanity — basic HTTPS, TLS version, ciphersuites, PQC key exchange
+description: |
+    Verify that rsyslog can forward log messages to an Elasticsearch
+    instance over TLS using the omelasticsearch module, and validate
+    the tls.tlsversion, tls.ciphersuites, and tls.keyexchangegroups
+    parameters (upstream PR #7278). Tests include baseline HTTPS
+    delivery, TLS 1.3 version enforcement, invalid version rejection,
+    ciphersuite selection, and PQC hybrid key exchange with classical
+    fallback (X25519MLKEM768:X25519, gated on OpenSSL 3.5+).
 contact: Patrik Koncity <pkoncity@redhat.com>
 test: ./runtest.sh
 require+:
@@ -7,9 +14,10 @@ require+:
   - library(selinux-policy/common)
   - initscripts
   - rsyslog-elasticsearch
+  - openssl
   - net-tools
   - java-openjdk
-duration: 5m
+duration: 15m
 enabled: true
 tag:
   - NoRHEL4
