@@ -54,15 +54,24 @@ EOF
 }
 
 # Send a unique message via logger and verify it is indexed in Elasticsearch.
+# Polls ES with short sleeps instead of a fixed delay.
 # Args: $1 — unique message string
 send_and_verify() {
     local msg="$1"
+    local attempt max_attempts=15
     rlRun "logger '${msg}'"
-    rlRun "sleep 15"
-    rlRun -s "curl $CURL_TLS_OPTS -u elastic:$ELASTIC_PASSWORD -XGET 'https://127.0.0.1:9200/_all/_search?q=${msg}&pretty'"
-    rlAssertGrep "\"message\"" "$rlRun_LOG"
-    rlAssertGrep "${msg}" "$rlRun_LOG"
-    rm -f "$rlRun_LOG"
+    for attempt in $(seq 1 $max_attempts); do
+        rlRun -s "curl $CURL_TLS_OPTS -u elastic:$ELASTIC_PASSWORD -XGET \"https://127.0.0.1:9200/_all/_search?q=${msg}&pretty\""
+        if grep -q "${msg}" "$rlRun_LOG"; then
+            rlLog "Message indexed after ${attempt}s"
+            rlAssertGrep "${msg}" "$rlRun_LOG"
+            rm -f "$rlRun_LOG"
+            return 0
+        fi
+        rm -f "$rlRun_LOG"
+        sleep 2
+    done
+    rlFail "Message '${msg}' not indexed after $((max_attempts * 2))s"
 }
 
 
@@ -304,8 +313,12 @@ EOF
     # Phase 5: tls.keyexchangegroups — PQC hybrid with classical fallback
     # =========================================================================
     rlPhaseStartTest "tls.keyexchangegroups — X25519MLKEM768:X25519 hybrid" && {
-      if ! openssl list -kem-algorithms 2>/dev/null | grep -q 'X25519MLKEM768'; then
-        rlLog "X25519MLKEM768 not available (requires OpenSSL 3.5+), skipping"
+      local ossl_ver
+      ossl_ver=$(openssl version | awk '{print $2}')
+      if ! rlTestVersion "${ossl_ver}" '>=' '3.5'; then
+        rlLog "OpenSSL ${ossl_ver} < 3.5, X25519MLKEM768 not available, skipping"
+      elif ! openssl list -kem-algorithms | grep -q 'X25519MLKEM768'; then
+        rlLog "X25519MLKEM768 KEM not listed by OpenSSL ${ossl_ver}, skipping"
       else
         rlRun "rsyslogServiceStop"
         configure_omelasticsearch 'tls.keyexchangegroups="X25519MLKEM768:X25519"'
