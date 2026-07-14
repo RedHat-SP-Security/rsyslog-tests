@@ -294,7 +294,7 @@ EOF
       rlRun "rsyslogServiceStop"
       configure_omelasticsearch 'tls.tlsversion="INVALID"'
       rlRun "rsyslogServiceStart"
-      local neg_msg="testMSG_tlsversion_invalid_$(date +%s)"
+      neg_msg="testMSG_tlsversion_invalid_$(date +%s)"
       rlRun "logger '${neg_msg}'"
       rlRun "sleep 10"
       rlRun -s "curl $CURL_TLS_OPTS -u elastic:$ELASTIC_PASSWORD -XGET \"https://127.0.0.1:9200/_all/_search?q=${neg_msg}&pretty\""
@@ -320,7 +320,6 @@ EOF
     # Phase 5: tls.keyexchangegroups — PQC hybrid with classical fallback
     # =========================================================================
     rlPhaseStartTest "tls.keyexchangegroups — X25519MLKEM768:X25519 hybrid" && {
-      local ossl_ver
       ossl_ver=$(openssl version | awk '{print $2}')
       if ! rlTestVersion "${ossl_ver}" '>=' '3.5'; then
         rlLog "OpenSSL ${ossl_ver} < 3.5, X25519MLKEM768 not available, skipping"
