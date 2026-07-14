@@ -1,4 +1,5 @@
-description: check that the logrotate script is posixly correct
+description: |
+    check that the logrotate script is posixly correct
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 duration: 5m

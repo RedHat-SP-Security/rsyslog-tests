@@ -1,5 +1,8 @@
 summary: Tests various configuration directives
-description: ''
+description: |
+    Verify that the config.enabled parameter correctly enables or disables
+    rsyslog configuration objects including actions, global directives,
+    inputs, modules, rulesets, parsers, timezones, and include files.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

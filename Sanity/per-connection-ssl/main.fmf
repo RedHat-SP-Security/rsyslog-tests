@@ -1,4 +1,5 @@
-description: Test various SSL connection configuration places
+description: |
+    Test various SSL connection configuration places
 contact: Dalibor Pospisil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

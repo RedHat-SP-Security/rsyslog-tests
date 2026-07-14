@@ -1,4 +1,8 @@
 summary: tests basic mmfields module functionality
+description: |
+    Verify that the mmfields module correctly splits delimited input into
+    JSON fields using default and custom separators, and supports the
+    jsonRoot option for controlling output structure.
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:

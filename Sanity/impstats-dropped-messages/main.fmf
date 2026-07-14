@@ -1,4 +1,9 @@
 summary: Tests dropped messages of impstats module
+description: |
+    Verify that the impstats module correctly reports the number of rate-
+    limited discarded messages via the ratelimit.discarded counter when
+    imuxsock rate limiting is active, and that only the allowed burst of
+    messages is logged.
 contact: Adam Prikryl <aprikryl@redhat.com>
 test: ./runtest.sh
 duration: 5m

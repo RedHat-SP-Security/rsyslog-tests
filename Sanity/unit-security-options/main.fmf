@@ -1,4 +1,5 @@
-description: check systemd-analyze setting for rsyslog
+description: |
+    check systemd-analyze setting for rsyslog
 contact: Dalibor Pospíšil <dapospis@redhat.com>
 test: ./runtest.sh
 require+:
