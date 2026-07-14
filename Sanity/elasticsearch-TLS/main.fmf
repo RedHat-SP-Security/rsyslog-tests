@@ -15,6 +15,7 @@ require+:
   - initscripts
   - rsyslog-elasticsearch
   - openssl
+  - patch
   - net-tools
   - java-openjdk
 duration: 15m
