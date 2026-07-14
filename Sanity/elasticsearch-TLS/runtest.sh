@@ -288,13 +288,20 @@ EOF
     rlPhaseEnd; }
 
     # =========================================================================
-    # Phase 3: tls.tlsversion — invalid value aborts startup
+    # Phase 3: tls.tlsversion — invalid value prevents message delivery
     # =========================================================================
-    rlPhaseStartTest "tls.tlsversion invalid value — rsyslog aborts startup" && {
+    rlPhaseStartTest "tls.tlsversion invalid value — message not delivered" && {
       rlRun "rsyslogServiceStop"
       configure_omelasticsearch 'tls.tlsversion="INVALID"'
-      rlRun "rsyslogServiceStart" 1 "rsyslog should fail to start with invalid tls.tlsversion"
-      # Restore valid config so subsequent phases and cleanup work
+      rlRun "rsyslogServiceStart"
+      local neg_msg="testMSG_tlsversion_invalid_$(date +%s)"
+      rlRun "logger '${neg_msg}'"
+      rlRun "sleep 10"
+      rlRun -s "curl $CURL_TLS_OPTS -u elastic:$ELASTIC_PASSWORD -XGET \"https://127.0.0.1:9200/_all/_search?q=${neg_msg}&pretty\""
+      rlAssertNotGrep "${neg_msg}" "$rlRun_LOG"
+      rm -f "$rlRun_LOG"
+      # Restore valid config for subsequent phases
+      rlRun "rsyslogServiceStop"
       configure_omelasticsearch
       rlRun "rsyslogServiceStart"
     rlPhaseEnd; }
