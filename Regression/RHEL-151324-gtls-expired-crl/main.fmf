@@ -1,0 +1,28 @@
+summary: Test for RHEL-151324 - rsyslog with gtls driver accepts connections with expired CRL
+description: |
+    Bug: https://issues.redhat.com/browse/RHEL-151324
+    Verify that rsyslog using the GnuTLS driver correctly rejects
+    connections when the configured Certificate Revocation List (CRL)
+    file has expired.
+contact: QE Automation <sec-eng-special@redhat.com>
+test: ./runtest.sh
+framework: beakerlib
+recommend:
+    - rsyslog
+    - rsyslog-gnutls
+    - openssl
+    - policycoreutils-python-utils
+require:
+    - library(openssl/certgen)
+duration: 5m
+tag:
+    - NoRHEL4
+    - NoRHEL5
+    - NoRHEL6
+    - NoRHEL7
+    - NoRHEL8
+    - NoRHEL9
+adjust:
+    - enabled: false
+      when: distro < rhel-10.3
+      continue: false
