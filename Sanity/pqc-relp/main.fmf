@@ -1,0 +1,77 @@
+summary: PQC RELP sanity — ML-DSA-65 certificates and ML-KEM hybrid key exchange
+description: >
+  Validates rsyslog RELP transport with name auth across cert algorithm
+  (RSA, ML-DSA-65) and TLS library (gnutls, openssl, cross-library). The KEM
+  negotiation matrix runs all 9 combinations of pqc/classical/hybrid for server
+  and client within each variant, plus a certificate auth failure (wrong_ca)
+  scenario. New rainerscript syntax only. Certificate generation uses lib.sh
+  helpers.
+contact: Attila Lakatos <alakatos@redhat.com>
+test: ./runtest.sh
+require+:
+  - library(distribution/dpcommon)
+  - library(ControlFlow/Cleanup)
+  - openssl
+  - gnutls-utils
+  - librelp
+  - rsyslog-relp
+  - rsyslog-gnutls
+  - rsyslog-openssl
+  - rsyslog
+duration: 30m
+enabled: true
+tag:
+  - Tier1
+tier: '1'
+
+/rsa:
+    environment:
+        CERT_ALG: RSA
+    adjust+:
+      - enabled: false
+        when: distro < rhel-10.1
+        because: ML-KEM hybrid KEM requires OpenSSL 3.5+ / GnuTLS 3.8+
+    /gtls:
+        environment+:
+            SERVER_DRIVER: gnutls
+            CLIENT_DRIVER: gnutls
+    /ossl:
+        environment+:
+            SERVER_DRIVER: openssl
+            CLIENT_DRIVER: openssl
+    /cross:
+        tier: '2'
+        /gtls_to_ossl:
+            environment+:
+                SERVER_DRIVER: openssl
+                CLIENT_DRIVER: gnutls
+        /ossl_to_gtls:
+            environment+:
+                SERVER_DRIVER: gnutls
+                CLIENT_DRIVER: openssl
+
+/mldsa:
+    environment:
+        CERT_ALG: ML-DSA-65
+    adjust+:
+      - enabled: false
+        when: distro < rhel-10.1
+        because: ML-DSA-65 requires OpenSSL 3.5+; ML-KEM hybrid KEM requires GnuTLS 3.8+
+    /gtls:
+        environment+:
+            SERVER_DRIVER: gnutls
+            CLIENT_DRIVER: gnutls
+    /ossl:
+        environment+:
+            SERVER_DRIVER: openssl
+            CLIENT_DRIVER: openssl
+    /cross:
+        tier: '2'
+        /gtls_to_ossl:
+            environment+:
+                SERVER_DRIVER: openssl
+                CLIENT_DRIVER: gnutls
+        /ossl_to_gtls:
+            environment+:
+                SERVER_DRIVER: gnutls
+                CLIENT_DRIVER: openssl
