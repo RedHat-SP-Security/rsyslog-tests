@@ -1444,6 +1444,21 @@ rsyslogCatLogFileFromPointer() {
   tail -c +$bytes "$file"
 }
 
+# Wait up to MAX_WAIT seconds for MSG to appear in LOGFILE.
+# Args: $1=msg_string, $2=logfile_path, $3=max_wait_seconds (default 15)
+rlWaitForMessage() {
+    local msg="$1" logfile="$2" max_wait="${3:-15}"
+    local i
+    for i in $(seq 1 "${max_wait}"); do
+        grep -qF "${msg}" "${logfile}" && {
+            rlLog "Message delivered after ${i}s"
+            return 0
+        }
+        sleep 1
+    done
+    return 1
+}
+
 # wait until a file is growing or the pattern is found
 # $1 - file to monitor
 # $2 - pattern to search for, do not search for it if empty
