@@ -486,7 +486,7 @@ EOF
         since=$(date +"%F %T")
         sleep 1
         rlRun "logger -p local6.info 'TLS driver: certificate chain depth'"
-        rlRun "sleep 3"
+        rlRun "rlWaitForCmd 'journalctl -u rsyslog --no-pager | grep -q \"Some constraint limits were reached.\"' -t 60 -d 1" 0 "Wait for GnuTLS constraint error"
         rlRun "rsyslogServerStatus"
         rlRun -s "journalctl -u rsyslog -l --since '$since' --no-pager"
         rlRun "cat $rlRun_LOG"
