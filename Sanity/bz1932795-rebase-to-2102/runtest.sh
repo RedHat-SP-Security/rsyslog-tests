@@ -483,10 +483,13 @@ EOF
         rlRun "rsyslogServerStart"
         rlRun "rsyslogServiceStart"
         rlRun "sleep 1"
+        since=$(date +"%F %T")
+        sleep 1
         rlRun "logger -p local6.info 'TLS driver: certificate chain depth'"
         rlRun "sleep 3"
         rlRun "rsyslogServerStatus"
-        rlRun -s "rsyslogServiceStatus"
+        rlRun -s "journalctl -u rsyslog -l --since '$since' --no-pager"
+        rlRun "cat $rlRun_LOG"
         rlAssertGrep 'Some constraint limits were reached.' $rlRun_LOG
         test ! -f /var/log/rsyslog-stats.log || rlAssertNotGrep 'TLS driver: certificate chain depth' /var/log/rsyslog-stats.log
         rlRun "rsyslogServiceStop"
