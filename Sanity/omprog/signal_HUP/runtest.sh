@@ -60,6 +60,8 @@ input(type="imuxsock" Socket="/dev/log2")
 EOF
     cat > /usr/libexec/rsyslog/log_rotate.sh << 'EOF'
 #!/bin/bash
+# ignore SIGHUP - systemctl kill sends the signal to all processes in the cgroup
+trap '' HUP
 exec >> /var/log/logs/test.out
 exec 2>&1
 file=/var/log/logs/test.log
