@@ -8,13 +8,15 @@ require+:
   - library(ControlFlow/Cleanup)
 tag:
   - Tier3
-  - CI-Tier-1
-  - rhel-8.7
 tier: '3'
 link:
   - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=1909639
 extra-nitrate: TC#0612937
 adjust:
   - enabled: false
-    when: distro < rhel-8.7
+    when: distro < rhel-9.9
+    continue: false
+  - enabled: false
+    when: distro < rhel-10.3
+    continue: false
 id: f7ef272f-e9c0-44d3-a7c8-1d98767d541b
