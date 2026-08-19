@@ -20,4 +20,8 @@ tag:
   - Tier1
   - CI-Tier-1
 tier: 1
+adjust:
+  - enabled: false
+    when: distro < rhel-10.2
+    because: impstats format="zabbix" requires upstream PR #6154
 id: fcd9013f-153c-4057-aa63-58bfe4a73036
