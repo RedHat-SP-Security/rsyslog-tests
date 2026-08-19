@@ -118,6 +118,10 @@ adjust+:
               - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2077423
             id: a20e0603-59a5-4451-8a10-1b07adb5321f
         /both_anon:
+            adjust+:
+              - enabled: false
+                when: distro == rhel-10.0
+                because: OpenSSL anon TLS handshake failure in rsyslog 8.2412.0-1, fixed in later NVR
             environment+:
                 CLIENT_NO_CERT: 1
                 SERVER_NO_CERT: 1
@@ -149,6 +153,10 @@ adjust+:
               - verifies: https://bugzilla.redhat.com/show_bug.cgi?id=2077423
             id: 519d0298-0bfc-4ce5-9f75-316c9873fd06
         /both_anon:
+            adjust+:
+              - enabled: false
+                when: distro == rhel-10.0
+                because: OpenSSL anon TLS handshake failure in rsyslog 8.2412.0-1, fixed in later NVR
             environment+:
                 CLIENT_NO_CERT: 1
                 SERVER_NO_CERT: 1

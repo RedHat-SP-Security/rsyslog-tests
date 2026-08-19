@@ -31,6 +31,9 @@ adjust:
   - enabled: false
     when: arch == s390x,ppc64le,ia64
     continue: false
+  - enabled: false
+    when: distro < rhel-10.2
+    because: tls.tlsversion, tls.ciphersuites, tls.keyexchangegroups require upstream PR #7278
 /rsa:
     environment:
         CRYPTO_ALG: RSA
@@ -43,6 +46,6 @@ adjust:
       - enabled: false
         because: PQC it's not implement for ElasticSearch
       - enabled: false
-        when: distro < rhel-10.1 or distro < fedora-43
+        when: distro < fedora-43
         because: PQC is available from this version of OS
     id: 4a254740-c0ff-4424-ab5c-8ef540c190fd

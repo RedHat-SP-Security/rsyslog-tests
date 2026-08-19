@@ -29,7 +29,8 @@ tag:
 tier: 1
 adjust:
   - enabled: false
-    when: distro < rhel-10
+    when: distro < rhel-10.2
+    because: imkafka granular per-topic metrics require upstream PR #6154
     continue: false
   - enabled: false
     when: arch == s390x
