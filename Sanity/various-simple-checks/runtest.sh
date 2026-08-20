@@ -52,10 +52,13 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "BZ#1399562"
+        lines_before=$(wc -l < /var/log/messages)
         rlServiceStop "rsyslog"
         rlServiceStart "rsyslog"
         rlRun "sleep 2"
-        rlAssertNotGrep "rsyslogd.*segfault" /var/log/messages
+        tail -n +$((lines_before+1)) /var/log/messages > messages_after_restart
+        rlAssertNotGrep "rsyslogd.*segfault" messages_after_restart
+        rm -f messages_after_restart
     rlPhaseEnd
 
     rlPhaseStartTest "BZ#1399652"

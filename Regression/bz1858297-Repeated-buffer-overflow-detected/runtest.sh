@@ -134,7 +134,7 @@ EOF
 
   rlPhaseStartTest && {
     rsyslogResetLogFilePointer /var/log/messages
-    since=$(date +"%F %T")
+    journal_cursor=$(journalctl -u rsyslog -n 0 --show-cursor 2>/dev/null | grep 'cursor:' | sed 's/.*cursor: //')
     rlLogInfo "Opening 1024 connections to test for buffer overflow"
     CleanupRegister 'rlRun "kill \$(pidof sleep)"'
     progressHeader 1024
@@ -148,7 +148,7 @@ EOF
     done
     progressFooter
     rlRun "echo 'muj test' | nc --ssl --ssl-cert /etc/rsyslog.d/client-cert.pem --ssl-key /etc/rsyslog.d/client-key.pem 127.0.0.1 6514"
-    rlRun -s "journalctl -u rsyslog -l --since '$since' --no-pager"
+    rlRun -s "journalctl -u rsyslog -l --after-cursor='$journal_cursor' --no-pager"
     rlAssertNotGrep "code=dumped" $rlRun_LOG
     rlAssertNotGrep "code=killed" $rlRun_LOG
     rm -f $rlRun_LOG
