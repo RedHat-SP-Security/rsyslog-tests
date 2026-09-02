@@ -1166,11 +1166,13 @@ rsyslogServerStop() {
     for ((i=180; i>0; i--)); do
       if grep -q '== ERROR SUMMARY' "$rsyslogServerOut"; then
         echo
+        rm -f $rsyslogServerPidFile
         return 0
       fi
       echo -n "."
       sleep 1
     done
+    rm -f $rsyslogServerPidFile
     return 1
   fi
 
@@ -1356,11 +1358,13 @@ rsyslogServiceStop() {
     for ((i=180; i>0; i--)); do
       grep -q '== ERROR SUMMARY' $rsyslogOut && {
         echo
+        rm -f $rsyslogPidFile
         return 0
       }
       echo -n .
       sleep 1
     done
+    rm -f $rsyslogPidFile
     return 1
   else
     rlIsRHEL 5 && {
