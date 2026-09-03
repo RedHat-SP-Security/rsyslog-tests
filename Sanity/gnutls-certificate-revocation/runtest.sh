@@ -33,8 +33,8 @@ PACKAGES="rsyslog rsyslog-gnutls openssl policycoreutils-python-utils"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlAsertRpms --all
-        rlRun "rlImport openssl/certgen"
+        rlAssertRpms --all
+        rlRun "rlImport --all"
 
         rlServiceStop rsyslog.service
 
@@ -150,7 +150,7 @@ EOF
         # Start the service and send a test message
         rlServiceStart rsyslog.service
         rlRun "logger test"
-        sleep 3
+        rsyslogWaitTillGrowing /var/log/debug.log "GnuTLS" 30
 
         rlRun "cat server.log"
         rlRun "cat server.err"
@@ -201,8 +201,8 @@ EOF
 
         # Start the service and send a test message
         rlServiceStart rsyslog.service
-        sleep 3
         rlRun "logger test"
+        rsyslogWaitTillGrowing /var/log/debug.log "GnuTLS" 30
 
         rlRun "cat server.log"
         rlRun "cat server.err"
