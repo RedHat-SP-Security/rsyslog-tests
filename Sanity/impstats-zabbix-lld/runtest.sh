@@ -32,6 +32,7 @@
 
 PACKAGE="rsyslog"
 STATSFILE="/tmp/rsyslog-impstats-zabbix.log"
+SOCKET="/tmp/rsyslog-impstats-zabbix.sock"
 RSYSLOG_CONF="/etc/rsyslog.conf"
 LOGFILE="/tmp/rsyslog-test.log"
 RSYSLOG_PIDFILE="/tmp/rsyslog-test.pid"
@@ -41,7 +42,7 @@ rlJournalStart
         rlImport --all
         rlAssertRpm "$PACKAGE"
 
-        rlRun "rm -f \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Clean up any pre-existing test files"
+        rlRun "rm -f \"$STATSFILE\" \"$SOCKET\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Clean up any pre-existing test files"
 
         rlRun "rsyslogSetup" 0 "Initialize rsyslog test environment"
 
@@ -52,7 +53,9 @@ rlJournalStart
         rlRun "rsyslogPrepareConf" 0 "Prepare base rsyslog configuration"
 
         rsyslogConfigReplace MODULES <<EOF
-module(load="imuxsock")
+module(load="imuxsock"
+    SysSock.Use="off"
+    Socket="$SOCKET")
 module(load="impstats"
     interval="1"
     format="zabbix"
@@ -78,7 +81,7 @@ EOF
 
     rlPhaseStartTest "Verify Zabbix LLD format output"
         rlLog "Sending test messages to generate stats"
-        rlRun "logger -t impstats-zabbix-test 'test message for stats generation'" 0 "Sending test message"
+        rlRun "logger -u \"$SOCKET\" -t impstats-zabbix-test 'test message for stats generation'" 0 "Sending test message"
 
         rlLog "Waiting for impstats to flush at least two intervals"
         rlRun "sleep 5"
@@ -144,7 +147,7 @@ print('Zabbix LLD format structure verified')
             rlRun "kill $pid" 0,1 "Stopping background rsyslogd"
             rlRun "wait $pid" 0,1,127 "Waiting for rsyslogd to exit"
         fi
-        rlRun "rm -f \"$STATSFILE\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Remove test files"
+        rlRun "rm -f \"$STATSFILE\" \"$SOCKET\" \"$LOGFILE\" \"$RSYSLOG_PIDFILE\"" 0 "Remove test files"
         rsyslogCleanup
     rlPhaseEnd
 rlJournalEnd
