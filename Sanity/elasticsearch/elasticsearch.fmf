@@ -29,6 +29,7 @@ execute:
     /SearchIndex:
         environment:
             SearchIndex: test-index
+        id: dabd8e3a-d52a-4927-92f2-3cb6911ba893
     /noSearchIndex:
 
 /v8.x:
@@ -60,3 +61,4 @@ execute:
           - rm -f /etc/yum.repos.d/elasticsearch.repo
           - update-crypto-policies --set DEFAULT
           - rm -rf /etc/elasticsearch /var/lib/elasticsearch
+    id: 1c384462-7530-4b60-81a1-b3e992cacc13
