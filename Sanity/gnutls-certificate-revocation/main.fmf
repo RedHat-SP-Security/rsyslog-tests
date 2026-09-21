@@ -8,7 +8,7 @@ contact: Anderson Toshiyuki Sasaki <ansasaki@redhat.com>
 component:
   - rsyslog
 test: ./runtest.sh
-require:
+require+:
   - library(openssl/certgen)
 recommend:
   - rsyslog

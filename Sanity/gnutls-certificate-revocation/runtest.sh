@@ -33,7 +33,7 @@ PACKAGES="rsyslog rsyslog-gnutls openssl policycoreutils-python-utils"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlAssertRpms --all
+        rlCheckRequirements $PACKAGES
         rlRun "rlImport --all"
 
         rlServiceStop rsyslog.service
