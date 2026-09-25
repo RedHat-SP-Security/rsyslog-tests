@@ -24,6 +24,7 @@ tag:
   - NoRHEL7
   - TIPfail
   - TIPfail_Security
+  - fips
   - rhel-8.0.0
   - customer_scenario
 extra-summary: /CoreOS/rsyslog/Sanity/gnutls-certificate-revocation

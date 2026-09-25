@@ -12,6 +12,7 @@ enabled: true
 tag:
   - Tier1
   - ImageMode
+  - fips
 tier: '1'
 adjust+:
   - require-:
