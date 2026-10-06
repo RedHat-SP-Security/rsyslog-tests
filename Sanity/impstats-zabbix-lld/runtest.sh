@@ -53,9 +53,8 @@ rlJournalStart
         rlRun "rsyslogPrepareConf" 0 "Prepare base rsyslog configuration"
 
         rsyslogConfigReplace MODULES <<EOF
-module(load="imuxsock"
-    SysSock.Use="off"
-    Socket="$SOCKET")
+module(load="imuxsock" SysSock.Use="off")
+input(type="imuxsock" Socket="$SOCKET")
 module(load="impstats"
     interval="1"
     format="zabbix"
