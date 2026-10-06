@@ -33,9 +33,9 @@
 PACKAGE="rsyslog"
 
 function wait_for_established_tls() {
-  # Wait for TLS connection to be established (up to 10 seconds)
+  local timeout=${TLS_CONNECT_TIMEOUT:-10}
   TLS_CONNECTED=0
-  for i in {1..10}; do
+  for i in $(seq 1 $timeout); do
       if ss -tn | grep -q 'ESTAB.*:6514'; then
           rlLog "TLS connection established after $i seconds"
           TLS_CONNECTED=1
@@ -45,7 +45,7 @@ function wait_for_established_tls() {
   done
   if [[ $TLS_CONNECTED -eq 0 ]]; then
       rlRun "ss -tn state all '( dport = :6514 or sport = :6514 )'" 0 "Show all connections on port 6514 for debugging"
-      rlFail "TLS connection to port 6514 was not established within 10 seconds"
+      rlFail "TLS connection to port 6514 was not established within $timeout seconds"
   fi
   rlRun "ss -tn | grep 'ESTAB.*:6514'" 0 "Verify ESTABLISHED connection to port 6514 exists"
 }
