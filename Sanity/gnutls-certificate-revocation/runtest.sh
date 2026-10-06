@@ -150,7 +150,7 @@ EOF
         # Start the service and send a test message
         rlServiceStart rsyslog.service
         rlRun "logger test"
-        rsyslogWaitTillGrowing /var/log/debug.log "GnuTLS" 30
+        rsyslogWaitTillGrowing /var/log/debug.log "GnuTLS" ${GNUTLS_WAIT_TIMEOUT:-30} ${GNUTLS_WAIT_INTERVAL:-15}
 
         rlRun "cat server.log"
         rlRun "cat server.err"
@@ -202,7 +202,7 @@ EOF
         # Start the service and send a test message
         rlServiceStart rsyslog.service
         rlRun "logger test"
-        rsyslogWaitTillGrowing /var/log/debug.log "GnuTLS" 30
+        rsyslogWaitTillGrowing /var/log/debug.log "GnuTLS" ${GNUTLS_WAIT_TIMEOUT:-30} ${GNUTLS_WAIT_INTERVAL:-15}
 
         rlRun "cat server.log"
         rlRun "cat server.err"
