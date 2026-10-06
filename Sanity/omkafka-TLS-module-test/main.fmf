@@ -17,7 +17,7 @@ recommend:
   - librdkafka
   - rsyslog-kafka
   - java
-duration: 25m
+duration: 30m
 enabled: true
 tag:
   - NoRHEL4
