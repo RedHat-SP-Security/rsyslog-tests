@@ -32,6 +32,29 @@
 
 PACKAGE="rsyslog"
 
+function wait_for_tls_connections() {
+  local timeout=${TLS_CONNECT_TIMEOUT:-10}
+  local all_connected=0
+  for i in $(seq 1 $timeout); do
+    local count=0
+    for port in 50514 50515 50516; do
+      ss -tn | grep -q "ESTAB.*:${port}" && ((count++))
+    done
+    if [[ $count -ge 3 ]]; then
+      rlLog "All TLS connections established after $i seconds"
+      all_connected=1
+      break
+    fi
+    sleep 1
+  done
+  if [[ $all_connected -eq 0 ]]; then
+    for port in 50514 50515 50516; do
+      rlRun "ss -tn state all '( dport = :${port} or sport = :${port} )'" 0 "Show connections on port $port"
+    done
+    rlFail "Not all TLS connections were established within $timeout seconds"
+  fi
+}
+
 if [ "${DRIVER_GTLS}" != "YES" ] ; then
   # Get the part of the path before the last component (e.g., "/Sanity/per-connection-ssl/ossl")
   parent_path=$(dirname "$TMT_TEST_NAME")
@@ -248,6 +271,7 @@ EOF
 
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest
+      wait_for_tls_connections
       rlRun "logger 'test message'"
       rlRun "logger -p local1.info 'test message1'" 0 "send a message using a default keys/certs"
       rlRun "logger -p local2.info 'test message2'" 0 "send a message using a deciated keys/certs"
