@@ -17,6 +17,7 @@ enabled: true
 tag:
   - Tier3
   - CI-Tier-1
+  - fips
 tier: '3'
 adjust:
   - enabled: false

@@ -27,6 +27,7 @@ tag:
   - NoRHEL7
   - NoRHEL8
   - Tier2
+  - fips
 adjust:
   - enabled: false
     when: distro < rhel-9

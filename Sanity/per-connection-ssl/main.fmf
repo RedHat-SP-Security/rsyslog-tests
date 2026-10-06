@@ -10,6 +10,8 @@ require+:
   - openssl
 duration: 5m
 enabled: true
+tag:
+  - fips
 adjust:
   - enabled: false
     when: distro ~< rhel-9.4
