@@ -31,6 +31,10 @@ extra-nitrate: TC#0611161
         CRYPTO_ALG: RSA
     id: c8da86a5-7070-48cf-b62b-b8dfd66d1dff
 /pqc_alg:
+    # PQC algorithms (ML-DSA-65) require the OQS Provider which is not
+    # available in FIPS mode — key generation fails during test setup
+    tag-:
+      - fips
     environment:
         CRYPTO_ALG: ML-DSA-65
     adjust+:

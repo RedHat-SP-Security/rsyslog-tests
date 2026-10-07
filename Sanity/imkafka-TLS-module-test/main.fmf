@@ -27,7 +27,9 @@ tag:
   - NoRHEL7
   - NoRHEL8
   - Tier2
-  - fips
+# fips tag removed: Kafka broker cannot initialize its TLS stack in
+# FIPS mode — the JVM SSL context fails to start and port 9093 never
+# opens (rlWaitForSocket times out after 120s)
 adjust:
   - enabled: false
     when: distro < rhel-9

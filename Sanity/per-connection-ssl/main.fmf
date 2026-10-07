@@ -36,6 +36,10 @@ link:
             CRYPTO_ALG: RSA
         id: e37ca156-d789-4d59-bbd1-9b422d6a467f
     /pqc_alg:
+        # PQC algorithms (ML-DSA-65) require the OQS Provider which is not
+        # available in FIPS mode — key generation fails during test setup
+        tag-:
+          - fips
         environment:
             CRYPTO_ALG: ML-DSA-65
         adjust+:
