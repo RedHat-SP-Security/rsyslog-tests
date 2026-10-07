@@ -271,12 +271,12 @@ EOF
 
   tcfTry "Tests" --no-assert && {
     rlPhaseStartTest
-      wait_for_tls_connections
       rlRun "logger 'test message'"
       rlRun "logger -p local1.info 'test message1'" 0 "send a message using a default keys/certs"
       rlRun "logger -p local2.info 'test message2'" 0 "send a message using a deciated keys/certs"
       rlRun "logger -p local3.info 'test message3'" 0 "send a message using a other deciated keys/certs"
       rlRun "logger -p local4.info 'test message4'" 0 "send a message using a wrong keys/certs"
+      wait_for_tls_connections
       rlRun "sleep 3s"
 
       rlLog "'test message4' must not be delivered dues to the mismatch of the certificates"
