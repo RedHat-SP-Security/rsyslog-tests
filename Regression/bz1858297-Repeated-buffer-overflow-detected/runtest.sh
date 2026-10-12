@@ -140,8 +140,8 @@ EOF
     progressHeader 1024
     for ((i = 30000; i <= 31024; i++)); do
       (
-        sleep 1200 | nc --ssl --ssl-cert /etc/rsyslogd.d/client-cert.pem \
-          --ssl-key /etc/rsyslogd.d/client-key.pem \
+        sleep 1200 | nc --ssl --ssl-cert /etc/rsyslog.d/client-cert.pem \
+          --ssl-key /etc/rsyslog.d/client-key.pem \
           127.0.0.1 6514 &>/dev/null &
       )
       progressDraw $((i - 30000))
