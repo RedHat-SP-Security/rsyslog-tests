@@ -1,0 +1,4 @@
+PURPOSE of /CoreOS/rsyslog/Regression/RHEL-151324-gtls-expired-crl
+Description: This test verifies that rsyslog, when configured with the GnuTLS (gtls) driver, correctly rejects incoming TLS connections if the specified Certificate Revocation List (CRL) file has expired.
+Author: QE Automation <sec-eng-special@redhat.com>
+Bug: https://issues.redhat.com/browse/RHEL-151324
