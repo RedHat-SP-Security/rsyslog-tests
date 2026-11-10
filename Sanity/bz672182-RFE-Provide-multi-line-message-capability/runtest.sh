@@ -64,12 +64,8 @@ EOF
 \$ModLoad imtcp
 \$InputTCPServerDisableLFDelimiter on
 \$InputTCPServerAddtlFrameDelimiter 76
-#\$template RemoteHost,"$TmpDir/syslog_%HOSTNAME%/messages"
 \$template RemoteHost,"/var/log/messages_%HOSTNAME%"
-# Remote Logging
-\$RuleSet remote
 *.* ?RemoteHost
-\$InputTCPServerBindRuleset remote
 \$InputTCPServerRun 50514
 EOF
           #}}}

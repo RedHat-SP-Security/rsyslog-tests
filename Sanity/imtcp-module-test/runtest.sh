@@ -93,38 +93,38 @@ input(type="imtcp" name="remote50514" port="50514" ruleset="TestRuleSet")
 input(type="imtcp" name="remote50515" port="50515" ruleset="TestRuleSet")
 input(type="imtcp" name="remote50516" port="50516" ruleset="TestRuleSet")
 EOF
-        else
-          rsyslogConfigReplace 'IMTCP-MODLOAD' <<'EOF'
-$ModLoad imtcp.so
-EOF
-          rsyslogConfigReplace 'IMTCP-RULES' <<EOF
-\$template TestDynFile,"/var/log/%inputname%.log"
-
-\$RuleSet TestRuleSet
-*.* ?TestDynFile
-
-\$InputTCPServerInputName remote50514
-\$InputTCPServerBindRuleset TestRuleSet
-\$InputTCPServerRun 50514
-
-\$InputTCPServerInputName remote50515
-\$InputTCPServerBindRuleset TestRuleSet
-\$InputTCPServerRun 50515
-
-\$InputTCPServerInputName remote50516
-\$InputTCPServerBindRuleset TestRuleSet
-\$InputTCPServerRun 50516
-
-EOF
-        fi
-
-        rsyslogConfigReplace 'IMTCP-RULES2' <<EOF
-#\$RuleSet RSYSLOG_DefaultRuleset
-# forwarding of localX messages for the test
+          rsyslogConfigReplace 'IMTCP-RULES2' <<EOF
 local4.info   @@localhost:50514
 local5.info   @@localhost:50515
 local6.info   @@localhost:50516
 EOF
+        else
+          rsyslogConfigReplace 'IMTCP-MODLOAD' <<'EOF'
+$ModLoad imtcp.so
+EOF
+          # Property filter at the top of RULES catches TCP-received messages
+          # and stops processing to prevent forwarding loops.  This avoids
+          # $InputTCPServerBindRuleset which is broken in rsyslog 8.2510.0.
+          rsyslogConfigReplace 'IMTCP-RULES2' <<'EOF'
+$template TestDynFile,"/var/log/%inputname%.log"
+:inputname, startswith, "remote" ?TestDynFile
+& stop
+EOF
+          rsyslogConfigReplace 'IMTCP-RULES' <<EOF
+\$InputTCPServerInputName remote50514
+\$InputTCPServerRun 50514
+
+\$InputTCPServerInputName remote50515
+\$InputTCPServerRun 50515
+
+\$InputTCPServerInputName remote50516
+\$InputTCPServerRun 50516
+
+local4.info   @@localhost:50514
+local5.info   @@localhost:50515
+local6.info   @@localhost:50516
+EOF
+        fi
         rlRun "rsyslogPrintEffectiveConfig -n"
         rsyslogServiceStart
         TMPFILE=`mktemp`
