@@ -26,6 +26,15 @@ enabled: true
       - rsyslogSyntaxOLD
     tier: '2'
     extra-nitrate: TC#0138205
+    adjust:
+      - enabled: false
+        when: distro == rhel-10.2
+        continue: false
+        because: $InputTCPServer* directives broken in rsyslog 8.2510.0 (RHEL 10.2)
+      - enabled: false
+        when: distro == rhel-9.8
+        continue: false
+        because: $InputTCPServer* directives broken in rsyslog 8.2510.0 (RHEL 9.8)
     id: 9fecbd67-2877-45c6-93c9-cd156a8129f4
 /new-syntax:
     environment:
